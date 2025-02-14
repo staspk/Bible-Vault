@@ -7,6 +7,7 @@ PYTHON_ROOT_DIRECTORY         =  os.path.dirname(DEFINITIONS_PY_ABSOLUTE_PATH)  
 PROJECT_ROOT_DIRECTORY        =  os.path.dirname(PYTHON_ROOT_DIRECTORY)
 
 JSONS_DIRECTORY               =  os.path.join(PROJECT_ROOT_DIRECTORY, 'jsons')
+BIBLE_JSON                    =  os.path.join(JSONS_DIRECTORY, 'bible.json')
 
 
 

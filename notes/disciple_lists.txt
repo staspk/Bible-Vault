@@ -1,0 +1,41 @@
+Matthew 10 => {
+	Simon, who is called Peter; Andrew, his brother
+	James, the son of Zeb′edee; John, his brother
+	Philip
+	Bartholomew
+	Thomas
+	Matthew, the tax collector
+	James, son of Alphaeus
+	Thaddaeus
+	Simon, the Cananaean
+	Judas Iscariot
+}
+
+Mark 3 => {
+	Simon, whom he surnamed Peter
+	James the son of Zeb′edee, John his brother, whom he surnamed Bo-aner′ges (sons of thunder)
+	Andrew
+	Philip
+	Bartholomew
+	Matthew
+	Thomas
+	James, son of Alphaeus
+	Thaddaeus
+	Simon, the Cananaean
+	Judas Iscariot
+}
+
+Luke 6 => {
+	Simon, who he named Peter, Andrew, his brother
+	James & John
+	Phillip
+	Bartholomew
+	Matthew
+	Thomas
+	James, son of Alphaeus
+	Simon, who is called the Zealot
+	Judas, son of James
+	Judas Iscariot
+}
+
+	

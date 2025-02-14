@@ -1,0 +1,5 @@
+
+Simon and his Mother lived in Capernaum => {
+	Capernaum, a city on the North of the Sea of Galilee
+	Population: ~1500; Source: Josephus
+}

@@ -1,0 +1,11 @@
+Capernaum, a city on the North of the Sea of Galilee => {
+	Population: ~1500; Source: Josephus
+	~20 miles away from Nazareth
+}
+
+Nazareth => {
+	Population during Jesus' time:
+	1'st theory: 1600-2000
+	2'nd theory: maximum of 480, after an additional decade of research
+	Source: James F. Strange, Professor of Religious Studies at the University of South Florida,
+}
