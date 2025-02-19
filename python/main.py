@@ -1,20 +1,37 @@
-import sys
+import sys, json
 from definitions import BIBLE_JSON
-import json
-
-import bible
+from models import Bible
 
 
-with open(BIBLE_JSON, 'r', encoding='utf-8') as file:
-    bible = json.load(file)
 
-size_in_bytes = sys.getsizeof(bible)
+print(Bible.toString(Bible.Books.) .FIRST_CHRONICLES)
+
+Bible.Books.GENESIS
+
+
+
+class Genesis(BibleBook):
+    def info():
+        return "genesis"
+
+
+
+
+
+
+
+# with open(BIBLE_JSON, 'r', encoding='utf-8') as file:
+#     bibleJson = json.load(file)
+
+
+
+# print(BIBLE_JSON)
 
 # for len(bible.item)
 # for book_abbr, book in bible.items():
 #     print(book_abbr, )
 
-print(bible[5])
-print(size_in_bytes)
+# print(bible[5])
+# print(size_in_bytes)
 
-bible.books.GENSIS
+# bible.Book
