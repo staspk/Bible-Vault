@@ -3,23 +3,6 @@ from definitions import BIBLE_JSON
 from models import Bible
 
 
-
-print(Bible.toString(Bible.Books.) .FIRST_CHRONICLES)
-
-Bible.Books.GENESIS
-
-
-
-class Genesis(BibleBook):
-    def info():
-        return "genesis"
-
-
-
-
-
-
-
 # with open(BIBLE_JSON, 'r', encoding='utf-8') as file:
 #     bibleJson = json.load(file)
 
