@@ -209,7 +209,6 @@ def toString(книга: Книги) -> str:
 @dataclass
 class BibleКнига:
     name: str
-    abbr: str
     chapters: int
     index: int
 
