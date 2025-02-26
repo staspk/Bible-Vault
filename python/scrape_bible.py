@@ -8,11 +8,11 @@ from selenium.webdriver.common.by import By
 from definitions import *
 
 book = 'Genesis'
-book = '2Kgs'
-chapter = 4
+book = '1'
+chapter = 1
 us_translations = ['kjv', 'nkjv', 'esv', 'nasb', 'niv', 'rsv', 'nrsv', 'ylt']
 rus_translations = ['rusv', 'nrt']
-target_translation = 'rsv'
+target_translation = 'RSV'
 
 version_string = ';'.join(us_translations)
 print(version_string)
@@ -24,25 +24,41 @@ BIBLE_GATEWAY_URL = fr'https://www.biblegateway.com/passage/?search={book}{chapt
 GENESIS1 = fr'file://{PROJECT_ROOT_DIRECTORY}/genesis1.html'
 
 opts = Options()
-# opts.add_argument("--headless")
+opts.add_argument("--headless")
+# opts.add_argument('--log-level=3')
 driver = webdriver.Chrome(options=opts)
 # driver = webdriver.Chrome()
 
 
-
 driver.get(BIBLE_GATEWAY_URL)
+passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
+html = passageTextDiv.get_attribute('outerHTML')
+with open('toParse.html', 'w', encoding='utf-8') as file:
+    file.write(html)
+
+driver.get(TEMPORARY_HTML)
+print(driver.page_source)
+
+sys.exit()
+
+curVerse = 1
+htmlId = f'en-{target_translation}-{curVerse}'
 
 
-passageDiv = driver.find_element(By.CLASS_NAME, 'passage-text').get_attribute('innerHTML')
+soup = BeautifulSoup(driver.page_source, 'html.parser')
+passageTextDiv = soup.find('div', class_='passage-text')
+verse1 = soup.find('span', 'text Gen-1-1')
 
-passageText = driver.find_element(By.CLASS_NAME, 'passage-text').text
+print(verse1)
 
-soup = BeautifulSoup(passageDiv, 'html.parser')
 
-# for child in soup.descendants:
-#     print(child)
 
-# print(passageDiv)
-print(passageText)
+# with open("soup.html", "w", encoding="utf-8") as file:
+#     file.write(passageTextDiv.prettify())
+
+
+
+
+
 
 driver.quit()

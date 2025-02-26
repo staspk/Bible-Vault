@@ -205,13 +205,15 @@ def toString(book: Books) -> str:
             return 'Revelation'
         case _:
             raise RuntimeError(f'Unreachable path reached. Check Bible.py:toString(book: Books)')
-        
+
+
 @dataclass
 class BibleBook:
     name: str
     abbr: str
     chapters: int
     index: int
+
 
 bible_books: dict[Books, BibleBook] = {
     Books.GENESIS:               BibleBook(name='Genesis',            abbr='Gen',      chapters=50,   index=1),
