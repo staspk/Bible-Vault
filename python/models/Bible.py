@@ -1,285 +1,169 @@
 from dataclasses import dataclass
 from enum import Enum
 
-class Books(Enum):
-    GENESIS              =  1
-    EXODUS               =  2
-    LEVITICUS            =  3
-    NUMBERS              =  4
-    DEUTERONOMY          =  5
-    JOSHUA               =  6
-    JUDGES               =  7
-    RUTH                 =  8
-    FIRST_SAMUEL         =  9
-    SECOND_SAMUEL        =  10
-    FIRST_KINGS          =  11
-    SECOND_KINGS         =  12
-    FIRST_CHRONICLES     =  13
-    SECOND_CHRONICLES    =  14
-    EZRA                 =  15
-    NEHEMIAH             =  16
-    ESTHER               =  17
-    JOB                  =  18
-    PSALMS               =  19
-    PROVERBS             =  20
-    ECCLESIASTES         =  21
-    SONG_OF_SOLOMON      =  22
-    ISAIAH               =  23
-    JEREMIAH             =  24
-    LAMENTATIONS         =  25
-    EZEKIEL              =  26
-    DANIEL               =  27
-    HOSEA                =  28
-    JOEL                 =  29
-    AMOS                 =  30
-    OBADIAH              =  31
-    JONAH                =  32
-    MICAH                =  33
-    NAHUM                =  34
-    HABAKKUK             =  35
-    ZEPHANIAH            =  36
-    HAGGAI               =  37
-    ZECHARIAH            =  38
-    MALACHI              =  39
-    MATTHEW              =  40
-    MARK                 =  41
-    LUKE                 =  42
-    JOHN                 =  43
-    ACTS                 =  44
-    ROMANS               =  45
-    FIRST_CORINTHIANS    =  46
-    SECOND_CORINTHIANS   =  47
-    GALATIANS            =  48
-    EPHESIANS            =  49
-    PHILIPPIANS          =  50
-    COLOSSIANS           =  51
-    FIRST_THESSALONIANS  =  52
-    SECOND_THESSALONIANS =  53
-    FIRST_TIMOTHY        =  54
-    SECOND_TIMOTHY       =  55
-    TITUS                =  56
-    PHILEMON             =  57
-    HEBREWS              =  58
-    JAMES                =  59
-    FIRST_PETER          =  60
-    SECOND_PETER         =  61
-    FIRST_JOHN           =  62
-    SECOND_JOHN          =  63
-    THIRD_JOHN           =  64
-    JUDE                 =  65
-    REVELATION           =  66
-
-def toString(book: Books) -> str:
-    match book:
-        case Books.GENESIS:
-            return 'Genesis'
-        case Books.EXODUS:
-            return 'Exodus'
-        case Books.LEVITICUS:
-            return 'Leviticus'
-        case Books.NUMBERS:
-            return 'Numbers'
-        case Books.DEUTERONOMY:
-            return 'Deuteronomy'
-        case Books.JOSHUA:
-            return 'Joshua'
-        case Books.JUDGES:
-            return 'Judges'
-        case Books.RUTH:
-            return 'Ruth'
-        case Books.FIRST_SAMUEL:
-            return '1 Samuel'
-        case Books.SECOND_SAMUEL:
-            return '2 Samuel'
-        case Books.FIRST_KINGS:
-            return '1 Kings'
-        case Books.SECOND_KINGS:
-            return '2 Kings'
-        case Books.FIRST_CHRONICLES:
-            return '1 Chronicles'
-        case Books.SECOND_CHRONICLES:
-            return '2 Chronicles'
-        case Books.EZRA:
-            return 'Ezra'
-        case Books.NEHEMIAH:
-            return 'Nehemiah'
-        case Books.ESTHER:
-            return 'Esther'
-        case Books.JOB:
-            return 'Job'
-        case Books.PSALMS:
-            return 'Psalms'
-        case Books.PROVERBS:
-            return 'Proverbs'
-        case Books.ECCLESIASTES:
-            return 'Ecclesiastes'
-        case Books.SONG_OF_SOLOMON:
-            return 'Song of Solomon'
-        case Books.ISAIAH:
-            return 'Isaiah'
-        case Books.JEREMIAH:
-            return 'Jeremiah'
-        case Books.LAMENTATIONS:
-            return 'Lamentations'
-        case Books.EZEKIEL:
-            return 'Ezekiel'
-        case Books.DANIEL:
-            return 'Daniel'
-        case Books.HOSEA:
-            return 'Hosea'
-        case Books.JOEL:
-            return 'Joel'
-        case Books.AMOS:
-            return 'Amos'
-        case Books.OBADIAH:
-            return 'Obadiah'
-        case Books.JONAH:
-            return 'Jonah'
-        case Books.MICAH:
-            return 'Micah'
-        case Books.NAHUM:
-            return 'Nahum'
-        case Books.HABAKKUK:
-            return 'Habakkuk'
-        case Books.ZEPHANIAH:
-            return 'Zephaniah'
-        case Books.HAGGAI:
-            return 'Haggai'
-        case Books.ZECHARIAH:
-            return 'Zechariah'
-        case Books.MALACHI:
-            return 'Malachi'
-        case Books.MATTHEW:
-            return 'Matthew'
-        case Books.MARK:
-            return 'Mark'
-        case Books.LUKE:
-            return 'Luke'
-        case Books.JOHN:
-            return 'John'
-        case Books.ACTS:
-            return 'Acts'
-        case Books.ROMANS:
-            return 'Romans'
-        case Books.FIRST_CORINTHIANS:
-            return '1 Corinthians'
-        case Books.SECOND_CORINTHIANS:
-            return '2 Corinthians'
-        case Books.GALATIANS:
-            return 'Galatians'
-        case Books.EPHESIANS:
-            return 'Ephesians'
-        case Books.PHILIPPIANS:
-            return 'Philippians'
-        case Books.COLOSSIANS:
-            return 'Colossians'
-        case Books.FIRST_THESSALONIANS:
-            return '1 Thessalonians'
-        case Books.SECOND_THESSALONIANS:
-            return '2 Thessalonians'
-        case Books.FIRST_TIMOTHY:
-            return '1 Timothy'
-        case Books.SECOND_TIMOTHY:
-            return '2 Timothy'
-        case Books.TITUS:
-            return 'Titus'
-        case Books.PHILEMON:
-            return 'Philemon'
-        case Books.HEBREWS:
-            return 'Hebrews'
-        case Books.JAMES:
-            return 'James'
-        case Books.FIRST_PETER:
-            return '1 Peter'
-        case Books.SECOND_PETER:
-            return '2 Peter'
-        case Books.FIRST_JOHN:
-            return '1 John'
-        case Books.SECOND_JOHN:
-            return '2 John'
-        case Books.THIRD_JOHN:
-            return '3 John'
-        case Books.JUDE:
-            return 'Jude'
-        case Books.REVELATION:
-            return 'Revelation'
-        case _:
-            raise RuntimeError(f'Unreachable path reached. Check Bible.py:toString(book: Books)')
-
-
 @dataclass
-class BibleBook:
+class Book:
+    """
+     abbreviations for apocrypha
+    Tob
+    Jdt
+    GkEsth
+    Wis
+    Sir
+    Bar
+    EpJer
+    SgThr
+    Sus
+    Bel
+    1Macc
+    2Macc
+    1Esd
+    PrMan
+    Ps151
+    3Ma
+    2Esd
+    4Ma
+    """
     name: str
-    abbr: str
-    chapters: int
-    index: int
+    abbr: str           # common abbreviation, consistent with BibleGateway abbr's (tested) and 
+    chapters: int       # total chapters in book
+    index: int          # numerical appearance in the bible, 1-66
 
 
-bible_books: dict[Books, BibleBook] = {
-    Books.GENESIS:               BibleBook(name='Genesis',            abbr='Gen',      chapters=50,   index=1),
-    Books.EXODUS:                BibleBook(name='Exodus',             abbr='Exod',     chapters=40,   index=2),
-    Books.LEVITICUS:             BibleBook(name='Leviticus',          abbr='Lev',      chapters=27,   index=3),
-    Books.NUMBERS:               BibleBook(name='Numbers',            abbr='Num',      chapters=36,   index=4),
-    Books.DEUTERONOMY:           BibleBook(name='Deuteronomy',        abbr='Deut',     chapters=34,   index=5),
-    Books.JOSHUA:                BibleBook(name='Joshua',             abbr='Josh',     chapters=24,   index=6),
-    Books.JUDGES:                BibleBook(name='Judges',             abbr='Judg',     chapters=21,   index=7),
-    Books.RUTH:                  BibleBook(name='Ruth',               abbr='Ruth',     chapters=4,    index=8),
-    Books.FIRST_SAMUEL:          BibleBook(name='1 Samuel',           abbr='1Sam',     chapters=31,   index=9),
-    Books.SECOND_SAMUEL:         BibleBook(name='2 Samuel',           abbr='2Sam',     chapters=24,   index=10),
-    Books.FIRST_KINGS:           BibleBook(name='1 Kings',            abbr='1Kgs',     chapters=22,   index=11),
-    Books.SECOND_KINGS:          BibleBook(name='2 Kings',            abbr='2Kgs',     chapters=25,   index=12),
-    Books.FIRST_CHRONICLES:      BibleBook(name='1 Chronicles',       abbr='1Chr',     chapters=29,   index=13),
-    Books.SECOND_CHRONICLES:     BibleBook(name='2 Chronicles',       abbr='2Chr',     chapters=36,   index=14),
-    Books.EZRA:                  BibleBook(name='Ezra',               abbr='Ezra',     chapters=10,   index=15),
-    Books.NEHEMIAH:              BibleBook(name='Nehemiah',           abbr='Neh',      chapters=13,   index=16),
-    Books.ESTHER:                BibleBook(name='Esther',             abbr='Esth',     chapters=10,   index=17),
-    Books.JOB:                   BibleBook(name='Job',                abbr='Job',      chapters=42,   index=18),
-    Books.PSALMS:                BibleBook(name='Psalms',             abbr='Ps',       chapters=150,  index=19),
-    Books.PROVERBS:              BibleBook(name='Proverbs',           abbr='Prov',     chapters=31,   index=20),
-    Books.ECCLESIASTES:          BibleBook(name='Ecclesiastes',       abbr='Eccl',     chapters=12,   index=21),
-    Books.SONG_OF_SOLOMON:       BibleBook(name='Song of Solomon',    abbr='Song',     chapters=8,    index=22),
-    Books.ISAIAH:                BibleBook(name='Isaiah',             abbr='Isa',      chapters=66,   index=23),
-    Books.JEREMIAH:              BibleBook(name='Jeremiah',           abbr='Jer',      chapters=52,   index=24),
-    Books.LAMENTATIONS:          BibleBook(name='Lamentations',       abbr='Lam',      chapters=5,    index=25),
-    Books.EZEKIEL:               BibleBook(name='Ezekiel',            abbr='Ezek',     chapters=48,   index=26),
-    Books.DANIEL:                BibleBook(name='Daniel',             abbr='Dan',      chapters=12,   index=27),
-    Books.HOSEA:                 BibleBook(name='Hosea',              abbr='Hos',      chapters=14,   index=28),
-    Books.JOEL:                  BibleBook(name='Joel',               abbr='Joel',     chapters=3,    index=29),
-    Books.AMOS:                  BibleBook(name='Amos',               abbr='Amos',     chapters=9,    index=30),
-    Books.OBADIAH:               BibleBook(name='Obadiah',            abbr='Obad',     chapters=1,    index=31),
-    Books.JONAH:                 BibleBook(name='Jonah',              abbr='Jonah',    chapters=4,    index=32),
-    Books.MICAH:                 BibleBook(name='Micah',              abbr='Mic',      chapters=7,    index=33),
-    Books.NAHUM:                 BibleBook(name='Nahum',              abbr='Nah',      chapters=3,    index=34),
-    Books.HABAKKUK:              BibleBook(name='Habakkuk',           abbr='Hab',      chapters=3,    index=35),
-    Books.ZEPHANIAH:             BibleBook(name='Zephaniah',          abbr='Zeph',     chapters=3,    index=36),
-    Books.HAGGAI:                BibleBook(name='Haggai',             abbr='Hag',      chapters=2,    index=37),
-    Books.ZECHARIAH:             BibleBook(name='Zechariah',          abbr='Zech',     chapters=14,   index=38),
-    Books.MALACHI:               BibleBook(name='Malachi',            abbr='Mal',      chapters=4,    index=39),
-    Books.MATTHEW:               BibleBook(name='Matthew',            abbr='Matt',     chapters=28,   index=40),
-    Books.MARK:                  BibleBook(name='Mark',               abbr='Mark',     chapters=16,   index=41),
-    Books.LUKE:                  BibleBook(name='Luke',               abbr='Luke',     chapters=24,   index=42),
-    Books.JOHN:                  BibleBook(name='John',               abbr='John',     chapters=21,   index=43),
-    Books.ACTS:                  BibleBook(name='Acts',               abbr='Acts',     chapters=28,   index=44),
-    Books.ROMANS:                BibleBook(name='Romans',             abbr='Rom',      chapters=16,   index=45),
-    Books.FIRST_CORINTHIANS:     BibleBook(name='1 Corinthians',      abbr='1Cor',     chapters=16,   index=46),
-    Books.SECOND_CORINTHIANS:    BibleBook(name='2 Corinthians',      abbr='2Cor',     chapters=13,   index=47),
-    Books.GALATIANS:             BibleBook(name='Galatians',          abbr='Gal',      chapters=6,    index=48),
-    Books.EPHESIANS:             BibleBook(name='Ephesians',          abbr='Eph',      chapters=6,    index=49),
-    Books.PHILIPPIANS:           BibleBook(name='Philippians',        abbr='Phil',     chapters=4,    index=50),
-    Books.COLOSSIANS:            BibleBook(name='Colossians',         abbr='Col',      chapters=4,    index=51),
-    Books.FIRST_THESSALONIANS:   BibleBook(name='1 Thessalonians',    abbr='1Thess',   chapters=5,    index=52),
-    Books.SECOND_THESSALONIANS:  BibleBook(name='2 Thessalonians',    abbr='2Thess',   chapters=3,    index=53),
-    Books.FIRST_TIMOTHY:         BibleBook(name='1 Timothy',          abbr='1Tim',     chapters=6,    index=54),
-    Books.SECOND_TIMOTHY:        BibleBook(name='2 Timothy',          abbr='2Tim',     chapters=4,    index=55),
-    Books.TITUS:                 BibleBook(name='Titus',              abbr='Titus',    chapters=3,    index=56),
-    Books.PHILEMON:              BibleBook(name='Philemon',           abbr='Phlm',     chapters=1,    index=57),
-    Books.HEBREWS:               BibleBook(name='Hebrews',            abbr='Heb',      chapters=13,   index=58),
-    Books.JAMES:                 BibleBook(name='James',              abbr='Jas',      chapters=5,    index=59),
-    Books.FIRST_PETER:           BibleBook(name='1 Peter',            abbr='1Pet',     chapters=5,    index=60),
-    Books.SECOND_PETER:          BibleBook(name='2 Peter',            abbr='2Pet',     chapters=3,    index=61),
-    Books.FIRST_JOHN:            BibleBook(name='1 John',             abbr='1John',    chapters=5,    index=62),
-    Books.SECOND_JOHN:           BibleBook(name='2 John',             abbr='2John',    chapters=1,    index=63),
-    Books.THIRD_JOHN:            BibleBook(name='3 John',             abbr='3John',    chapters=1,    index=64),
-    Books.JUDE:                  BibleBook(name='Jude',               abbr='Jude',     chapters=1,    index=65),
-    Books.REVELATION:            BibleBook(name='Revelation',         abbr='Rev',      chapters=22,   index=66)
+class BIBLE(Enum):
+    GENESIS               =  'Genesis'
+    EXODUS                =  'Exodus'
+    LEVITICUS             =  'Leviticus'
+    NUMBERS               =  'Numbers'
+    DEUTERONOMY           =  'Deuteronomy'
+    JOSHUA                =  'Joshua'
+    JUDGES                =  'Judges'
+    RUTH                  =  'Ruth'
+    FIRST_SAMUEL          =  '1 Samuel'
+    SECOND_SAMUEL         =  '2 Samuel'
+    FIRST_KINGS           =  '1 Kings'
+    SECOND_KINGS          =  '2 Kings'
+    FIRST_CHRONICLES      =  '1 Chronicles'
+    SECOND_CHRONICLES     =  '2 Chronicles'
+    EZRA                  =  'Ezra'
+    NEHEMIAH              =  'Nehemiah'
+    ESTHER                =  'Esther'
+    JOB                   =  'Job'
+    PSALMS                =  'Psalms'
+    PROVERBS              =  'Proverbs'
+    ECCLESIASTES          =  'Ecclesiastes'
+    SONG_OF_SOLOMON       =  'Song of Solomon'
+    ISAIAH                =  'Isaiah'
+    JEREMIAH              =  'Jeremiah'
+    LAMENTATIONS          =  'Lamentations'
+    EZEKIEL               =  'Ezekiel'
+    DANIEL                =  'Daniel'
+    HOSEA                 =  'Hosea'
+    JOEL                  =  'Joel'
+    AMOS                  =  'Amos'
+    OBADIAH               =  'Obadiah'
+    JONAH                 =  'Jonah'
+    MICAH                 =  'Micah'
+    NAHUM                 =  'Nahum'
+    HABAKKUK              =  'Habakkuk'
+    ZEPHANIAH             =  'Zephaniah'
+    HAGGAI                =  'Haggai'
+    ZECHARIAH             =  'Zechariah'
+    MALACHI               =  'Malachi'
+    MATTHEW               =  'Matthew'
+    MARK                  =  'Mark'
+    LUKE                  =  'Luke'
+    JOHN                  =  'John'
+    ACTS                  =  'Acts'
+    ROMANS                =  'Romans'
+    FIRST_CORINTHIANS     =  '1 Corinthians'
+    SECOND_CORINTHIANS    =  '2 Corinthians'
+    GALATIANS             =  'Galatians'
+    EPHESIANS             =  'Ephesians'
+    PHILIPPIANS           =  'Philippians'
+    COLOSSIANS            =  'Colossians'
+    FIRST_THESSALONIANS   =  '1 Thessalonians'
+    SECOND_THESSALONIANS  =  '2 Thessalonians'
+    FIRST_TIMOTHY         =  '1 Timothy'
+    SECOND_TIMOTHY        =  '2 Timothy'
+    TITUS                 =  'Titus'
+    PHILEMON              =  'Philemon'
+    HEBREWS               =  'Hebrews'
+    JAMES                 =  'James'
+    FIRST_PETER           =  '1 Peter'
+    SECOND_PETER          =  '2 Peter'
+    FIRST_JOHN            =  '1 John'
+    SECOND_JOHN           =  '2 John'
+    THIRD_JOHN            =  '3 John'
+    JUDE                  =  'Jude'
+    REVELATION            =  'Revelation'
+
+
+Bible: dict[BIBLE, Book] = {
+    BIBLE.GENESIS:               Book(name=BIBLE.GENESIS.name,               abbr='Gen',      chapters=50,    index=1),
+    BIBLE.EXODUS:                Book(name=BIBLE.EXODUS.name,                abbr='Exod',     chapters=40,    index=2),
+    BIBLE.LEVITICUS:             Book(name=BIBLE.LEVITICUS.name,             abbr='Lev',      chapters=27,    index=3),
+    BIBLE.NUMBERS:               Book(name=BIBLE.NUMBERS.name,               abbr='Num',      chapters=36,    index=4),
+    BIBLE.DEUTERONOMY:           Book(name=BIBLE.DEUTERONOMY.name,           abbr='Deut',     chapters=34,    index=5),
+    BIBLE.JOSHUA:                Book(name=BIBLE.JOSHUA.name,                abbr='Josh',     chapters=24,    index=6),
+    BIBLE.JUDGES:                Book(name=BIBLE.JUDGES.name,                abbr='Judg',     chapters=21,    index=7),
+    BIBLE.RUTH:                  Book(name=BIBLE.RUTH.name,                  abbr='Ruth',     chapters=4,     index=8),
+    BIBLE.FIRST_SAMUEL:          Book(name=BIBLE.FIRST_SAMUEL.name,          abbr='1Sam',     chapters=31,    index=9),
+    BIBLE.SECOND_SAMUEL:         Book(name=BIBLE.SECOND_SAMUEL.name,         abbr='2Sam',     chapters=24,    index=10),
+    BIBLE.FIRST_KINGS:           Book(name=BIBLE.FIRST_KINGS.name,           abbr='1Kgs',     chapters=22,    index=11),
+    BIBLE.SECOND_KINGS:          Book(name=BIBLE.SECOND_KINGS.name,          abbr='2Kgs',     chapters=25,    index=12),
+    BIBLE.FIRST_CHRONICLES:      Book(name=BIBLE.FIRST_CHRONICLES.name,      abbr='1Chr',     chapters=29,    index=13),
+    BIBLE.SECOND_CHRONICLES:     Book(name=BIBLE.SECOND_CHRONICLES.name,     abbr='2Chr',     chapters=36,    index=14),
+    BIBLE.EZRA:                  Book(name=BIBLE.EZRA.name,                  abbr='Ezra',     chapters=10,    index=15),
+    BIBLE.NEHEMIAH:              Book(name=BIBLE.NEHEMIAH.name,              abbr='Neh',      chapters=13,    index=16),
+    BIBLE.ESTHER:                Book(name=BIBLE.ESTHER.name,                abbr='Esth',     chapters=10,    index=17),
+    BIBLE.JOB:                   Book(name=BIBLE.JOB.name,                   abbr='Job',      chapters=42,    index=18),
+    BIBLE.PSALMS:                Book(name=BIBLE.PSALMS.name,                abbr='Ps',       chapters=150,   index=19),
+    BIBLE.PROVERBS:              Book(name=BIBLE.PROVERBS.name,              abbr='Prov',     chapters=31,    index=20),
+    BIBLE.ECCLESIASTES:          Book(name=BIBLE.ECCLESIASTES.name,          abbr='Eccl',     chapters=12,    index=21),
+    BIBLE.SONG_OF_SOLOMON:       Book(name=BIBLE.SONG_OF_SOLOMON.name,       abbr='Song',     chapters=8,     index=22),
+    BIBLE.ISAIAH:                Book(name=BIBLE.ISAIAH.name,                abbr='Isa',      chapters=66,    index=23),
+    BIBLE.JEREMIAH:              Book(name=BIBLE.JEREMIAH.name,              abbr='Jer',      chapters=52,    index=24),
+    BIBLE.LAMENTATIONS:          Book(name=BIBLE.LAMENTATIONS.name,          abbr='Lam',      chapters=5,     index=25),
+    BIBLE.EZEKIEL:               Book(name=BIBLE.EZEKIEL.name,               abbr='Ezek',     chapters=48,    index=26),
+    BIBLE.DANIEL:                Book(name=BIBLE.DANIEL.name,                abbr='Dan',      chapters=12,    index=27),
+    BIBLE.HOSEA:                 Book(name=BIBLE.HOSEA.name,                 abbr='Hos',      chapters=14,    index=28),
+    BIBLE.JOEL:                  Book(name=BIBLE.JOEL.name,                  abbr='Joel',     chapters=3,     index=29),
+    BIBLE.AMOS:                  Book(name=BIBLE.AMOS.name,                  abbr='Amos',     chapters=9,     index=30),
+    BIBLE.OBADIAH:               Book(name=BIBLE.OBADIAH.name,               abbr='Obad',     chapters=1,     index=31),
+    BIBLE.JONAH:                 Book(name=BIBLE.JONAH.name,                 abbr='Jonah',    chapters=4,     index=32),
+    BIBLE.MICAH:                 Book(name=BIBLE.MICAH.name,                 abbr='Mic',      chapters=7,     index=33),
+    BIBLE.NAHUM:                 Book(name=BIBLE.NAHUM.name,                 abbr='Nah',      chapters=3,     index=34),
+    BIBLE.HABAKKUK:              Book(name=BIBLE.HABAKKUK.name,              abbr='Hab',      chapters=3,     index=35),
+    BIBLE.ZEPHANIAH:             Book(name=BIBLE.ZEPHANIAH.name,             abbr='Zeph',     chapters=3,     index=36),
+    BIBLE.HAGGAI:                Book(name=BIBLE.HAGGAI.name,                abbr='Hag',      chapters=2,     index=37),
+    BIBLE.ZECHARIAH:             Book(name=BIBLE.ZECHARIAH.name,             abbr='Zech',     chapters=14,    index=38),
+    BIBLE.MALACHI:               Book(name=BIBLE.MALACHI.name,               abbr='Mal',      chapters=4,     index=39),
+    BIBLE.MATTHEW:               Book(name=BIBLE.MATTHEW.name,               abbr='Matt',     chapters=28,    index=40),
+    BIBLE.MARK:                  Book(name=BIBLE.MARK.name,                  abbr='Mark',     chapters=16,    index=41),
+    BIBLE.LUKE:                  Book(name=BIBLE.LUKE.name,                  abbr='Luke',     chapters=24,    index=42),
+    BIBLE.JOHN:                  Book(name=BIBLE.JOHN.name,                  abbr='John',     chapters=21,    index=43),
+    BIBLE.ACTS:                  Book(name=BIBLE.ACTS.name,                  abbr='Acts',     chapters=28,    index=44),
+    BIBLE.ROMANS:                Book(name=BIBLE.ROMANS.name,                abbr='Rom',      chapters=16,    index=45),
+    BIBLE.FIRST_CORINTHIANS:     Book(name=BIBLE.FIRST_CORINTHIANS.name,     abbr='1Cor',     chapters=16,    index=46),
+    BIBLE.SECOND_CORINTHIANS:    Book(name=BIBLE.SECOND_CORINTHIANS.name,    abbr='2Cor',     chapters=13,    index=47),
+    BIBLE.GALATIANS:             Book(name=BIBLE.GALATIANS.name,             abbr='Gal',      chapters=6,     index=48),
+    BIBLE.EPHESIANS:             Book(name=BIBLE.EPHESIANS.name,             abbr='Eph',      chapters=6,     index=49),
+    BIBLE.PHILIPPIANS:           Book(name=BIBLE.PHILIPPIANS.name,           abbr='Phil',     chapters=4,     index=50),
+    BIBLE.COLOSSIANS:            Book(name=BIBLE.COLOSSIANS.name,            abbr='Col',      chapters=4,     index=51),
+    BIBLE.FIRST_THESSALONIANS:   Book(name=BIBLE.FIRST_THESSALONIANS.name,   abbr='1Thess',   chapters=5,     index=52),
+    BIBLE.SECOND_THESSALONIANS:  Book(name=BIBLE.SECOND_THESSALONIANS.name,  abbr='2Thess',   chapters=3,     index=53),
+    BIBLE.FIRST_TIMOTHY:         Book(name=BIBLE.FIRST_TIMOTHY.name,         abbr='1Tim',     chapters=6,     index=54),
+    BIBLE.SECOND_TIMOTHY:        Book(name=BIBLE.SECOND_TIMOTHY.name,        abbr='2Tim',     chapters=4,     index=55),
+    BIBLE.TITUS:                 Book(name=BIBLE.TITUS.name,                 abbr='Titus',    chapters=3,     index=56),
+    BIBLE.PHILEMON:              Book(name=BIBLE.PHILEMON.name,              abbr='Phlm',     chapters=1,     index=57),
+    BIBLE.HEBREWS:               Book(name=BIBLE.HEBREWS.name,               abbr='Heb',      chapters=13,    index=58),
+    BIBLE.JAMES:                 Book(name=BIBLE.JAMES.name,                 abbr='Jas',      chapters=5,     index=59),
+    BIBLE.FIRST_PETER:           Book(name=BIBLE.FIRST_PETER.name,           abbr='1Pet',     chapters=5,     index=60),
+    BIBLE.SECOND_PETER:          Book(name=BIBLE.SECOND_PETER.name,          abbr='2Pet',     chapters=3,     index=61),
+    BIBLE.FIRST_JOHN:            Book(name=BIBLE.FIRST_JOHN.name,            abbr='1John',    chapters=5,     index=62),
+    BIBLE.SECOND_JOHN:           Book(name=BIBLE.SECOND_JOHN.name,           abbr='2John',    chapters=1,     index=63),
+    BIBLE.THIRD_JOHN:            Book(name=BIBLE.THIRD_JOHN.name,            abbr='3John',    chapters=1,     index=64),
+    BIBLE.JUDE:                  Book(name=BIBLE.JUDE.name,                  abbr='Jude',     chapters=1,     index=65),
+    BIBLE.REVELATION:            Book(name=BIBLE.REVELATION.name,            abbr='Rev',      chapters=22,    index=66)
 }
