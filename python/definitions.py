@@ -13,6 +13,9 @@ BIBLE_JSON                    =  os.path.join(JSONS_DIRECTORY, 'bible.json')
 
 TEMPORARY_HTML                =  os.path.join(PYTHON_ROOT_DIRECTORY, 'temporary.html')
 
+BIBLE_HTML                    =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_html')
+BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt')
+
 
 
 # ENV                   =  os.path.join(PROJECT_ROOT_DIRECTORY, '.env', '.env')
