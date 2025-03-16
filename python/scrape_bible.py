@@ -6,26 +6,117 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from definitions import *
+from kozubenko.io import load_file, remove_html_tags
+from kozubenko.utils import *
+from models.Bible import BIBLE, Book
 
-def scrape_genesis():
-    book = 'Genesis'
-    chapter = 1
-    target_translation = 'RSV'
-
-    BIBLE_GATEWAY_URL = fr'https://www.biblegateway.com/passage/?search={book}{chapter}&version={target_translation}'
-
+def scrape_basic_html(book:Book, start_chapter = 1, target_translation = 'RSV'):
     opts = Options()
     opts.add_argument("--headless")
     driver = webdriver.Chrome(options=opts)
 
-    driver.get(BIBLE_GATEWAY_URL)
+    for chapter in range(start_chapter, book.chapters + 1):
+        FILE = fr'{BIBLE_HTML}\{book.name}\{chapter}.html'
+        BIBLE_GATEWAY = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+        
+        driver.get(BIBLE_GATEWAY)
 
-    passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
-    html = p
+        passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
+        html = passageTextDiv.get_attribute('outerHTML')
 
-    with open('toParse.html', 'w', encoding='utf-8') as file:
-        file.write(html)
+        os.makedirs(os.path.dirname(FILE), exist_ok=True)
+        with open(FILE, 'w', encoding='utf-8') as file:
+            file.write(html)
 
+        time.sleep(41)
+
+
+def scrape_rsv_html(book:Book):
+    """
+    folder_path: path to folder holding the books chapters. file names should be:
+    - 1.html
+    - 2.html
+    - 3.html
+    - etc.
+    """
+    
+    for chapter in range(1, book.chapters):
+        FILE = fr'{BIBLE_HTML}\{book.name}\{chapter}.html'
+        html_str = load_file(FILE)
+
+
+        new_str = remove_html_tags(html_str)
+
+        print_yellow(new_str)
+        print('\n\n')
+
+        if chapter == 3:
+            raise Exception
+
+        # TARGET_1 = f'{chapter}&nbsp;</span>'                            # delimiter, verse1 text is right after
+        # split_str = html_str.split(TARGET_1, 1)
+        
+        # print_yellow(split_str[0])
+
+
+def soup_scrape(book:Book, start_chapter = 1):
+    for chapter in range(start_chapter, book.chapters + 1):
+        READ_FILE = fr'{BIBLE_HTML}\{book.name}\{chapter}.html'
+        WRITE_FILE = fr'{BIBLE_TXT}\{book.name}\{chapter}.txt'
+        with open(READ_FILE, 'r', encoding='utf-8') as file:
+            html_content = file.read()
+
+        soup = BeautifulSoup(html_content, 'html.parser')
+        spans = soup.find_all("span", class_=lambda x: x.startswith(f"text"))
+        footnotes = soup.find("div", class_="footnotes")
+
+        for span in spans:
+            print_yellow(span.get_text())
+        for note in footnotes:
+            print_yellow(note.get_text())
+        print('\n')
+
+        os.makedirs(os.path.dirname(WRITE_FILE), exist_ok=True)
+        with open(WRITE_FILE, 'w', encoding='utf-8') as file:
+            for span in spans:
+                file.write(span.get_text() + '\n')
+            for footnote in footnotes:
+                file.write(note.get_text() + '\n')
+        
+        # if chapter == 10:
+        #     raise Exception
+
+def soup_second_pass(book:Book):
+    for chapter in range(1, book.chapters):
+        FILE = fr'{BIBLE_TXT}\{book.name}\{chapter}.txt'
+
+        with open(FILE, 'r', encoding='utf-8') as file:
+            html_content = file.read()
+
+        
+
+def selenium_scrape(book:Book):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+
+    driver = webdriver.Chrome(options=chrome_options)
+    
+    try:
+        for chapter in range(1, book.chapters):
+            FILE = fr'{BIBLE_HTML}\{book.name}\{chapter}.html'
+            print_red(FILE)
+            driver.get(FILE)
+
+            text = driver.find_element(By.TAG_NAME, "div").text
+            text = driver.execute_script(
+                "return document.body ? document.body.innerText : document.documentElement.innerText;"
+            )
+
+            print_yellow(text)
+
+            raise Exception
+    finally:
+        driver.quit()
 
 
 if __name__ == "__main__":
@@ -56,11 +147,6 @@ if __name__ == "__main__":
     html = passageTextDiv.get_attribute('outerHTML')
     with open('toParse.html', 'w', encoding='utf-8') as file:
         file.write(html)
-
-
-
-
-    sys.exit()
 
 
     driver.get(TEMPORARY_HTML)
