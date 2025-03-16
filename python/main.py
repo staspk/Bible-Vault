@@ -1,20 +1,12 @@
-import sys, json
-from definitions import BIBLE_JSON
-from models import Bible
+import json as JSON
+from definitions import *
+from kozubenko.io import load_json
+from kozubenko.utils import *
+from scrape_bible import scrape_genesis
+from models.Bible import *
 
 
-# with open(BIBLE_JSON, 'r', encoding='utf-8') as file:
-#     bibleJson = json.load(file)
+# scrape_genesis()
 
+# json = load_json(fr'{PYTHON_ROOT_DIRECTORY}\rsv.json')
 
-
-# print(BIBLE_JSON)
-
-# for len(bible.item)
-# for book_abbr, book in bible.items():
-#     print(book_abbr, )
-
-# print(bible[5])
-# print(size_in_bytes)
-
-# bible.Book
