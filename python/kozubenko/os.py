@@ -1,6 +1,10 @@
 import os
 
 def Downloads_Directory() -> str:
+    """
+    - **Windows:** returns downloads value under: `Registry:SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders`\n
+    - **Mac/Linux:** returns `~/Downloads`
+    """
     if os.name == 'nt':
         import winreg
         key = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders'
@@ -12,4 +16,25 @@ def Downloads_Directory() -> str:
         
     elif os.name == 'posix':  # Both Mac and Linux
         return os.path.join(os.path.expanduser("~"), "Downloads")
-        
+
+
+def File(path:str, *paths:str, file:str=None):
+    """
+    returns a path string your os needs. path & *paths created, if non-existent
+    """
+    dir = Directory(path, paths)
+
+    if(file):
+        return os.path.join(dir, file)
+    
+    return dir
+
+def Directory(path:str, *paths:str) -> str:
+    """
+    returns a path string your os needs. path (including parent dirs) created, if non-existent
+    """
+
+    dir = os.path.join(path, paths)
+    os.makedirs(dir, exist_ok=True)
+
+    return Directory

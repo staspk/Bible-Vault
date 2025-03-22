@@ -7,28 +7,44 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from definitions import *
 from kozubenko.io import load_file, remove_html_tags
-from kozubenko.utils import *
+from kozubenko.os import File
 from models.Bible import BIBLE, Book
+from python.kozubenko.time import Time
+from python.kozubenko.utils import Utils
 
-def scrape_basic_html(book:Book, start_chapter = 1, target_translation = 'RSV'):
+def report_exception(report:str):
+    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.utc_now)
+
+    
+    
+    pass
+
+def scrape_basic_html(book:Book, target_translation = 'RSV', start_chapter = 1):
     opts = Options()
     opts.add_argument("--headless")
     driver = webdriver.Chrome(options=opts)
 
     for chapter in range(start_chapter, book.chapters + 1):
-        FILE = fr'{BIBLE_HTML}\{book.name}\{chapter}.html'
-        BIBLE_GATEWAY = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
-        
-        driver.get(BIBLE_GATEWAY)
+        try:
+            FILE = fr'{BIBLE_HTML}\{target_translation}\{book.name}\{chapter}.html'
+            BIBLE_GATEWAY = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+            
+            driver.get(BIBLE_GATEWAY)
 
-        passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
-        html = passageTextDiv.get_attribute('outerHTML')
+            passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
+            html = passageTextDiv.get_attribute('outerHTML')
 
-        os.makedirs(os.path.dirname(FILE), exist_ok=True)
-        with open(FILE, 'w', encoding='utf-8') as file:
-            file.write(html)
+            os.makedirs(os.path.dirname(FILE), exist_ok=True)
+            with open(FILE, 'w', encoding='utf-8') as file:
+                file.write(html)
 
-        time.sleep(41)
+            time.sleep(20)
+            time.sleep(Utils.random_int(5, 15))
+        except Exception as e:
+            type(e).__name__
+            report = ''
+            report
+
 
 
 def scrape_rsv_html(book:Book):

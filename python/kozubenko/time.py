@@ -1,3 +1,4 @@
+import datetime
 import time
 
 class Timer:
@@ -23,3 +24,10 @@ class Timer:
             print(f'Operation timed at: {elapsed:.3f}ms')
 
         Timer.start_time = None
+
+class Time:
+    def local_time() -> str:
+        """
+        returns local_time in format: `2025-03-18 16:30:55`
+        """
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
