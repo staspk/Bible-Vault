@@ -1,6 +1,5 @@
-import sys
 import time
-import requests
+import traceback
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -8,25 +7,28 @@ from selenium.webdriver.common.by import By
 from definitions import *
 from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
-from models.Bible import BIBLE, Book
-from python.kozubenko.time import Time
-from python.kozubenko.utils import Utils
+from kozubenko.print import *
+from kozubenko.time import Time
+from kozubenko.utils import Utils
+from models.Bible import Book
+
 
 def report_exception(report:str):
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.utc_now)
 
-    
-    
-    pass
+    with open(FILE, 'w', encoding='UTF-8') as file:
+        file.write(report)
 
 def scrape_basic_html(book:Book, target_translation = 'RSV', start_chapter = 1):
     opts = Options()
     opts.add_argument("--headless")
+    opts.add_argument("--proxy-server=socks5://127.0.0.1:9050")
+    
     driver = webdriver.Chrome(options=opts)
 
     for chapter in range(start_chapter, book.chapters + 1):
         try:
-            FILE = fr'{BIBLE_HTML}\{target_translation}\{book.name}\{chapter}.html'
+            FILE = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
             BIBLE_GATEWAY = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
             
             driver.get(BIBLE_GATEWAY)
@@ -34,16 +36,20 @@ def scrape_basic_html(book:Book, target_translation = 'RSV', start_chapter = 1):
             passageTextDiv = driver.find_element(By.CLASS_NAME, 'passage-text')
             html = passageTextDiv.get_attribute('outerHTML')
 
-            os.makedirs(os.path.dirname(FILE), exist_ok=True)
             with open(FILE, 'w', encoding='utf-8') as file:
                 file.write(html)
 
             time.sleep(20)
             time.sleep(Utils.random_int(5, 15))
         except Exception as e:
-            type(e).__name__
-            report = ''
-            report
+            exception_type = type(e).__name__
+            exception_message = str(e)
+            exception_trace = traceback.format_exc()
+
+            report = f"Exception Type: {exception_type}\\n"
+            report += f"Message: {exception_message}\\n\\n"
+            report += f"Traceback:\\n{exception_trace}"
+            report_exception(report)
 
 
 
