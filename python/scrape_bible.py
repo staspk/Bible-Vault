@@ -1,6 +1,8 @@
+import random
 import time
 import traceback
 from bs4 import BeautifulSoup
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -9,20 +11,67 @@ from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
+from kozubenko.tor import Tor
 from kozubenko.utils import Utils
 from models.Bible import Book
+from user_agents import random_user_agent
 
 
 def report_exception(report:str):
-    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.utc_now)
+    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time())
 
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
 
+
+def stealth_scrape(book:Book, target_translation = 'RSV', start_chapter = 1):
+    Tor.start()
+
+    for chapter in range(start_chapter, book.chapters + 1):
+        try:
+            FILE = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
+            URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+
+            print_red(URL)
+
+            username = str(random.randint(10000, 99999))
+            proxy = f'socks5h://{username}:password@127.0.0.1:9050'
+
+            # opts = Options()
+            # opts.add_argument(f"user-agent={user_agent}")
+
+            response = requests.get(URL, headers=random_user_agent(), proxies={
+                'http': proxy,
+                'https': proxy
+            })
+
+            soup = BeautifulSoup(response.text, "html.parser")
+            passage_div = soup.find("div", class_="passage-text")
+
+            with open(FILE, 'w', encoding='UTF-8') as file:
+                file.write(str(passage_div))
+
+            time.sleep(random.randint(0, 5))
+
+
+
+        except Exception as e:
+            exception_type = type(e).__name__
+            exception_message = str(e)
+            exception_trace = traceback.format_exc()
+
+            report = f"Exception Type: {exception_type}\\n"
+            report += f"Message: {exception_message}\\n\\n"
+            report += f"Traceback:\\n{exception_trace}"
+            report_exception(report)
+
+    Tor.stop()
+
+    
+
 def scrape_basic_html(book:Book, target_translation = 'RSV', start_chapter = 1):
     opts = Options()
     opts.add_argument("--headless")
-    opts.add_argument("--proxy-server=socks5://127.0.0.1:9050")
     
     driver = webdriver.Chrome(options=opts)
 

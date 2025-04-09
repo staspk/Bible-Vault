@@ -65,6 +65,6 @@ user_agents = [
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.95 Safari/537.36 DuckDuckGo/1"
 ]
 
-def get_random_user_agent():
+def random_user_agent():
     random.choice(user_agents)
 

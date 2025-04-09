@@ -1,14 +1,19 @@
+import random
+import requests
 from definitions import *
+from kozubenko.os import Directory
+from kozubenko.print import print_cyan
 from kozubenko.tor import Tor
 from scrape_bible import *
 from models.Bible import *
 
 
 
-Tor.start()
+stealth_scrape(Bible[BIBLE.GENESIS])
 
-for i in range(1, 67):
-    scrape_basic_html(Bible[i], target_translation='NASB')
+
+# for i in range(1, 67):
+#     scrape_basic_html(Bible[i], target_translation='NASB')
 
 
 
