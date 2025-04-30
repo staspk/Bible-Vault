@@ -8,9 +8,6 @@ PROJECT_ROOT_DIRECTORY        =  os.path.dirname(PYTHON_ROOT_DIRECTORY)         
 
 REPORTS_DIRECTORY             =  os.path.join(PYTHON_ROOT_DIRECTORY, 'reports')
 
-TOR_EXE                       =  os.path.join(PYTHON_ROOT_DIRECTORY, 'tor.exe')
-TORRC                         =  os.path.join(PYTHON_ROOT_DIRECTORY, 'torrc')
-
 TEMP_DIRECTORY                =  os.path.join(PROJECT_ROOT_DIRECTORY, 'temp')
 JSONS_DIRECTORY               =  os.path.join(PROJECT_ROOT_DIRECTORY, 'jsons')
 

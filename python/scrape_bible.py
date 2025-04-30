@@ -11,7 +11,7 @@ from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
-from kozubenko.tor import Tor
+from tor.tor import Tor
 from kozubenko.utils import Utils
 from models.Bible import Book
 from user_agents import random_user_agent
@@ -24,8 +24,13 @@ def report_exception(report:str):
         file.write(report)
 
 
-def stealth_scrape(book:Book, target_translation = 'RSV', start_chapter = 1):
-    Tor.start()
+def stealth_scrape_one(book:Book, chapter:int, target_translation:str):
+
+
+    pass
+
+def stealth_scrape(book:Book, target_translation, start_chapter = 1, only_one_cycle=False):
+    tor = Tor()
 
     for chapter in range(start_chapter, book.chapters + 1):
         try:
@@ -34,15 +39,12 @@ def stealth_scrape(book:Book, target_translation = 'RSV', start_chapter = 1):
 
             print_red(URL)
 
-            username = str(random.randint(10000, 99999))
-            proxy = f'socks5h://{username}:password@127.0.0.1:9050'
-
             # opts = Options()
             # opts.add_argument(f"user-agent={user_agent}")
 
             response = requests.get(URL, headers=random_user_agent(), proxies={
-                'http': proxy,
-                'https': proxy
+                'http':  tor.proxy(),
+                'https': tor.proxy()
             })
 
             soup = BeautifulSoup(response.text, "html.parser")
@@ -53,7 +55,9 @@ def stealth_scrape(book:Book, target_translation = 'RSV', start_chapter = 1):
 
             time.sleep(random.randint(0, 5))
 
-
+            if only_one_cycle:
+                Tor.stop()
+                return
 
         except Exception as e:
             exception_type = type(e).__name__
@@ -67,7 +71,7 @@ def stealth_scrape(book:Book, target_translation = 'RSV', start_chapter = 1):
 
     Tor.stop()
 
-    
+
 
 def scrape_basic_html(book:Book, target_translation = 'RSV', start_chapter = 1):
     opts = Options()

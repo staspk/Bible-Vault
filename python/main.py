@@ -3,7 +3,7 @@ import requests
 from definitions import *
 from kozubenko.os import Directory
 from kozubenko.print import print_cyan
-from kozubenko.tor import Tor
+from tor.tor import Tor
 from scrape_bible import *
 from models.Bible import *
 
