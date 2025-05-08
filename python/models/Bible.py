@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from enum import IntEnum
+import os
 
-@dataclass
-class Book:
-    """
-  abbreviations for apocrypha
+from definitions import BIBLE_NUMERICAL_MAP
+
+"""
+abbreviations for apocrypha:
     Tob
     Jdt
     GkEsth
@@ -23,14 +24,27 @@ class Book:
     3Ma
     2Esd
     4Ma
+"""
+
+@dataclass
+class Book:
+    """
+    Value in: `Bible:dict[BIBLE, Book]`\n
+    name     : str -> "Genesis"
+    abbr     : str -> consistent with BibleGateway's abbreviations
+    chapters : int -> total chapters, e.g: 50
+    index    : int -> numerical appearance in the bible, 1-66
     """
     name: str
-    abbr: str           # common abbreviation, consistent with BibleGateway abbr's (tested) and 
-    chapters: int       # total chapters in book
-    index: int          # numerical appearance in the bible, 1-66
+    abbr: str
+    chapters: int
+    index: int
 
 
 class BIBLE(IntEnum):
+    """
+    Key in: `Bible:dict[BIBLE, Book]`
+    """
     GENESIS               =  1
     EXODUS                =  2
     LEVITICUS             =  3
@@ -167,3 +181,24 @@ Bible: dict[BIBLE, Book] = {
     BIBLE.JUDE:                  Book(name='Jude',                      abbr='Jude',     chapters=1,     index=65),
     BIBLE.REVELATION:            Book(name='Revelation',                abbr='Rev',      chapters=22,    index=66)
 }
+
+
+def find_max_verse(book:BIBLE, chapter:int) -> int:
+    if not isinstance(book, BIBLE):
+        raise Exception('Bible.py:find_max_verse(): book must be of IntEnum:Book')
+
+    if(0 > chapter > book.chapters):
+        raise Exception('Bible.py:find_max_verse(): real chapter required')
+
+    path = os.path.join(BIBLE_NUMERICAL_MAP, str(book.value))
+    if not os.path.exists(path):
+        raise Exception(f'Bible.py:find_max_verse(): Path does not exist. path: {path}')
+    
+    with open(path, 'r', encoding='utf-8') as file:
+        line_num = 1
+        for line in file:
+            if(line_num == chapter):
+                return int(line.split(':')[2])
+            line_num += 1
+    
+    raise Exception('Bible.py:find_max_verse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!')
