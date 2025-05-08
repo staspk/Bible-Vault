@@ -1,4 +1,5 @@
 import os, subprocess, random
+import requests
 from stem import Signal
 from stem.control import Controller
 from kozubenko.os import Parent
@@ -21,14 +22,20 @@ class Tor:
             for line in file:
                 key, value = (line.strip()).split(' ', 1)
                 if(key == 'SocksPort' and value):
-                    self._socks_port = value
+                    self._socks_port = int(value)
                 if(key == 'ControlPort' and value):
-                    self._control_port = value
+                    self._control_port = int(value)
 
         if self._socks_port is None:
             raise Exception("To instantiate Tor(), must have line in torrc file: 'SocksPort 9050'")
         
         self._start()
+
+    def test_request(self) -> str:
+        """
+        returns the ip used in get request as string
+        """
+        return requests.get(url='https://api.ipify.org', proxies=self.proxies_as_dict()).text
 
     def _start(self):
         if os.name == 'nt':
@@ -37,13 +44,27 @@ class Tor:
                 [Tor.TOR_EXE, '-f', Tor.TORRC],
                 creationflags=subprocess.CREATE_NO_WINDOW,                # flag is windows only, fyi
             )
-            print_green(f'Tor started. {type(self._process)}')      
+            print_green(f'Tor started.')      
         else:
             raise Exception('os not supported')
         
+    def proxies_as_dict(self) -> dict[str, str]:
+        """
+        returns a proxies dict, e.g:\n
+        {
+            'http': self.proxy(),
+            'https': self.proxy()
+        }
+        """
+        proxy = self.proxy()
+        return {
+            'http': proxy,
+            'https': proxy
+        }
+        
     def proxy(self) -> str:
         """
-        returns a proxy string, e.g: 'socks5h://{random_username}:password@127.0.0.1:{self._socks_port}'\n
+        returns a proxy string, e.g: `socks5h://{random_username}:password@127.0.0.1:{self._socks_port}`\n
         note: tor.exe uses: 9050, tor-browser uses: 9150. (nebulous) claims of "better success" with 9150
         """
         username = str(random.randint(10000, 99999))
@@ -52,11 +73,6 @@ class Tor:
     def stop(self):
         if(self._process):
             self._process.terminate()
-            exit_code = self._process.wait()
-            if(exit_code == 0):
-                print_green('Tor.stop(): Success')
-            else:
-                print_red(f'Tor.stop(): Failure. exit_code: {exit_code}')
 
 
     def new_identity(self):
@@ -84,3 +100,9 @@ class Tor:
                 print_red('Tor.kill_windows_tor_processes(): Success')
             else:
                 print_dark_red(f'Tor.kill_windows_tor_processes(): result.returncode: {result.returncode}')
+
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, type, value, traceback):
+        self.stop()
