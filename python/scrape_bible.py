@@ -17,19 +17,60 @@ from models.Bible import Book
 from user_agents import random_user_agent
 
 
-def report_exception(report:str):
+def report_exception(exception:Exception):
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time())
+
+    exception_type = type(exception).__name__
+    exception_message = str(exception)
+    exception_trace = traceback.format_exc()
+
+    report = f"Exception Type: {exception_type}\\n"
+    report += f"Message: {exception_message}\\n\\n"
+    report += f"Traceback:\\n{exception_trace}"
 
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
 
+def stealth_scrape_chapter(book:Book, chapter:int, translations:list[str]):
+    with Tor() as tor:
+        for translation in translations:
+            print_red(f'stealth_scrape_chapter called on: {book.name}:{chapter}; translation: {translation}')
+            try:
+                URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={translation}'
+                HTML = File(BIBLE_HTML, translation, book.name, file=f'{chapter}.html')
+
+                response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
+
+                soup = BeautifulSoup(response.text, "html.parser")
+                passage_div = soup.find("div", class_="passage-text")
+
+                with open(HTML, 'w', encoding='UTF-8') as file:
+                    file.write(str(passage_div))
+
+            except Exception as e:
+                report_exception(e)
 
 def stealth_scrape_one(book:Book, chapter:int, target_translation:str):
+    with Tor() as tor:
+        try:
+            URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+            SAVED_HTML = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
+            TXT_FILE  = File(BIBLE_TXT, target_translation, book.name, file=f'{chapter}.html')
 
+            print_red(f'stealth_scrape_one called on: {URL}')
 
-    pass
+            response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
 
-def stealth_scrape(book:Book, target_translation, start_chapter = 1, only_one_cycle=False):
+            soup = BeautifulSoup(response.text, "html.parser")
+            passage_div = soup.find("div", class_="passage-text")
+
+            with open(SAVED_HTML, 'w', encoding='UTF-8') as file:
+                file.write(str(passage_div))
+
+        except Exception as e:
+            report_exception(e)
+
+def stealth_scrape(book:Book, target_translation, start_chapter = 1):
     tor = Tor()
 
     for chapter in range(start_chapter, book.chapters + 1):
@@ -42,10 +83,7 @@ def stealth_scrape(book:Book, target_translation, start_chapter = 1, only_one_cy
             # opts = Options()
             # opts.add_argument(f"user-agent={user_agent}")
 
-            response = requests.get(URL, headers=random_user_agent(), proxies={
-                'http':  tor.proxy(),
-                'https': tor.proxy()
-            })
+            response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
 
             soup = BeautifulSoup(response.text, "html.parser")
             passage_div = soup.find("div", class_="passage-text")
@@ -55,19 +93,8 @@ def stealth_scrape(book:Book, target_translation, start_chapter = 1, only_one_cy
 
             time.sleep(random.randint(0, 5))
 
-            if only_one_cycle:
-                Tor.stop()
-                return
-
         except Exception as e:
-            exception_type = type(e).__name__
-            exception_message = str(e)
-            exception_trace = traceback.format_exc()
-
-            report = f"Exception Type: {exception_type}\\n"
-            report += f"Message: {exception_message}\\n\\n"
-            report += f"Traceback:\\n{exception_trace}"
-            report_exception(report)
+            report_exception(e)
 
     Tor.stop()
 
