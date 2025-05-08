@@ -1,26 +1,15 @@
-import random
-import requests
 from definitions import *
-from kozubenko.os import Directory
-from kozubenko.print import print_cyan
-from tor.tor import Tor
+from html_parser import parse_simple_html
 from scrape_bible import *
 from models.Bible import *
 
 
 
-stealth_scrape(Bible[BIBLE.GENESIS])
+eng_translations = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
+russ_translations = ['RUSV', 'NRT']
 
 
-# for i in range(1, 67):
-#     scrape_basic_html(Bible[i], target_translation='NASB')
+# stealth_scrape_chapter(Bible[BIBLE.GENESIS], 1, russ_translations)
 
-
-
-# scrape_basic_html(Bible[BIBLE.DEUTERONOMY])
-
-# scrape_rsv_html(Bible[BIBLE.GENESIS])
-
-# selenium_scrape(Bible[BIBLE.GENESIS])
-
-# soup_scrape(Bible[BIBLE.GENESIS], start_chapter=50)
+# stealth_scrape(Bible[BIBLE.GENESIS], 'KJV')
+parse_simple_html(Bible[BIBLE.GENESIS], 'RSV', one_pass=True)
