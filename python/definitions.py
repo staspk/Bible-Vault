@@ -18,7 +18,7 @@ TEMPORARY_HTML                =  os.path.join(PYTHON_ROOT_DIRECTORY, 'temporary.
 BIBLE_HTML                    =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_html')
 BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt')
 
-
+BIBLE_NUMERICAL_MAP           =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_numerical_map')
 
 
 
