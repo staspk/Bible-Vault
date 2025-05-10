@@ -1,5 +1,6 @@
 import os
 import re
+from typing import Union
 
 from bs4 import BeautifulSoup
 from definitions import BIBLE_HTML, BIBLE_TXT
@@ -18,14 +19,33 @@ class HTML:
     footnotes = ['RSV', 'NRT']
     references = ['NKJV', 'NASB', 'ESV', 'NRSV', 'NIV', 'NET', 'NRT']
 
+def parse_html(book:Book, target_translations:Union[str, list[str]]):
+    if type(target_translations) is str:
+        target_translations = [target_translations]
 
-def parse_simple_html(book:Book, target_translation, one_pass=False):
+    for translation in target_translations:
+        if translation in HTML.simple_html:
+            parse_simple_html(book, translation)
+        if translation in HTML.footnotes:
+            parse_footnotes_html(book, translation, one_pass=True)
+
+def parse_footnotes_html(book:Book, target_translation:str, one_pass=False):
     for chapter in range(1, book.chapters + 1):
         IN_HTML = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
         OUT_TXT = File(BIBLE_TXT, target_translation, book.name, file=f'{chapter}.txt')
 
         if not os.path.exists(IN_HTML):
-            raise Exception(f'parse_simple_html(): IN_HTML path does not exist: {IN_HTML}')
+            raise Exception(f'parse_footnotes_html(): html file to parse does not exist. IN_HTML: {IN_HTML}')
+        
+        raise Exception('not implemented yet')
+
+def parse_simple_html(book:Book, target_translation:str, one_pass=False):
+    for chapter in range(1, book.chapters + 1):
+        IN_HTML = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
+        OUT_TXT = File(BIBLE_TXT, target_translation, book.name, file=f'{chapter}.txt')
+
+        if not os.path.exists(IN_HTML):
+            raise Exception(f'parse_simple_html(): html file to parse does not exist. IN_HTML: {IN_HTML}')
         
         with open(IN_HTML, 'r', encoding='utf-8') as file:
             html = file.read()
@@ -38,9 +58,9 @@ def parse_simple_html(book:Book, target_translation, one_pass=False):
                 text += line
 
         with open(OUT_TXT, 'w', encoding='utf-8') as out:
-            split_text = re.split(f'1\xa0', text, maxsplit=1)[1]
+            split_text = re.split(f'{chapter}\xa0', text, maxsplit=1)[1]
 
-            max_verse = find_max_verse(BIBLE(chapter), chapter)
+            max_verse = find_max_verse(book, chapter)
             for x_verse in range(1, max_verse+1):
                 array = re.split(f' {x_verse + 1}\xa0', split_text, maxsplit=1)
                 out.write(array[0].strip())
