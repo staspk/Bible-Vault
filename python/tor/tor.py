@@ -50,10 +50,9 @@ class Tor:
         
     def proxies_as_dict(self) -> dict[str, str]:
         """
-        returns a proxies dict, e.g:\n
-        {
-            'http': self.proxy(),
-            'https': self.proxy()
+        returns a proxies dict, e.g: {\n
+          'http': socks5h://{random_username}:password@127.0.0.1:{self._socks_port},\n
+          'https': socks5h://{random_username}:password@127.0.0.1:{self._socks_port}\n
         }
         """
         proxy = self.proxy()
@@ -73,6 +72,7 @@ class Tor:
     def stop(self):
         if(self._process):
             self._process.terminate()
+            print_green('Tor stopped.')
 
 
     def new_identity(self):
