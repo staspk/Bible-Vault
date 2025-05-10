@@ -1,6 +1,7 @@
 import random
 import time
 import traceback
+from typing import Union
 from bs4 import BeautifulSoup
 import requests
 from selenium import webdriver
@@ -10,7 +11,7 @@ from definitions import *
 from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
 from kozubenko.print import *
-from kozubenko.time import Time
+from kozubenko.time import Time, Timer
 from tor.tor import Tor
 from kozubenko.utils import Utils
 from models.Bible import Book
@@ -70,31 +71,35 @@ def stealth_scrape_one(book:Book, chapter:int, target_translation:str):
         except Exception as e:
             report_exception(e)
 
-def stealth_scrape(book:Book, target_translation, start_chapter = 1):
+def stealth_scrape(book:Book, target_translation:Union[str, list[str]], start_chapter = 1):
+    if type(target_translation) is str:
+        target_translation = [target_translation]
+
     tor = Tor()
 
-    for chapter in range(start_chapter, book.chapters + 1):
-        try:
-            FILE = File(BIBLE_HTML, target_translation, book.name, file=f'{chapter}.html')
-            URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+    for translation in target_translation:
+        for chapter in range(start_chapter, book.chapters + 1):
+            try:
+                FILE = File(BIBLE_HTML, translation, book.name, file=f'{chapter}.html')
+                URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={translation}'
 
-            print_red(URL)
+                print_red(URL)
 
-            # opts = Options()
-            # opts.add_argument(f"user-agent={user_agent}")
+                # opts = Options()
+                # opts.add_argument(f"user-agent={user_agent}")
 
-            response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
+                response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
 
-            soup = BeautifulSoup(response.text, "html.parser")
-            passage_div = soup.find("div", class_="passage-text")
+                soup = BeautifulSoup(response.text, "html.parser")
+                passage_div = soup.find("div", class_="passage-text")
 
-            with open(FILE, 'w', encoding='UTF-8') as file:
-                file.write(str(passage_div))
+                with open(FILE, 'w', encoding='UTF-8') as file:
+                    file.write(str(passage_div))
 
-            time.sleep(random.randint(0, 5))
+                time.sleep(random.randint(0, 5))
 
-        except Exception as e:
-            report_exception(e)
+            except Exception as e:
+                report_exception(e)
 
     Tor.stop()
 
