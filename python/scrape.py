@@ -75,7 +75,7 @@ def stealth_scrape(book:Book, target_translation:Union[str, list[str]], start_ch
     if type(target_translation) is str:
         target_translation = [target_translation]
 
-    tor = Tor()
+    TOR = Tor()
 
     for translation in target_translation:
         for chapter in range(start_chapter, book.chapters + 1):
@@ -88,7 +88,7 @@ def stealth_scrape(book:Book, target_translation:Union[str, list[str]], start_ch
                 # opts = Options()
                 # opts.add_argument(f"user-agent={user_agent}")
 
-                response = requests.get(URL, headers=random_user_agent(), proxies=tor.proxies_as_dict())
+                response = requests.get(URL, headers=random_user_agent(), proxies=TOR.proxies_as_dict())
 
                 soup = BeautifulSoup(response.text, "html.parser")
                 passage_div = soup.find("div", class_="passage-text")
@@ -101,7 +101,7 @@ def stealth_scrape(book:Book, target_translation:Union[str, list[str]], start_ch
             except Exception as e:
                 report_exception(e)
 
-    Tor.stop()
+    TOR.stop()
 
 
 
