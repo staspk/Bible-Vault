@@ -19,7 +19,7 @@ from user_agents import random_user_agent
 
 
 def report_exception(exception:Exception):
-    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time())
+    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
 
     exception_type = type(exception).__name__
     exception_message = str(exception)
@@ -51,7 +51,7 @@ def stealth_scrape_chapter(book:Book, chapter:int, translations:list[str]):
             except Exception as e:
                 report_exception(e)
 
-def stealth_scrape_one(book:Book, chapter:int, target_translation:str):
+def stealth_scrape_one(book:Book, target_translation:str, chapter:int):
     with Tor() as tor:
         try:
             URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
