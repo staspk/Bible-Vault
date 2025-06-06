@@ -1,12 +1,14 @@
-import random
-import time
-import traceback
 from typing import Union
-from bs4 import BeautifulSoup
+import random, time, traceback
 import requests
+from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from definitions import *
 from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
@@ -31,6 +33,67 @@ def report_exception(exception:Exception):
 
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
+
+def scrape_chapter(book:Book, chapter:int, target_translation:str):
+    print_red(f'scrape_chapter called on: {book.name}:{chapter}; translation: {target_translation}')
+
+    URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
+
+    with Tor() as tor:
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("network.proxy.type", 1)
+        profile.set_preference("network.proxy.socks", "127.0.0.1")
+        profile.set_preference("network.proxy.socks_port", 9050)
+        profile.set_preference("network.proxy.socks_remote_dns", True)
+        profile.set_preference("browser.cache.disk.enable", False)
+        profile.set_preference("browser.cache.memory.enable", False)
+
+        options = Options()
+        options.profile = profile
+        # options.headless = True
+
+        driver = webdriver.Firefox(options=options)
+
+        URL = 'https://api.ipify.org'
+        driver.get(URL)
+
+        settings_icon = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
+        )
+
+        time.sleep(2.5)
+
+        # svg_icon = settings_icon.find_element(By.TAG_NAME, "svg")
+        actions = ActionChains(driver)
+        actions.move_to_element(settings_icon).click().perform()
+
+        
+
+        # driver.execute_script("""
+        #     var el = arguments[0];
+        #     var evt = new PointerEvent('click', { bubbles: true, cancelable: true, isTrusted: true });
+        #     el.dispatchEvent(evt);
+        # """, settings_icon)
+
+        time.sleep(7)
+
+        
+
+        # tooltip = driver.find_element(By.CSS_SELECTOR, ".bg-tooltip.options-tooltip")
+        # child_div = tooltip.find_element(By.TAG_NAME, "div")
+        # children = child_div.find_elements(By.XPATH, "./*")
+
+        # actions = ActionChains(driver)
+        # for i in range(1, 6):
+        #     actions.move_to_element(children[i]).click().perform()
+
+        time.sleep(10)
+
+        with open('./temporary.html', 'w', encoding='UTF-8') as file:
+            file.write(driver.page_source)
+
+        driver.quit()
+
 
 def stealth_scrape_chapter(book:Book, chapter:int, translations:list[str]):
     with Tor() as tor:
@@ -205,6 +268,8 @@ def soup_second_pass(book:Book):
 def selenium_scrape(book:Book):
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+
+    # chrome_options.add_argument('--proxy-server=socks5h://127.0.0.1:9050')
 
     driver = webdriver.Chrome(options=chrome_options)
     
