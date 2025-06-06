@@ -1,4 +1,4 @@
-import os, subprocess, random
+import os, subprocess, random, time
 import requests
 from stem import Signal
 from stem.control import Controller
@@ -33,7 +33,7 @@ class Tor:
 
     def test_request(self) -> str:
         """
-        returns the ip used in get request as string
+        Routes a requests get method through tor's socks5h proxy, returns the public ip used in that request as a string
         """
         return requests.get(url='https://api.ipify.org', proxies=self.proxies_as_dict()).text
 
@@ -50,10 +50,12 @@ class Tor:
         
     def proxies_as_dict(self) -> dict[str, str]:
         """
-        returns a proxies dict, e.g: {\n
-          'http': socks5h://{random_username}:password@127.0.0.1:{self._socks_port},\n
-          'https': socks5h://{random_username}:password@127.0.0.1:{self._socks_port}\n
+        {
+            'http': 'socks5h://{username}:password@127.0.0.1:{self._socks_port}',
+            'https': 'socks5h://{username}:password@127.0.0.1:{self._socks_port}'
         }
+        
+        Example use: `requests.get(url, proxies=tor.proxies_as_dict())`
         """
         proxy = self.proxy()
         return {
@@ -67,6 +69,7 @@ class Tor:
         note: tor.exe uses: 9050, tor-browser uses: 9150. (nebulous) claims of "better success" with 9150
         """
         username = str(random.randint(10000, 99999))
+        # return f'socks5h://@127.0.0.1:{self._socks_port}'
         return f'socks5h://{username}:password@127.0.0.1:{self._socks_port}'
 
     def stop(self):
@@ -75,7 +78,12 @@ class Tor:
             print_green('Tor stopped.')
 
 
-    def new_identity(self):
+    def request_new_identity(self):
+        """
+        **Call Requirements: "ControlPort 9051" line in torrc file.**
+        \nRate limited at ~10 seconds.
+        \nRebuilds circuit to get a new public ip, assuming you're routing the traffic through a socks5 proxy
+        """
         if(self._control_port is None):
             raise RuntimeError("Tor().new_identity(), requires line in torrc file: 'ControlPort 9051'")
         
@@ -86,6 +94,8 @@ class Tor:
         except Exception as e:
             raise Exception(f'Failed to get new identity: {e}')
         
+        time.sleep(.5)
+        
     def kill_windows_tor_processes():
         result = subprocess.run(
             ['tasklist', '/FI', 'IMAGENAME eq tor.exe'],        # list, filter, for 'tor.exe'
@@ -94,7 +104,7 @@ class Tor:
         )
 
         if "tor.exe" in result.stdout:
-            print_red('Tor.kill_windows_tor_processes() tor.exe process(es) found.')
+            print_red('Tor.kill_windows_tor_processes() tor.exe process(es) found. Killing...')
             result = subprocess.run(['taskkill', '/F', '/IM', 'tor.exe'], capture_output=True)
             if(result.returncode == 0):
                 print_red('Tor.kill_windows_tor_processes(): Success')
@@ -106,3 +116,43 @@ class Tor:
     
     def __exit__(self, type, value, traceback):
         self.stop()
+
+
+# def selenium_firefox_test():
+    # with Tor() as tor:
+    #     profile = webdriver.FirefoxProfile()
+    #     profile.set_preference("network.proxy.type", 1)
+    #     profile.set_preference("network.proxy.socks", "127.0.0.1")
+    #     profile.set_preference("network.proxy.socks_port", 9050)
+    #     profile.set_preference("network.proxy.socks_remote_dns", True)
+    #     profile.set_preference("browser.cache.disk.enable", False)
+    #     profile.set_preference("browser.cache.memory.enable", False)
+
+    #     options = Options()
+    #     options.profile = profile
+    #     # options.headless = True
+
+    #     driver = webdriver.Firefox(options=options)
+
+    #     URLS = [
+    #         'https://check.torproject.org/',
+    #         'https://check.torproject.org/',
+    #         'https://api.ipify.org',
+    #         'https://icanhazip.com',
+    #         'https://check.torproject.org/',
+    #         'https://check.torproject.org/',
+    #         'https://ifconfig.me',
+    #         'https://check.torproject.org/',
+    #         'https://check.torproject.org/',
+    #         'https://icanhazip.com',
+    #         'https://check.torproject.org/',
+    #         'https://check.torproject.org/'
+    #     ]
+
+    #     for i in range(URLS.__len__()):
+    #         driver.get(URLS[i])
+    #         time.sleep(10)
+    #         driver.get('https://www.google.com/')
+    #         time.sleep(2)
+
+    #     driver.quit()
