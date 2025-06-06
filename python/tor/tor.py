@@ -81,8 +81,9 @@ class Tor:
     def request_new_identity(self):
         """
         **Call Requirements: "ControlPort 9051" line in torrc file.**
-        \nRate limited at ~10 seconds.
-        \nRebuilds circuit to get a new public ip, assuming you're routing the traffic through a socks5 proxy
+        \nPractical Rate/Call Limit: ~10 seconds.
+        \nSends signal to rebuild circuit. Does not guarantee new exit node will be a fresh ip.
+        \n***Note: "MaxCircuitDirtiness {seconds}" in torrc file places upper limit for circuit use. Default: 600***
         """
         if(self._control_port is None):
             raise RuntimeError("Tor().new_identity(), requires line in torrc file: 'ControlPort 9051'")
