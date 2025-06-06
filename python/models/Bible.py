@@ -108,6 +108,12 @@ class BIBLE:
     JUDE                 = Book(name='Jude',                abbr='Jude',     chapters=1,     index=65)
     REVELATION           = Book(name='Revelation',          abbr='Rev',      chapters=22,    index=66)
 
+    def book_list() -> list[Book]:
+        list:Book = []
+        for name, book in BIBLE.__dict__.items():
+            if not name.startswith('__') and isinstance(book, Book):
+                list.append(book)
+        return list
 
 def find_max_verse(book:Book, chapter:int) -> int:
     if not isinstance(book, Book):
