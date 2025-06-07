@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Union
 import random, time, traceback
 import requests
@@ -6,8 +7,9 @@ from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from definitions import *
 from kozubenko.io import load_file, remove_html_tags
@@ -15,10 +17,76 @@ from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time, Timer
 from tor.tor import Tor
-from kozubenko.utils import Utils
+from kozubenko.utils import AssertClass, AssertList, Utils
 from models.Bible import Book
 from user_agents import random_user_agent
 
+
+@dataclass
+class BibleGatewayOption:
+    state:bool
+    element:WebElement
+
+    def __post_init__(self):
+        if type(self.state) is not bool or not isinstance(self.element, WebElement):
+            raise Exception(f"BibleGatewayOption(state:bool, element:WebElement) -> constructor error: types are enforced")
+
+    def set_state(self, state:bool):
+        if type(self.state) is not bool:
+            raise Exception(f"BibleGatewayOption.set_state(self, state:bool) -> state must be a bool")
+        
+        if self.state != state:
+            self.state = state
+            self.element.click()       
+
+@dataclass
+class BibleGatewayOptions:
+    cross_references: BibleGatewayOption
+    footnotes       : BibleGatewayOption
+    verse_numbers   : BibleGatewayOption
+    headings        : BibleGatewayOption
+    red_letter      : BibleGatewayOption
+
+    def __post_init__(self):
+        if any(not isinstance(instance_var_value, BibleGatewayOption) for instance_var_value in self.__dict__.values()):
+            raise Exception(f"BibleGatewayOptions(*args:BibleGatewayOption) -> constructor error: types are enforced")
+        
+    def __str__ (self) -> str:
+        return (
+            f"cross_references: {self.cross_references.state}\n"
+            f"footnotes: {self.footnotes.state}\n"
+            f"verse_numbers: {self.verse_numbers.state}\n"
+            f"headings: {self.headings.state}\n"
+            f"red_letter: {self.red_letter.state}"
+        )
+
+    def cross_references(self, state:bool):
+        self.cross_references.set_state(bool(state))
+
+    def footnotes(self, state:bool):
+        self.footnotes.set_state(bool(state))
+
+    def verse_numbers(self, state:bool):
+        self.verse_numbers.set_state(bool(state))
+
+    def headings(self, state:bool):
+        self.headings.set_state(bool(state))
+
+    def red_letter(self, state:bool):
+        self.red_letter.set_state(bool(state))
+
+    def set_states(self, cross_references:bool = None, footnotes:bool = None, verse_numbers:bool = None, headings:bool = None, red_letter:bool = None):
+        if cross_references is not None:
+            self.cross_references.set_state(bool(cross_references)) 
+        if footnotes is not None:
+            self.footnotes.set_state(bool(footnotes)) 
+        if verse_numbers is not None:
+            self.verse_numbers.set_state(bool(verse_numbers))
+        if headings is not None:
+            self.headings.set_state(bool(headings))
+        if red_letter is not None:
+            self.red_letter.set_state(bool(red_letter))
+    
 
 def report_exception(exception:Exception):
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
@@ -34,65 +102,63 @@ def report_exception(exception:Exception):
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
 
-def scrape_chapter(book:Book, chapter:int, target_translation:str):
-    print_red(f'scrape_chapter called on: {book.name}:{chapter}; translation: {target_translation}')
 
-    URL = fr'https://www.biblegateway.com/passage/?search={book.abbr}{chapter}&version={target_translation}'
 
-    with Tor() as tor:
+def scrape_bible(book:Book, target_translations:list):
+    """
+    supported len(target_translations): 1-5
+    """
+    AssertClass("book", book, Book)
+    AssertList("target_translations", target_translations, min_len=1, max_len=5)
+
+    print_green(f"scrape_bible({book}, {target_translations})")
+
+    TOR = Tor()
+    for chapter in range(2, book.chapters):
+        URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
+
         profile = webdriver.FirefoxProfile()
         profile.set_preference("network.proxy.type", 1)
         profile.set_preference("network.proxy.socks", "127.0.0.1")
-        profile.set_preference("network.proxy.socks_port", 9050)
+        profile.set_preference("network.proxy.socks_port", TOR._socks_port)
         profile.set_preference("network.proxy.socks_remote_dns", True)
         profile.set_preference("browser.cache.disk.enable", False)
         profile.set_preference("browser.cache.memory.enable", False)
 
-        options = Options()
-        options.profile = profile
+        page_options_checkboxes = Options()
+        page_options_checkboxes.profile = profile
         # options.headless = True
 
-        driver = webdriver.Firefox(options=options)
+        driver = webdriver.Firefox(options=page_options_checkboxes)
 
-        URL = 'https://api.ipify.org'
         driver.get(URL)
 
         settings_icon = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
+        time.sleep(1.25)
+        settings_icon.click()
 
-        time.sleep(2.5)
+        settings_div = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".bg-tooltip.options-tooltip"))
+        )
+        page_options_checkboxes = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;'] svg")
+        page_options_toggles    = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;']")
+        page_options_states     = [True if svg.get_attribute("name") == 'checked' else False for svg in page_options_checkboxes]
+        page_options_states_and_toggles = [BibleGatewayOption(state, toggle) for state, toggle in zip(page_options_states, page_options_toggles)]
+        page_options                    = BibleGatewayOptions(*page_options_states_and_toggles)
 
-        # svg_icon = settings_icon.find_element(By.TAG_NAME, "svg")
-        actions = ActionChains(driver)
-        actions.move_to_element(settings_icon).click().perform()
-
-        
-
-        # driver.execute_script("""
-        #     var el = arguments[0];
-        #     var evt = new PointerEvent('click', { bubbles: true, cancelable: true, isTrusted: true });
-        #     el.dispatchEvent(evt);
-        # """, settings_icon)
-
-        time.sleep(7)
-
-        
-
-        # tooltip = driver.find_element(By.CSS_SELECTOR, ".bg-tooltip.options-tooltip")
-        # child_div = tooltip.find_element(By.TAG_NAME, "div")
-        # children = child_div.find_elements(By.XPATH, "./*")
-
-        # actions = ActionChains(driver)
-        # for i in range(1, 6):
-        #     actions.move_to_element(children[i]).click().perform()
-
-        time.sleep(10)
+        page_options.set_states(False, False, True, False, True)
+        settings_icon.click()
 
         with open('./temporary.html', 'w', encoding='UTF-8') as file:
             file.write(driver.page_source)
 
+        time.sleep(6000)
+
         driver.quit()
+        TOR.stop()
+        exit()
 
 
 def stealth_scrape_chapter(book:Book, chapter:int, translations:list[str]):
