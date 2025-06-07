@@ -28,7 +28,6 @@ abbreviations for apocrypha:
 @dataclass
 class Book:
     """
-    Value in: `Bible:dict[BIBLE, Book]`\n
     name     : str -> "Genesis"
     abbr     : str -> consistent with BibleGateway's abbreviations
     chapters : int -> total chapters, e.g: 50
