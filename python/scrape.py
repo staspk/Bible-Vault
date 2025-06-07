@@ -17,7 +17,7 @@ from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time, Timer
 from tor.tor import Tor
-from kozubenko.utils import AssertClass, AssertList, Utils
+from kozubenko.utils import AssertBool, AssertClass, AssertList, Utils
 from models.Bible import Book
 from user_agents import random_user_agent
 
@@ -28,16 +28,15 @@ class BibleGatewayOption:
     element:WebElement
 
     def __post_init__(self):
-        if type(self.state) is not bool or not isinstance(self.element, WebElement):
-            raise Exception(f"BibleGatewayOption(state:bool, element:WebElement) -> constructor error: types are enforced")
+        AssertBool("state", self.state)
+        AssertClass("element", self.element, WebElement)
 
     def set_state(self, state:bool):
-        if type(self.state) is not bool:
-            raise Exception(f"BibleGatewayOption.set_state(self, state:bool) -> state must be a bool")
+        AssertBool("state", state)
         
         if self.state != state:
             self.state = state
-            self.element.click()       
+            self.element.click()
 
 @dataclass
 class BibleGatewayOptions:
@@ -48,8 +47,8 @@ class BibleGatewayOptions:
     red_letter      : BibleGatewayOption
 
     def __post_init__(self):
-        if any(not isinstance(instance_var_value, BibleGatewayOption) for instance_var_value in self.__dict__.values()):
-            raise Exception(f"BibleGatewayOptions(*args:BibleGatewayOption) -> constructor error: types are enforced")
+        for instance_var in self.__dict__.values():
+            AssertClass("instance_var", instance_var, BibleGatewayOption)
         
     def __str__ (self) -> str:
         return (
