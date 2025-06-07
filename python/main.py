@@ -11,17 +11,10 @@ russ_translations = ['RUSV', 'NRT']
 
 # stealth_scrape_chapter(BIBLE.GENESIS, 1, russ_translations)
 
-scrape_chapter(BIBLE.DANIEL, 2, 'NASB')
+scrape_bible(BIBLE.GENESIS, ['KJV', 'NASB', 'RSV', 'RUSV'])
 
 # stealth_scrape_one(BIBLE.DANIEL, eng_translations, 1)
 # parse_html(BIBLE.DANIEL, 'NASB', True)
-
-
-
-
-
-
-
 
 
 
