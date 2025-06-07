@@ -3,7 +3,7 @@ import requests
 from stem import Signal
 from stem.control import Controller
 from kozubenko.os import Parent
-from kozubenko.print import print_dark_red, print_green, print_red
+from kozubenko.print import print_green, print_yellow, print_red
 
 
 class Tor:
@@ -105,12 +105,13 @@ class Tor:
         )
 
         if "tor.exe" in result.stdout:
-            print_red('Tor.kill_windows_tor_processes() tor.exe process(es) found. Killing...')
+            print_yellow('Tor(): tor.exe process(es) found. Spinning up subprocess.run[taskkill]...', False)
             result = subprocess.run(['taskkill', '/F', '/IM', 'tor.exe'], capture_output=True)
             if(result.returncode == 0):
-                print_red('Tor.kill_windows_tor_processes(): Success')
+                print_green('Success!')
             else:
-                print_dark_red(f'Tor.kill_windows_tor_processes(): result.returncode: {result.returncode}')
+                print_red(f'Failure!')
+                print_red(f'subprocess.run[taskkill] -> result.returncode: {result.returncode}')
 
     def __enter__(self):
         return self
