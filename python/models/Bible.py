@@ -38,6 +38,9 @@ class Book:
     chapters: int
     index: int
 
+    def __str__(self):
+        return self.name
+
 
 class BIBLE: 
     GENESIS              = Book(name='Genesis',             abbr='Gen',      chapters=50,    index=1)
