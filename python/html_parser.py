@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from definitions import BIBLE_HTML, BIBLE_TXT
 from kozubenko.os import File
 from kozubenko.print import print_green, print_red, print_yellow
-from models.Bible import BIBLE, Book, find_max_verse
+from models.Bible import BIBLE, Book
 
 
 class HTML:
@@ -59,7 +59,7 @@ def just_parse_simple_html(book, chapter, html) -> str:
     out_text = ''
     split_text = re.split(f'{chapter}\xa0', text, maxsplit=1)[1]
 
-    max_verse = find_max_verse(book, chapter)
+    max_verse = BIBLE.find_max_verse(book, chapter)
     for x_verse in range(1, max_verse+1):
         array = re.split(f' {x_verse + 1}\xa0', split_text, maxsplit=1)
         out_text += (array[0].strip())

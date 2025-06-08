@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import os
 
 from definitions import BIBLE_NUMERICAL_MAP
+from kozubenko.utils import AssertClass, AssertInt, AssertPathExists
 
 """
 abbreviations for apocrypha:
@@ -117,22 +118,16 @@ class BIBLE:
                 list.append(book)
         return list
 
-def find_max_verse(book:Book, chapter:int) -> int:
-    if not isinstance(book, Book):
-        raise Exception('Bible.py:find_max_verse(): type(book) == Book required')
+    def find_max_verse(book:Book, chapter:int) -> int:
+        AssertClass("book", book, Book)
+        AssertInt("chapter", chapter, 1, book.chapters)
 
-    if(0 > chapter > book.chapters):
-        raise Exception('Bible.py:find_max_verse(): real chapter required')
-
-    path = os.path.join(BIBLE_NUMERICAL_MAP, str(book.index))
-    if not os.path.exists(path):
-        raise Exception(f'Bible.py:find_max_verse(): path does not exist. path: {path}')
-    
-    with open(path, 'r', encoding='utf-8') as file:
-        line_num = 1
-        for line in file:
-            if(line_num == chapter):
-                return int(line.split(':')[2])
-            line_num += 1
-    
-    raise Exception('Bible.py:find_max_verse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!')
+        path = os.path.join(BIBLE_NUMERICAL_MAP, str(book.index))
+        AssertPathExists("path", path)
+        
+        with open(path, 'r', encoding='utf-8') as file:
+            for i, line in enumerate(file, start=1):
+                if(i == chapter):
+                    return int(line.split(':')[2])
+        
+        raise Exception('Bible.py:find_max_verse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!')
