@@ -18,7 +18,7 @@ from kozubenko.print import *
 from kozubenko.time import Time, Timer
 from tor.tor import Tor
 from kozubenko.utils import AssertBool, AssertClass, AssertList, Utils
-from models.Bible import Book
+from models.Bible import BIBLE, Book
 from user_agents import random_user_agent
 
 
@@ -37,6 +37,7 @@ class BibleGatewayOption:
         if self.state != state:
             self.state = state
             self.element.click()
+            time.sleep(.1)
 
 @dataclass
 class BibleGatewayOptions:
@@ -103,9 +104,9 @@ def report_exception(exception:Exception):
 
 
 
-def scrape_bible(book:Book, target_translations:list):
+def scrape_bible_text(book:Book, target_translations:list):
     """
-    supported len(target_translations): 1-5
+    * target_translations: supported length: 1-5
     """
     AssertClass("book", book, Book)
     AssertList("target_translations", target_translations, min_len=1, max_len=5)
@@ -113,29 +114,31 @@ def scrape_bible(book:Book, target_translations:list):
     print_green(f"scrape_bible({book}, {target_translations})")
 
     TOR = Tor()
-    for chapter in range(2, book.chapters):
+    profile = webdriver.FirefoxProfile()
+    profile.set_preference("network.proxy.type", 1)
+    profile.set_preference("network.proxy.socks", "127.0.0.1")
+    profile.set_preference("network.proxy.socks_port", TOR._socks_port)
+    profile.set_preference("network.proxy.socks_remote_dns", True)
+    profile.set_preference("browser.cache.disk.enable", False)
+    profile.set_preference("browser.cache.memory.enable", False)
+
+    options = Options()
+    options.profile = profile
+    # options.headless = True
+
+    driver = webdriver.Firefox(options=options)
+
+    for chapter in range(1, book.chapters):
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference("network.proxy.type", 1)
-        profile.set_preference("network.proxy.socks", "127.0.0.1")
-        profile.set_preference("network.proxy.socks_port", TOR._socks_port)
-        profile.set_preference("network.proxy.socks_remote_dns", True)
-        profile.set_preference("browser.cache.disk.enable", False)
-        profile.set_preference("browser.cache.memory.enable", False)
-
-        page_options_checkboxes = Options()
-        page_options_checkboxes.profile = profile
-        # options.headless = True
-
-        driver = webdriver.Firefox(options=page_options_checkboxes)
-
         driver.get(URL)
-
+        
+        Timer.start()
         settings_icon = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
-        time.sleep(1.25)
+        Timer.stop()
+        time.sleep(2)
         settings_icon.click()
 
         settings_div = WebDriverWait(driver, 5).until(
@@ -150,10 +153,22 @@ def scrape_bible(book:Book, target_translations:list):
         page_options.set_states(False, False, True, False, True)
         settings_icon.click()
 
-        with open('./temporary.html', 'w', encoding='UTF-8') as file:
-            file.write(driver.page_source)
+        time.sleep(1)
 
-        time.sleep(6000)
+        for translation in target_translations:
+            OUT_TXT = File(BIBLE_TXT, translation, book.name, file=f'{chapter}.txt')
+
+            for verse in range(1, BIBLE.find_max_verse(book, chapter)):
+                css_selector = f".text.{book.abbr}-{chapter}-{verse}"
+                elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
+
+                pass
+
+
+        # with open('./temporary.html', 'w', encoding='UTF-8') as file:
+        #     file.write(html)
+
+        time.sleep(60000)
 
         driver.quit()
         TOR.stop()
