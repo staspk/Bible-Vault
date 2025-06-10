@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from typing import Union
+import sys
+from typing import Callable, Union
 import random, time, traceback
 import requests
 from bs4 import BeautifulSoup
@@ -17,7 +18,7 @@ from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time, Timer
 from tor.tor import Tor
-from kozubenko.utils import AssertBool, AssertClass, AssertList, Utils
+from kozubenko.utils import AssertBool, AssertClass, AssertInt, AssertList, Utils
 from models.Bible import BIBLE, Book
 from user_agents import random_user_agent
 
@@ -86,7 +87,14 @@ class BibleGatewayOptions:
             self.headings.set_state(bool(headings))
         if red_letter is not None:
             self.red_letter.set_state(bool(red_letter))
-    
+
+class BibleGateway:
+    def id_selector(translation:str, book:Book, chapter:int) -> str:
+        AssertClass("book", book, Book)
+        AssertInt("chapter", chapter, min_val=1)
+
+        if translation.upper() == "ESV":
+            return f"en-ESV"
 
 def report_exception(exception:Exception):
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
@@ -102,7 +110,31 @@ def report_exception(exception:Exception):
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
 
+def print_element(element:WebElement):
+    AssertClass("element", element, WebElement)
+    print_red("------------------------------------------------------------------------------------------------------------------------")
+    print_red(f"ID: {element.get_attribute('id')}")
 
+    print_red("outerHTML: ", False)
+    print_cyan(element.get_attribute("outerHTML"))
+
+    print_red("element.text: ", False)
+    print_cyan(element.text)
+    print_red("------------------------------------------------------------------------------------------------------------------------")
+    print()
+
+def print_elements(_list:list[WebElement]):
+    for element in _list:
+        print_element(element)
+
+def redirect_print_to_file(print_function:Callable):
+    with open("output.txt", "w") as file:
+        old_stdout = sys.stdout
+        sys.stdout = file
+        try:
+            print_function()
+        finally:
+            sys.stdout = old_stdout
 
 def scrape_bible_text(book:Book, target_translations:list):
     """
@@ -128,16 +160,14 @@ def scrape_bible_text(book:Book, target_translations:list):
 
     driver = webdriver.Firefox(options=options)
 
-    for chapter in range(1, book.chapters):
+    for chapter in range(2, book.chapters):
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
         driver.get(URL)
         
-        Timer.start()
-        settings_icon = WebDriverWait(driver, 10).until(
+        settings_icon = WebDriverWait(driver, 10).until(                                # operation time avg: ~15ms
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
-        Timer.stop()
         time.sleep(2)
         settings_icon.click()
 
@@ -158,12 +188,13 @@ def scrape_bible_text(book:Book, target_translations:list):
         for translation in target_translations:
             OUT_TXT = File(BIBLE_TXT, translation, book.name, file=f'{chapter}.txt')
 
-            for verse in range(1, BIBLE.find_max_verse(book, chapter)):
-                css_selector = f".text.{book.abbr}-{chapter}-{verse}"
-                elements = driver.find_elements(By.CSS_SELECTOR, css_selector)
+            elements = driver.find_elements(By.CSS_SELECTOR, f"[id^='en-{translation}-']")
+            redirect_print_to_file("before.txt", "w", print_elements(elements))
 
-                pass
+            elements[:] = [element for element in elements if element.text]
+            redirect_print_to_file("after.txt", "w", print_elements(elements))
 
+            exit()
 
         # with open('./temporary.html', 'w', encoding='UTF-8') as file:
         #     file.write(html)
