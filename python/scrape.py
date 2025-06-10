@@ -17,6 +17,7 @@ from kozubenko.io import load_file, remove_html_tags
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time, Timer
+from kozubenko.typing import FileDescriptorOrPath, WritableTextMode
 from tor.tor import Tor
 from kozubenko.utils import AssertBool, AssertClass, AssertInt, AssertList, Utils
 from models.Bible import BIBLE, Book
@@ -127,8 +128,8 @@ def print_elements(_list:list[WebElement]):
     for element in _list:
         print_element(element)
 
-def redirect_print_to_file(print_function:Callable):
-    with open("output.txt", "w") as file:
+def redirect_print_to_file(file:FileDescriptorOrPath, mode:WritableTextMode, print_function:Callable):
+    with open(file, mode) as file:
         old_stdout = sys.stdout
         sys.stdout = file
         try:
@@ -189,10 +190,10 @@ def scrape_bible_text(book:Book, target_translations:list):
             OUT_TXT = File(BIBLE_TXT, translation, book.name, file=f'{chapter}.txt')
 
             elements = driver.find_elements(By.CSS_SELECTOR, f"[id^='en-{translation}-']")
-            redirect_print_to_file("before.txt", "w", print_elements(elements))
+            redirect_print_to_file("before.txt", "w", lambda: print_elements(elements))
 
             elements[:] = [element for element in elements if element.text]
-            redirect_print_to_file("after.txt", "w", print_elements(elements))
+            redirect_print_to_file("after.txt", "w", lambda: print_elements(elements))
 
             exit()
 
