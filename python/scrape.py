@@ -1,10 +1,13 @@
-from dataclasses import dataclass
+from __future__ import annotations
+from dataclasses import dataclass, fields
 import sys
 from typing import Callable, Union
 import random, time, traceback
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+
+from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 # from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
@@ -19,7 +22,7 @@ from kozubenko.print import *
 from kozubenko.time import Time, Timer
 from kozubenko.typing import FileDescriptorOrPath, WritableTextMode
 from tor.tor import Tor
-from kozubenko.utils import AssertBool, AssertClass, AssertInt, AssertList, Utils
+from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, Utils
 from models.Bible import BIBLE, Book
 from user_agents import random_user_agent
 
@@ -30,11 +33,11 @@ class BibleGatewayOption:
     element:WebElement
 
     def __post_init__(self):
-        AssertBool("state", self.state)
-        AssertClass("element", self.element, WebElement)
+        assert_bool("state", self.state)
+        assert_class("element", self.element, WebElement)
 
     def set_state(self, state:bool):
-        AssertBool("state", state)
+        assert_bool("state", state)
         
         if self.state != state:
             self.state = state
@@ -43,40 +46,49 @@ class BibleGatewayOption:
 
 @dataclass
 class BibleGatewayOptions:
+    """
+    How to Use:
+     `page_options = BibleGatewayOptions.WebDriveInstructionsToFindMe(driver)`
+     `page_options.set_states()`
+    """
     cross_references: BibleGatewayOption
     footnotes       : BibleGatewayOption
     verse_numbers   : BibleGatewayOption
     headings        : BibleGatewayOption
     red_letter      : BibleGatewayOption
 
+    settings_icon   : WebElement = None
+
     def __post_init__(self):
-        for instance_var in self.__dict__.values():
-            AssertClass("instance_var", instance_var, BibleGatewayOption)
-        
-    def __str__ (self) -> str:
-        return (
-            f"cross_references: {self.cross_references.state}\n"
-            f"footnotes: {self.footnotes.state}\n"
-            f"verse_numbers: {self.verse_numbers.state}\n"
-            f"headings: {self.headings.state}\n"
-            f"red_letter: {self.red_letter.state}"
+        for field in fields(self):
+            if field.name == "settings_icon":
+                continue
+            value = getattr(self, field.name)
+            assert_class(field.name, value, BibleGatewayOption)
+    
+    @staticmethod
+    def DriverInstructionsToFindMe(driver:RemoteWebDriver) -> BibleGatewayOptions:
+        """
+        Static Constructor
+        """
+        if not BibleGatewayOptions.settings_icon:
+            BibleGatewayOptions.settings_icon = WebDriverWait(driver, 10).until(            # operation time avg: ~15ms
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
+            )
+        time.sleep(2)
+        BibleGatewayOptions.settings_icon.click()
+
+        settings_div = WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".bg-tooltip.options-tooltip"))
         )
+        page_options_checkboxes = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;'] svg")
+        page_options_toggles    = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;']")
+        page_options_states     = [True if svg.get_attribute("name") == 'checked' else False for svg in page_options_checkboxes]
+        page_options_states_and_toggles = [BibleGatewayOption(state, toggle) for state, toggle in zip(page_options_states, page_options_toggles)]
+        page_options                    = BibleGatewayOptions(*page_options_states_and_toggles)
 
-    def cross_references(self, state:bool):
-        self.cross_references.set_state(bool(state))
-
-    def footnotes(self, state:bool):
-        self.footnotes.set_state(bool(state))
-
-    def verse_numbers(self, state:bool):
-        self.verse_numbers.set_state(bool(state))
-
-    def headings(self, state:bool):
-        self.headings.set_state(bool(state))
-
-    def red_letter(self, state:bool):
-        self.red_letter.set_state(bool(state))
-
+        return page_options
+    
     def set_states(self, cross_references:bool = None, footnotes:bool = None, verse_numbers:bool = None, headings:bool = None, red_letter:bool = None):
         if cross_references is not None:
             self.cross_references.set_state(bool(cross_references)) 
@@ -89,10 +101,22 @@ class BibleGatewayOptions:
         if red_letter is not None:
             self.red_letter.set_state(bool(red_letter))
 
+        BibleGatewayOptions.settings_icon.click()
+        time.sleep(1)
+
+    def __str__ (self) -> str:
+        return (
+            f"cross_references: {self.cross_references.state}\n"
+            f"footnotes: {self.footnotes.state}\n"
+            f"verse_numbers: {self.verse_numbers.state}\n"
+            f"headings: {self.headings.state}\n"
+            f"red_letter: {self.red_letter.state}"
+        )
+
 class BibleGateway:
     def id_selector(translation:str, book:Book, chapter:int) -> str:
-        AssertClass("book", book, Book)
-        AssertInt("chapter", chapter, min_val=1)
+        assert_class("book", book, Book)
+        assert_int("chapter", chapter, min_val=1)
 
         if translation.upper() == "ESV":
             return f"en-ESV"
@@ -112,7 +136,7 @@ def report_exception(exception:Exception):
         file.write(report)
 
 def print_element(element:WebElement):
-    AssertClass("element", element, WebElement)
+    assert_class("element", element, WebElement)
     print_red("------------------------------------------------------------------------------------------------------------------------")
     print_red(f"ID: {element.get_attribute('id')}")
 
@@ -141,8 +165,8 @@ def scrape_bible_text(book:Book, target_translations:list):
     """
     * target_translations: supported length: 1-5
     """
-    AssertClass("book", book, Book)
-    AssertList("target_translations", target_translations, min_len=1, max_len=5)
+    assert_class("book", book, Book)
+    assert_list("target_translations", target_translations, min_len=1, max_len=5)
 
     print_green(f"scrape_bible({book}, {target_translations})")
 
@@ -165,26 +189,9 @@ def scrape_bible_text(book:Book, target_translations:list):
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
         driver.get(URL)
-        
-        settings_icon = WebDriverWait(driver, 10).until(                                # operation time avg: ~15ms
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
-        )
-        time.sleep(2)
-        settings_icon.click()
 
-        settings_div = WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, ".bg-tooltip.options-tooltip"))
-        )
-        page_options_checkboxes = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;'] svg")
-        page_options_toggles    = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;']")
-        page_options_states     = [True if svg.get_attribute("name") == 'checked' else False for svg in page_options_checkboxes]
-        page_options_states_and_toggles = [BibleGatewayOption(state, toggle) for state, toggle in zip(page_options_states, page_options_toggles)]
-        page_options                    = BibleGatewayOptions(*page_options_states_and_toggles)
-
+        page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
         page_options.set_states(False, False, True, False, True)
-        settings_icon.click()
-
-        time.sleep(1)
 
         for translation in target_translations:
             OUT_TXT = File(BIBLE_TXT, translation, book.name, file=f'{chapter}.txt')
