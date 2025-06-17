@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import os
 
 from definitions import BIBLE_NUMERICAL_MAP
-from kozubenko.utils import AssertClass, AssertInt, AssertPathExists
+from kozubenko.utils import assert_class, assert_int, assert_path_exists
 
 """
 abbreviations for apocrypha:
@@ -119,11 +119,11 @@ class BIBLE:
         return list
 
     def find_max_verse(book:Book, chapter:int) -> int:
-        AssertClass("book", book, Book)
-        AssertInt("chapter", chapter, 1, book.chapters)
+        assert_class("book", book, Book)
+        assert_int("chapter", chapter, 1, book.chapters)
 
         path = os.path.join(BIBLE_NUMERICAL_MAP, str(book.index))
-        AssertPathExists("path", path)
+        assert_path_exists("path", path)
         
         with open(path, 'r', encoding='utf-8') as file:
             for i, line in enumerate(file, start=1):
