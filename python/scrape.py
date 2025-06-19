@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, fields
 from datetime import datetime
 
-import time, traceback
+import sys, time, traceback
 
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
@@ -38,7 +38,6 @@ class ProblemChapter:
             f"Problem Chapter Collision Time: {str(self.dt)}\n"
             f"{self.book.name}:{self.chapter} [{self.translation}]"
         )
-        
 
 @dataclass
 class BibleGatewayOption:
@@ -87,15 +86,15 @@ class BibleGatewayOptions:
         cls.settings_icon = WebDriverWait(driver, 10).until(            # operation time avg: ~15ms
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
-        time.sleep(1)
+        time.sleep(1.25)
         cls.settings_icon.click()
 
-        settings_div = WebDriverWait(driver, 5).until(
+        settings_div = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".bg-tooltip.options-tooltip"))
         )
         page_options_checkboxes = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;'] svg")
         page_options_toggles    = settings_div.find_elements(By.CSS_SELECTOR, "div[style*='cursor: pointer;']")
-        page_options_states     = [True if svg.get_attribute("name") == 'checked' else False for svg in page_options_checkboxes]
+        page_options_states     = [True if svg.get_attribute("name") == "checked" else False for svg in page_options_checkboxes]
         page_options_states_and_toggles = [BibleGatewayOption(state, toggle) for state, toggle in zip(page_options_states, page_options_toggles)]
         page_options                    = cls(*page_options_states_and_toggles)
 
@@ -141,9 +140,9 @@ def report_exception_and_EXIT(exception:Exception=None, report:str=None):
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
     
-    print_dark_red(f"See exception report at: {FILE}")
-    print_dark_red('Stopping Program...')
-    exit()
+    print_red(f"See exception report at: {FILE}")
+    print_red('sys.exit()...')
+    sys.exit()
 
 def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1) -> list[ProblemChapter]:
     """
@@ -217,7 +216,7 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
 
     return problem_chapters
 
-def scrape_bible_txt(target_translations:list[str], offset_book_index = 0, start_chapter = 1):
+def scrape_bible_txt(target_translations:list[str], offset_book_index = 0):
     """
     * target_translations: supported length: 1-5
     * offset_book_index : (*optional*) - use when past partial scrapes have been done (1-65)
@@ -226,10 +225,6 @@ def scrape_bible_txt(target_translations:list[str], offset_book_index = 0, start
     if offset_book_index != 0:
         assert_int("offset_book_index", offset_book_index, min_val=1, max_val=65)
     
-    problem_chapters: list[ProblemChapter] = []
     for book in BIBLE.Books()[offset_book_index:]:
-        problem_chapters.extend(scrape_bible_book(book, target_translations))
+        scrape_bible_book(book, target_translations)
         print_green(f"{target_translations}:{book.name} Done.")
-    
-    report = File(REPORTS_DIRECTORY, "problem_chapters", file=Time.local_time_as_legal_filename())
-    redirect_print_to_file(report, 'w', lambda: print_list(problem_chapters))

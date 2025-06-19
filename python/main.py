@@ -9,5 +9,5 @@ from scrape import *
 eng_translations = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
 russ_translations = ['RUSV', 'NRT']
 
-scrape_bible_book(BIBLE.GENESIS, ['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'], 49)
+scrape_bible_txt(['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'], 18)
 # scrape_bible_txt(['NIV', 'NET', 'ESV', 'NLT', 'CEV'])
