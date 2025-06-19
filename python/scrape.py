@@ -1,11 +1,8 @@
 from __future__ import annotations
-from collections import namedtuple
 from dataclasses import dataclass, fields
 from datetime import datetime
-from typing import Callable
-from kozubenko.typing import FileDescriptorOrPath, WritableTextMode
 
-import sys, time, traceback
+import time, traceback
 
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
@@ -19,7 +16,7 @@ from definitions import *
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
-from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, Utils, assert_str
+from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, assert_str, Utils
 from tor.tor import Tor
 from models.Bible import BIBLE, Book
 
@@ -143,36 +140,6 @@ def report_exception_and_EXIT(exception:Exception=None, report:str=None):
     print_dark_red(f"See exception report at: {FILE}")
     print_dark_red('Stopping Program...')
     exit()
-
-def print_element(element:WebElement):
-    assert_class("element", element, WebElement)
-    print_red("------------------------------------------------------------------------------------------------------------------------")
-    print_red(f"ID: {element.get_attribute('id')}")
-
-    print_red("outerHTML: ", False)
-    print_cyan(element.get_attribute("outerHTML"))
-
-    print_red("element.text: ", False)
-    print_cyan(element.text)
-    print_red("------------------------------------------------------------------------------------------------------------------------")
-    print()
-
-def print_elements(_list:list[WebElement]):
-    if assert_list("_list", _list, returnBool=True):
-        for element in _list:
-            print_element(element)
-    else:
-        if type(_list) is WebElement:
-            print_element(element)
-
-def redirect_print_to_file(file:FileDescriptorOrPath, mode:WritableTextMode, print_function:Callable):
-    with open(file, mode, encoding="UTF-8") as file:
-        old_stdout = sys.stdout
-        sys.stdout = file
-        try:
-            print_function()
-        finally:
-            sys.stdout = old_stdout
 
 def scrape_bible_book(book:Book, target_translations:list[str]) -> list[ProblemChapter]:
     """
