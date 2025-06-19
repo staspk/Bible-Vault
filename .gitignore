@@ -1,7 +1,13 @@
+# project folders to ignore
+bible_html
+bible_txt
+
+# python
 .env
 .venv
 generated_data
 __pycache__
 
-bible_html
-bible_txt
+# node
+node_modules/
+
