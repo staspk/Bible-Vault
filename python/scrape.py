@@ -17,7 +17,7 @@ from definitions import *
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
-from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, Utils
+from kozubenko.utils import assert_bool, assert_class, assert_list, Utils
 from tor.tor import Tor
 from models.Bible import BIBLE, Book
 
@@ -107,30 +107,25 @@ class BibleGatewayOptions:
             f"red_letter: {self.red_letter.state}"
         )
 
-class BibleGateway:
-    def id_selector(translation:str, book:Book, chapter:int) -> str:
-        assert_class("book", book, Book)
-        assert_int("chapter", chapter, min_val=1)
 
-        if translation.upper() == "ESV":
-            return f"en-ESV"
-
-
-
-
-def report_exception(exception:Exception):
+def report_exception_and_EXIT(exception:Exception=None, report:str=None):
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
 
-    exception_type = type(exception).__name__
-    exception_message = str(exception)
-    exception_trace = traceback.format_exc()
+    if exception is not None and isinstance(exception, Exception):
+        exception_type = type(exception).__name__
+        exception_message = str(exception)
+        exception_trace = traceback.format_exc()
 
-    report = f"Exception Type: {exception_type}\\n"
-    report += f"Message: {exception_message}\\n\\n"
-    report += f"Traceback:\\n{exception_trace}"
+        report = f"Exception Type: {exception_type}\n"
+        report += f"Message: {exception_message}\n"
+        report += f"Traceback:\n{exception_trace}"
 
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
+    
+    print_dark_red(f"See exception report at: {FILE}")
+    print_dark_red('Stopping Program...')
+    exit()
 
 def print_element(element:WebElement):
     assert_class("element", element, WebElement)
@@ -162,14 +157,12 @@ def redirect_print_to_file(file:FileDescriptorOrPath, mode:WritableTextMode, pri
         finally:
             sys.stdout = old_stdout
 
-def scrape_bible_text(book:Book, target_translations:list[str]):
+def scrape_bible_book(book:Book, target_translations:list[str]):
     """
     * target_translations: supported length: 1-5
     """
     assert_class("book", book, Book)
     assert_list("target_translations", target_translations, min_len=1, max_len=5)
-
-    print_green(f"scrape_bible({book}, {target_translations})")
 
     TOR = Tor()
     profile = webdriver.FirefoxProfile()
@@ -186,7 +179,6 @@ def scrape_bible_text(book:Book, target_translations:list[str]):
 
     driver = webdriver.Firefox(options=options)
 
-    i = 1
     for chapter in range(2, book.chapters):
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
@@ -195,48 +187,36 @@ def scrape_bible_text(book:Book, target_translations:list[str]):
         page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
         page_options.set_states(False, False, True, False, True)
 
-        chapter_texts = dict.fromkeys(target_translations, "")
-
         max_verse = BIBLE.find_max_verse(book, chapter)
         for translation in target_translations:
             OUT_TXT = File(BIBLE_TXT, translation, book.name, file=f'{chapter}.txt')
 
-            # css_selector = f"[id^='en-{translation}-']"
-            # css_selector = f".text.{book.abbr}-{chapter}-{verse}"
             css_selector = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
             element = driver.find_element(By.CSS_SELECTOR, css_selector)
 
             chapter_text = element.text.replace('\n', '')
 
             split_text = chapter_text.split(' ', 1)
-            if not split_text[0] == chapter:
-                report_exception()
+            if int(split_text[0]) != chapter:
+                report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
 
+            final_chapter_text = ""
+            for verse in range(2, max_verse+1):
+                chapter_text = split_text[1]
+                split_text = [part.strip() for part in chapter_text.split(f"{verse}", 1)]
+                final_chapter_text += f"{split_text[0]}\n"
+            final_chapter_text += split_text[1]
 
-            redirect_print_to_file(File("examples", file=f"{chapter}-{translation}.txt"), "w", lambda: print(chapter_text))
-            print_green(chapter_text)
-            exit()
-
-
-            newline_count = chapter_text.count("\n")
-            print_green(f"Found {newline_count} newlines")
-            # redirect_print_to_file(File("examples", file=f"{chapter}-{translation}.txt"), "w", lambda: print(element.text))
-
-            print(element.text)
-            # elements[:] = [element for element in elements if element.text]
-
-            # chapter_text = "\n".join(element.text for element in elements)
-            # redirect_print_to_file(File("examples", file=f"{chapter}-{translation}.txt"), "w", lambda: print_elements(elements))
-
-            # print_red(chapter_text)
-        if i == 3:
-            driver.quit()
-            TOR.stop()
-            exit()
-        i += 1
-
-        # with open('./temporary.html', 'w', encoding='UTF-8') as file:
-        #     file.write(html)
+            with open(OUT_TXT, 'w', encoding='UTF-8') as file:
+                file.write(final_chapter_text)
 
     driver.quit()
     TOR.stop()
+
+def scrape_bible_txt(target_translations:list[str]):
+    """
+    * target_translations: supported length: 1-5
+    """
+    for book in BIBLE.Books:
+        scrape_bible_book()
+        print_green(f"{target_translations}:{book.name} Done.")
