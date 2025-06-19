@@ -188,13 +188,12 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
             css_selector = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
             element = driver.find_element(By.CSS_SELECTOR, css_selector)
 
+            chapter_text = element.text.replace('\n', '')
+
+            split_text = chapter_text.split(' ', 1)
+            if int(split_text[0]) != chapter:
+                report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
             try:
-                chapter_text = element.text.replace('\n', '')
-
-                split_text = chapter_text.split(' ', 1)
-                if int(split_text[0]) != chapter:
-                    report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
-
                 final_chapter_text = ""
                 for verse in range(2, max_verse+1):
                     chapter_text = split_text[1]
@@ -205,7 +204,9 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
                 with open(OUT_TXT, 'w', encoding='UTF-8') as file:
                     file.write(final_chapter_text)
             except:
-                problem_chapters.append(ProblemChapter(translation, book, chapter, datetime.now()))
+                problem = ProblemChapter(translation, book, chapter, datetime.now())
+                problem_chapters.append(problem)
+                print_yellow(f"Problem: {problem}")
 
     driver.quit()
     TOR.stop()
