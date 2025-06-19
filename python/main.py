@@ -7,6 +7,7 @@ from scrape import *
 
 """
 Skip Psalms for now...
+Issues also in Song of Solomon
 """
 
 eng_translations = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
