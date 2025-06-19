@@ -29,10 +29,10 @@ abbreviations for apocrypha:
 @dataclass
 class Book:
     """
-    name     : str -> "Genesis"
-    abbr     : str -> consistent with BibleGateway"s abbreviations
-    chapters : int -> total chapters, e.g: 50
-    index    : int -> numerical appearance in the bible, 1-66
+    * name : str -> *"Genesis"*
+    * abbr : str -> *consistent with BibleGateway's abbreviations*
+    * chapters : int -> *total chapters, e.g: 50*
+    * index : int -> *numerical appearance in the bible, 1-66*
     """
     name: str
     abbr: str
