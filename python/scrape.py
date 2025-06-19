@@ -1,5 +1,7 @@
 from __future__ import annotations
+from collections import namedtuple
 from dataclasses import dataclass, fields
+from datetime import datetime
 from typing import Callable
 from kozubenko.typing import FileDescriptorOrPath, WritableTextMode
 
@@ -17,10 +19,25 @@ from definitions import *
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
-from kozubenko.utils import assert_bool, assert_class, assert_list, Utils
+from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, Utils, assert_str
 from tor.tor import Tor
 from models.Bible import BIBLE, Book
 
+
+@dataclass
+class ProblemChapter:
+    translation:str
+    book:Book
+    chapter:int
+    dt:datetime
+
+    def __post_init__(self):
+        assert_str("translation", self.translation)
+        assert_class("book", self.book, Book)
+        assert_int("chapter", self.chapter, min_val=1)
+
+    def __str__(self):
+        
 
 @dataclass
 class BibleGatewayOption:
@@ -69,7 +86,7 @@ class BibleGatewayOptions:
         cls.settings_icon = WebDriverWait(driver, 10).until(            # operation time avg: ~15ms
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
-        time.sleep(2)
+        time.sleep(1)
         cls.settings_icon.click()
 
         settings_div = WebDriverWait(driver, 5).until(
@@ -96,7 +113,7 @@ class BibleGatewayOptions:
             self.red_letter.set_state(bool(red_letter))
 
         BibleGatewayOptions.settings_icon.click()
-        time.sleep(1)
+        time.sleep(.33)
 
     def __str__ (self) -> str:
         return (
@@ -157,7 +174,7 @@ def redirect_print_to_file(file:FileDescriptorOrPath, mode:WritableTextMode, pri
         finally:
             sys.stdout = old_stdout
 
-def scrape_bible_book(book:Book, target_translations:list[str]):
+def scrape_bible_book(book:Book, target_translations:list[str]) -> list[ProblemChapter]:
     """
     * target_translations: supported length: 1-5
     """
@@ -179,7 +196,8 @@ def scrape_bible_book(book:Book, target_translations:list[str]):
 
     driver = webdriver.Firefox(options=options)
 
-    for chapter in range(2, book.chapters):
+    problem_chapters: list[ProblemChapter] = []
+    for chapter in range(1, book.chapters): 
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
         driver.get(URL)
@@ -194,29 +212,36 @@ def scrape_bible_book(book:Book, target_translations:list[str]):
             css_selector = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
             element = driver.find_element(By.CSS_SELECTOR, css_selector)
 
-            chapter_text = element.text.replace('\n', '')
+            try:
+                chapter_text = element.text.replace('\n', '')
 
-            split_text = chapter_text.split(' ', 1)
-            if int(split_text[0]) != chapter:
-                report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
+                split_text = chapter_text.split(' ', 1)
+                if int(split_text[0]) != chapter:
+                    report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
 
-            final_chapter_text = ""
-            for verse in range(2, max_verse+1):
-                chapter_text = split_text[1]
-                split_text = [part.strip() for part in chapter_text.split(f"{verse}", 1)]
-                final_chapter_text += f"{split_text[0]}\n"
-            final_chapter_text += split_text[1]
+                final_chapter_text = ""
+                for verse in range(2, max_verse+1):
+                    chapter_text = split_text[1]
+                    split_text = [part.strip() for part in chapter_text.split(f"{verse}", 1)]
+                    final_chapter_text += f"{split_text[0]}\n"
+                final_chapter_text += split_text[1]
 
-            with open(OUT_TXT, 'w', encoding='UTF-8') as file:
-                file.write(final_chapter_text)
+                with open(OUT_TXT, 'w', encoding='UTF-8') as file:
+                    file.write(final_chapter_text)
+            except:
+                problem_chapters.append(ProblemChapter(translation, book, chapter, datetime.now()))
 
     driver.quit()
     TOR.stop()
+    return problem_chapters
 
 def scrape_bible_txt(target_translations:list[str]):
     """
     * target_translations: supported length: 1-5
     """
-    for book in BIBLE.Books:
-        scrape_bible_book()
+    problem_chapters: list[ProblemChapter] = []
+    for book in BIBLE.Books():
+        problem_chapters.extend(scrape_bible_book(book, target_translations))
         print_green(f"{target_translations}:{book.name} Done.")
+    
+    report = File(REPORTS_DIRECTORY, "problem_chapters", file=Time.local_time_as_legal_filename())
