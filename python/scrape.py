@@ -33,7 +33,11 @@ class ProblemChapter:
         assert_class("book", self.book, Book)
         assert_int("chapter", self.chapter, min_val=1)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        return (
+            f"Problem Chapter Collision Time: {str(self.dt)}\n"
+            f"{self.book.name}:{self.chapter} [{self.translation}]"
+        )
         
 
 @dataclass
@@ -141,12 +145,13 @@ def report_exception_and_EXIT(exception:Exception=None, report:str=None):
     print_dark_red('Stopping Program...')
     exit()
 
-def scrape_bible_book(book:Book, target_translations:list[str]) -> list[ProblemChapter]:
+def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1) -> list[ProblemChapter]:
     """
     * target_translations: supported length: 1-5
     """
     assert_class("book", book, Book)
     assert_list("target_translations", target_translations, min_len=1, max_len=5)
+    assert_int("startChapter", startChapter, min_val=1, max_val=book.chapters)
 
     TOR = Tor()
     profile = webdriver.FirefoxProfile()
@@ -164,13 +169,18 @@ def scrape_bible_book(book:Book, target_translations:list[str]) -> list[ProblemC
     driver = webdriver.Firefox(options=options)
 
     problem_chapters: list[ProblemChapter] = []
-    for chapter in range(1, book.chapters): 
+    for chapter in range(startChapter, book.chapters+1):
         URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={Utils.list_to_str(target_translations, ';')}"
 
         driver.get(URL)
 
-        page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
-        page_options.set_states(False, False, True, False, True)
+        try:
+            page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
+            page_options.set_states(False, False, True, False, True)
+        except:
+            page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
+            time.sleep(.1)
+            page_options.set_states(False, False, True, False, True)
 
         max_verse = BIBLE.find_max_verse(book, chapter)
         for translation in target_translations:
@@ -200,15 +210,26 @@ def scrape_bible_book(book:Book, target_translations:list[str]) -> list[ProblemC
 
     driver.quit()
     TOR.stop()
+
+    if problem_chapters:
+        report = File(REPORTS_DIRECTORY, "problem_chapters", file=f"scrape_bible_book({Time.local_time_as_legal_filename()})")
+        redirect_print_to_file(report, 'w', lambda: print_list(problem_chapters))
+
     return problem_chapters
 
-def scrape_bible_txt(target_translations:list[str]):
+def scrape_bible_txt(target_translations:list[str], offset_book_index = 0, start_chapter = 1):
     """
     * target_translations: supported length: 1-5
+    * offset_book_index : (*optional*) - use when past partial scrapes have been done (1-65)
     """
+    
+    if offset_book_index != 0:
+        assert_int("offset_book_index", offset_book_index, min_val=1, max_val=65)
+    
     problem_chapters: list[ProblemChapter] = []
-    for book in BIBLE.Books():
+    for book in BIBLE.Books()[offset_book_index:]:
         problem_chapters.extend(scrape_bible_book(book, target_translations))
         print_green(f"{target_translations}:{book.name} Done.")
     
     report = File(REPORTS_DIRECTORY, "problem_chapters", file=Time.local_time_as_legal_filename())
+    redirect_print_to_file(report, 'w', lambda: print_list(problem_chapters))
