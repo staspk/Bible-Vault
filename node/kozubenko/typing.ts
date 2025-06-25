@@ -22,10 +22,28 @@ function type(value) {
 * 
 * Example Use: `const aString = "hello"; assert_string("aString", aString)`
 */
-export function assert_string(varName: string, value: any, asBool=false): true | Error {  
+export function assert_string(varName: string, value: any): true | Error {  
     if (typeof value !== "string") {
         throw new Error(`${varName} must be a string, but is: ${typeof value}`);
     }
+    return true;
+}
+
+/**
+* Use to enforce type at runtime. Either returns true, or throws Error (if not 'number' or 'bigint')
+* 
+* Example Use: `const aNumber = 5; assert_int("aNumber", aNumber)`
+*/
+export function assert_number(varName: string, value: any, minVal?: number, maxVal?: number): true | Error {  
+    if (typeof value !== "number" && typeof value !== "bigint")
+        throw new Error(`assert_number(${varName}): must be a number, but is: ${typeof value}`);
+
+    if (minVal !== undefined && value < minVal)
+        throw new Error(`assert_number(${varName}): value < min_val: ${minVal}`);
+
+    if (maxVal !== undefined && value > maxVal)
+        throw new Error(`assert_number(${varName}): value > max_val: ${maxVal}`);
+
     return true;
 }
 
@@ -37,6 +55,18 @@ export function assert_string(varName: string, value: any, asBool=false): true |
 export function assert_list(varName: string, value: any): true | Error {  
     if (Array.isArray(value)) {
         throw new Error(`${varName} must be a string[], but is: ${typeof value}`);
+    }
+    return true;
+}
+
+/**
+* Use to enforce type at runtime. Either returns true, or throws Error
+* 
+* Example Use: `const aString = "hello"; assert_string("aString", aString)`
+*/
+export function assert_class(varName: string, value: any, classType: any): true | Error {  
+    if (!(value instanceof classType)) {
+        throw new Error(`${varName} must be a ${classType.name}, but is: ${value.name}}`);
     }
     return true;
 }
