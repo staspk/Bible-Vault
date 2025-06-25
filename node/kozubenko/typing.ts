@@ -18,9 +18,9 @@ function type(value) {
 }
 
 /**
-* Use to enforce type at runtime. Either returns true, or throws Error
-* 
-* Example Use: `const aString = "hello"; assert_string("aString", aString)`
+    Use to enforce type at runtime. Either returns true, or throws Error
+    
+    Example Use: `const aString = "hello"; assert_string("aString", aString)`
 */
 export function assert_string(varName: string, value: any): true | Error {  
     if (typeof value !== "string")
@@ -30,9 +30,9 @@ export function assert_string(varName: string, value: any): true | Error {
 }
 
 /**
-* Use to enforce type at runtime. Either returns true, or throws Error (if not 'number' or 'bigint')
-* 
-* Example Use: `const aNum = 5; assert_int("aNum", aNum)`
+    Use to enforce type at runtime. Either returns true, or throws Error (if not 'number' or 'bigint')
+
+    Example Use: `const aNum = 5; assert_int("aNum", aNum)`
 */
 export function assert_number(varName: string, value: any, minVal?: number, maxVal?: number): true | Error {  
     if (typeof value !== "number" && typeof value !== "bigint")
@@ -47,9 +47,9 @@ export function assert_number(varName: string, value: any, minVal?: number, maxV
 }
 
 /**
-* Use to enforce type at runtime. List refers to any[]. Either returns true, or throws Error
-* 
-* Example Use: `const aList = ["hello", "goodbye"]; assert_list("aList", aList)`
+    Use to enforce type at runtime. List refers to any[]. Either returns true, or throws Error
+ 
+    Example Use: `const aList = ["hello", "goodbye"]; assert_list("aList", aList)`
 */
 export function assert_list(varName: string, list: any, minLen?:number, maxLen?:number): true | Error {  
     if (!Array.isArray(list))
@@ -64,9 +64,9 @@ export function assert_list(varName: string, list: any, minLen?:number, maxLen?:
 }
 
 /**
-* Use to enforce type at runtime. Either returns true, or throws Error
-* 
-* Example Use: `const book = new Book('Revelation', 'Rev', 22, 66); assert_class("book", book, Book)`
+    Use to enforce type at runtime. Either returns true, or throws Error
+
+    Example Use: `const book = new Book('Revelation', 'Rev', 22, 66); assert_class("book", book, Book)`
 */
 export function assert_class(varName: string, object: any, _class: any): true | Error {  
     if (!(object instanceof _class)) 
