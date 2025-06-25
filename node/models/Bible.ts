@@ -6,18 +6,12 @@ import { assert_number, assert_class } from './../kozubenko/typing.ts';
 
 const BIBLE_NUMERICAL_MAP = path.join(__dirname, '..', '..', '..', 'bible_numerical_map');
 
-/**
-    * name: string — e.g. 'Genesis'
-    * abbr: string — consistent with BibleGateway abbreviations
-    * chapters: number — total chapters, e.g. 50
-    * index: number — numerical appearance in the bible, 1-66
-*/
 export class Book {
     constructor(
-        public name: string,
-        public abbr: string,
-        public chapters: number,
-        public index: number
+        public readonly name: string,           // e.g. 'Genesis'
+        public readonly abbr: string,           // consistent with BibleGateway abbreviations
+        public readonly chapters: number,       // total chapters, e.g. 50
+        public readonly index: number           // numerical appearance in the bible, 1-66
     ) {}
     
     toString() {
