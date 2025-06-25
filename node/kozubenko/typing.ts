@@ -52,10 +52,13 @@ export function assert_number(varName: string, value: any, minVal?: number, maxV
 * 
 * Example Use: `const aList = ["hello", "goodbye"]; assert_list("aList", aList)`
 */
-export function assert_list(varName: string, value: any): true | Error {  
-    if (Array.isArray(value)) {
+export function assert_list(varName: string, value: any, minLen?:number, maxLen?:number): true | Error {  
+    if (!Array.isArray(value))
         throw new Error(`${varName} must be a string[], but is: ${typeof value}`);
-    }
+    if (minLen && value.length < minLen)
+        throw new Error(`assert_list(${varName}): length of list < minLen. minLen: ${minLen}. actual length: ${value.length}`);
+    if (maxLen && value.length > maxLen)
+        throw new Error(`assert_list(${varName}): length of list > maxLen. maxLen: ${maxLen}. actual length: ${value.length}`);
     return true;
 }
 
