@@ -12,6 +12,21 @@ const PORT = 8080;
 const server = http.createServer((req, res) => {
     const INDEX_HTML = path.join(__dirname, "..", "frontend", "index.html");
 
+    if (!req.url)   return;
+
+    // GET /passage?book=Matthew&chapter=22&translation=NKJV;ESV
+
+    const urlObj = new URL(req.url, `http://localhost:${PORT}`);
+    if (urlObj.pathname === "/passage") {
+        const translationString = urlObj.searchParams.get("translation") ?? "";
+
+        const book = urlObj.searchParams.get("book") ?? "";
+        const chapter = urlObj.searchParams.get("chapter") ?? "";
+        const translations = translationString.split(";").filter(v => v);
+
+        if 
+    }
+
     fs.readFile(INDEX_HTML, (error, data) => {
         if (error) {
             res.writeHead(500, { "Content-Type": "text/html"});
