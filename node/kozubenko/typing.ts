@@ -64,9 +64,9 @@ export function assert_list(varName: string, value: any): true | Error {
 * 
 * Example Use: `const book = new Book('Revelation', 'Rev', 22, 66); assert_class("book", book, Book)`
 */
-export function assert_class(varName: string, value: any, classType: any): true | Error {  
-    if (!(value instanceof classType)) {
-        throw new Error(`${varName} must be a ${classType.name}, but is: ${value.name}}`);
+export function assert_class(varName: string, object: any, _class: any): true | Error {  
+    if (!(object instanceof _class)) {
+        throw new Error(`${varName} must be a ${_class.name}, but is: ${object.constructor.name}`);
     }
     return true;
 }
