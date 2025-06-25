@@ -39,10 +39,10 @@ export function assert_number(varName: string, value: any, minVal?: number, maxV
         throw new Error(`assert_number(${varName}): must be a number, but is: ${typeof value}`);
 
     if (minVal !== undefined && value < minVal)
-        throw new Error(`assert_number(${varName}): value less than min_val. min_val: ${minVal}. value: ${value}`);
+        throw new Error(`assert_number(${varName}): value less than minVal. minVal: ${minVal}. value: ${value}`);
 
     if (maxVal !== undefined && value > maxVal)
-        throw new Error(`assert_number(${varName}): value greater than min_val. max_val: ${maxVal}. value: ${value}`);
+        throw new Error(`assert_number(${varName}): value greater than maxVal. maxVal: ${maxVal}. value: ${value}`);
 
     return true;
 }
@@ -62,7 +62,7 @@ export function assert_list(varName: string, value: any): true | Error {
 /**
 * Use to enforce type at runtime. Either returns true, or throws Error
 * 
-* Example Use: `const aString = "hello"; assert_string("aString", aString)`
+* Example Use: `const book = new Book('Revelation', 'Rev', 22, 66); assert_class("book", book, Book)`
 */
 export function assert_class(varName: string, value: any, classType: any): true | Error {  
     if (!(value instanceof classType)) {
