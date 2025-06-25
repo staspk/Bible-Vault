@@ -1,8 +1,12 @@
+<#
+    Starts the http server that serves the frontend: ./node/http-server.ts
+#>
+
 $location = $PWD.Path
 
 try {
     Set-Location ./node
-    npx tsx app.ts
+    npx tsx http-server.ts
     $exitCode = $LASTEXITCODE
 }
 finally {
