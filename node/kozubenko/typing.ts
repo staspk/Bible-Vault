@@ -39,10 +39,10 @@ export function assert_number(varName: string, value: any, minVal?: number, maxV
         throw new Error(`assert_number(${varName}): must be a number, but is: ${typeof value}`);
 
     if (minVal !== undefined && value < minVal)
-        throw new Error(`assert_number(${varName}): value < min_val: ${minVal}`);
+        throw new Error(`assert_number(${varName}): value less than min_val. min_val: ${minVal}. value: ${value}`);
 
     if (maxVal !== undefined && value > maxVal)
-        throw new Error(`assert_number(${varName}): value > max_val: ${maxVal}`);
+        throw new Error(`assert_number(${varName}): value greater than min_val. max_val: ${maxVal}. value: ${value}`);
 
     return true;
 }
