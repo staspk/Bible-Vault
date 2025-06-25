@@ -1,9 +1,18 @@
-import { DEFINITIONS_TS } from "./definitions.js";
-import { assert_string } from "./kozubenko/utils";
-import { print } from "./kozubenko/print.js";
+import * as http from "node:http";
+import * as fs from "node:fs";
+import * as path from "node:path"
 
-console.log("DEFINITIONS_TS:", DEFINITIONS_TS);
-print("DEFINITIONS_TS", DEFINITIONS_TS);
+import { print } from "./kozubenko/print.ts";
 
-const aString = "hello";
-assert_string("aString", aString)
+print("process.argv", process.argv)
+
+const PORT = 8080;
+
+const server = http.createServer((req, res) => {
+    
+});
+
+
+server.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
