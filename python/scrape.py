@@ -217,15 +217,17 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
 
     return problem_chapters
 
-def scrape_bible_txt(target_translations:list[str], offset_book_index = 0):
+def scrape_bible_txt(target_translations:list[str], offset_book_start = 0, offset_book_end = 66):
     """
     * target_translations: supported length: 1-5
     * offset_book_index : (*optional*) - use when past partial scrapes have been done (1-65)
     """
     
-    if offset_book_index != 0:
-        assert_int("offset_book_index", offset_book_index, min_val=1, max_val=65)
+    if offset_book_start != 0:
+        assert_int("offset_book_index", offset_book_start, min_val=1, max_val=65)
+    if offset_book_end != 66:
+        assert_int("offset_book_end", offset_book_end, min_val=offset_book_start, max_val=66)
     
-    for book in BIBLE.Books()[offset_book_index:]:
+    for book in BIBLE.Books()[offset_book_start:offset_book_end]:
         scrape_bible_book(book, target_translations)
         print_green(f"{target_translations}:{book.name} Done.")
