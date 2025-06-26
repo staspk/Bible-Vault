@@ -3,6 +3,8 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "target": "esnext",
-    "types": ["node"]
+    "types": ["node"],
+    
+    "strictNullChecks": true
   }
 }
