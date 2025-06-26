@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "esnext",
-    "types": ["node"],
-    "moduleResolution": "node",
-    "allowImportingTsExtensions": true
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "types": ["node"]
   }
 }
