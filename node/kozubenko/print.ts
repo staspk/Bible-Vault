@@ -54,3 +54,13 @@ export function printGreen(text:string, newLine:boolean=true): void {
     if(newLine)
         console.log();
 }
+export function printRed(text:string, newLine:boolean=true): void {
+    process.stdout.write(`${TerminalColors.Red}${text}${TerminalColors.Reset}`);
+    if(newLine)
+        console.log();
+}
+export function printYellow(text:string, newLine:boolean=true): void {
+    process.stdout.write(`${TerminalColors.Yellow}${text}${TerminalColors.Reset}`);
+    if(newLine)
+        console.log();
+}
