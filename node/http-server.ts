@@ -2,24 +2,25 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path'
 
-import { print, printGreen } from './kozubenko/print';
-import { BIBLE, BibleReference, Book } from './models/Bible';
-import { assert_class } from './kozubenko/typing';
+import { print, printGreen, printYellow } from './kozubenko/print';
+import { BIBLE } from './models/Bible';
 
 print('process.argv', process.argv);
 print('__dirname', __dirname);
-print('testing-number', 10)
+print()
 
 const PORT = 8080;
 
-const server = http.createServer((req, res) => {
-    const INDEX_HTML = path.join(__dirname, '..', 'frontend', 'index.html');
+const INDEX_HTML = path.join(__dirname, '..', 'frontend', 'index.html');
+const INDEX_JS   = path.join(__dirname, '..', 'frontend', 'index.js');
+const INDEX_CSS  = path.join(__dirname, '..', 'frontend', 'index.css');
 
-    if (!req.url) { return }
+const server = http.createServer((request, response) => {
+    if (!request.url) {
+        return
+    }
 
-    
-
-    const urlObj = new URL(req.url, `http://localhost:${PORT}`);
+    const urlObj = new URL(request.url, `http://localhost:${PORT}`);
     if (urlObj.pathname === '/passage') {                                               // GET /passage?book=Matthew&chapter=22&translation=NKJV;ESV
         const param1: string = urlObj.searchParams.get('book') ?? '';
         const param2: string = urlObj.searchParams.get('chapter') ?? '';
@@ -33,23 +34,46 @@ const server = http.createServer((req, res) => {
             errorMessage += `book:`
 
         if (!book || !chapter || translations.length < 0) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Missing required query params' }));
+            response.writeHead(400, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({ error: 'Missing required query params' }));
             return;
         }
 
+        fs.readFile(INDEX_HTML, (error, data) => {
+            if (error) {
+                response.writeHead(500, { 'Content-Type': 'text/html'});
+                response.end('Error Loading: index.html');
+                return;
+            }
+
+            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.end(data);
+        });
     }
 
-    fs.readFile(INDEX_HTML, (error, data) => {
-        if (error) {
-            res.writeHead(500, { 'Content-Type': 'text/html'});
-            res.end('Error Loading: index.html');
-            return;
-        }
+    if (urlObj.pathname === '/index.js') {
+        fs.readFile(INDEX_JS, (error, data) => {
+            if (error) {
+                response.writeHead(404, { 'Content-Type': 'text/plain' });
+                response.end('Not Found: index.js');
+                return;
+            }
+            response.writeHead(200, { 'Content-Type': 'application/javascript' });
+            response.end(data);
+        });
+    }
 
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(data);
-    });
+    if (urlObj.pathname === '/index.css') {
+        fs.readFile(INDEX_CSS, (error, data) => {
+            if (error) {
+                response.writeHead(404, { 'Content-Type': 'text/plain' });
+                response.end('Not Found: index.css');
+                return;
+            }
+            response.writeHead(200, { 'Content-Type': 'text/css' });
+            response.end(data);
+        });
+    }
 });
 
 
