@@ -88,7 +88,7 @@ export class BIBLE {
     static REVELATION           = new Book('Revelation',          'Rev',      22, 66);
 
     private static _Books: Book[] = null;
-    
+
     public static Books(): Book[] {
         if (BIBLE._Books === null) {
             BIBLE._Books = Object.values(BIBLE).filter(
@@ -98,16 +98,25 @@ export class BIBLE {
         return BIBLE._Books;
     }
 
-    static getBook(bookInt?: number, bookStr?: string): Book {
-        const lookup = bookStr.trim().toLowerCase();
+/**
+ *  Returns a `BIBLE.Book` or `null`, if no match is found:
+ *   - `string`: matches `Book.name` (e.g: "Genesis") or `Book.abbr` (e.g: "Gen")
+ *   - `number`: matches `Book.index` (e.g: 1 for Genesis, 66 for Revelation)
+ */
+    static getBook(book: string | number): Book | null {
+        if (typeof book === "number") {
+            return BIBLE.Books().find(b => b.index === book) || null;
+        }
+
+        const lookup = book.trim().toLowerCase();
         return BIBLE.Books().find(
             b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
         ) || null;
     }
 
-    static isValidBibleReference(): boolean {
+    // static isValidBibleReference(): boolean {
 
-    }
+    // }
     
     static findMaxVerse(book: Book, chapter: number): number {
         assert_class('book', book, Book);
