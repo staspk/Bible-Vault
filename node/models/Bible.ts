@@ -87,10 +87,10 @@ export class BIBLE {
     static JUDE                 = new Book('Jude',                'Jude',     1,  65);
     static REVELATION           = new Book('Revelation',          'Rev',      22, 66);
 
-    private static _Books: Book[] = null;
+    private static _Books: Book[];
 
     public static Books(): Book[] {
-        if (BIBLE._Books === null) {
+        if (!BIBLE._Books) {
             BIBLE._Books = Object.values(BIBLE).filter(
                 (book): book is Book => book instanceof Book
             );
@@ -98,31 +98,42 @@ export class BIBLE {
         return BIBLE._Books;
     }
 
-/**
- *  Returns a `BIBLE.Book` or `null`, if no match is found:
- *   - `string`: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
- *   - `number`: matches `Book.index` (e.g: 1 for Genesis, 66 for Revelation)
- */
+    /**
+     *  Returns a `BIBLE.Book` or `null`, if no match is found:
+     *  - `string`: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
+     *  - `number`: matches `Book.index` (e.g: 1 for Genesis, 66 for Revelation)
+     */
     static getBook(book: string | number): Book | null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === book) || null;
         }
 
-        const lookup = book.trim().toLowerCase();
-        return BIBLE.Books().find(
-            b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
-        ) || null;
+        if (typeof book === 'string') {
+            const lookup = book.trim().toLowerCase();
+            return BIBLE.Books().find(
+                b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
+            ) || null;
+        }
+        
+        return null;
     }
 
-    // static isValidBibleReference(): boolean {
 
-    // }
+    static parseChapter(chapter: string | number): number | null {
+        if (typeof chapter === 'string')
+            chapter = parseInt(chapter, 10);
+
+        if (typeof chapter !== 'number')
+            return null;
+
+
+    }
     
     static findMaxVerse(book: Book, chapter: number): number {
         assert_class('book', book, Book);
         assert_number('chapter', chapter, 1, book.chapters);
 
-        return;
+        // return;
         
         const filePath = path.join(BIBLE_NUMERICAL_MAP, String(book.index));
         // assertPathExists('path', filePath);
@@ -146,7 +157,9 @@ export class BIBLE {
 }
 
 /**
- *  Use static contructor: `bibleReference.fromString('Genesis:5:1')`
+ *  A BibleReference
+ * 
+ *  To create, use static contructor: `BibleReference.fromStr("Genesis:5:1")`
  * 
  *  Use: `bibleRef.valid`, to check whether the instance refers to a real bible, that actually exists
  */
@@ -154,17 +167,21 @@ export class BibleReference {
     private constructor(
         public book: Book,
         public chapter: number,
-        public verse: number,
-        public valid: boolean
+        public verse?: number
     ) {}
 
 
     /**
-        STATIC CONSTRUCTOR
+     *  Static Constructor
+     * @param string - e.g: `"Genesis:5"` or `"Gen:5"`
+     */
+    static fromStr(string:string): BibleReference | null  {
+        const strArray = string.split(':');
 
-        @param string - e.g: 'Genesis:5:1', 'Gen:5:1'
-    */
-    static fromString(string:string): BibleReference | null  {
+        if (strArray.length < 2)
+            return null;
+
+        BIBLE.getBook(strArray[0])
 
         return null;
     }

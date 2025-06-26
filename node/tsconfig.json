@@ -5,6 +5,6 @@
     "target": "esnext",
     "types": ["node"],
     
-    "strictNullChecks": true
+    "strictNullChecks": true,
   }
 }
