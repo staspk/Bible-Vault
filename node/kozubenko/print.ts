@@ -28,10 +28,15 @@ class TerminalColors {
 /**
 * QoL Function for pretty-printing a variable [var_name as *white*, var_val as *gray*]
 *
-* Example: `print("process.argv", process.argv)`;
+* - `print("process.argv", process.argv)` Pretty-Print Variable
+* - `print()` prints empty line
 */
-export function print(varName:string, value:any): void {
-    if (typeof value === "string") {
+export function print(varName?:string, value?:any): void {
+    if(!varName && !value) {
+        console.log();
+        return;
+    }
+    if (typeof value === "string" || typeof value === "number") {
         process.stdout.write(`${TerminalColors.White}${varName}: ${TerminalColors.Reset}${value}\n`);
         return;
     }
@@ -41,5 +46,11 @@ export function print(varName:string, value:any): void {
         return;
     }
 
-    throw new Error("print() has currently only implemented strings, lists");
+    throw new Error("print() not implemented");
+}
+
+export function printGreen(text:string, newLine:boolean=true): void {
+    process.stdout.write(`${TerminalColors.Green}${text}${TerminalColors.Reset}`);
+    if(newLine)
+        console.log();
 }
