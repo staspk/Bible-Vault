@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { assert_number, assert_class } from './../kozubenko/typing.ts';
+import { assert_number, assert_class } from './../kozubenko/typing';
 
 
 const BIBLE_NUMERICAL_MAP = path.join(__dirname, '..', '..', '..', 'bible_numerical_map');
@@ -86,11 +86,27 @@ export class BIBLE {
     static THIRD_JOHN           = new Book('3 John',              '3John',    1,  64);
     static JUDE                 = new Book('Jude',                'Jude',     1,  65);
     static REVELATION           = new Book('Revelation',          'Rev',      22, 66);
+
+    private static _Books: Book[] = null;
     
-    static Books(): Book[] {
-        return Object.values(BIBLE).filter(
-            (book): book is Book => book instanceof Book
-        );
+    public static Books(): Book[] {
+        if (BIBLE._Books === null) {
+            BIBLE._Books = Object.values(BIBLE).filter(
+                (book): book is Book => book instanceof Book
+            );
+        }
+        return BIBLE._Books;
+    }
+
+    static getBook(bookInt?: number, bookStr?: string): Book {
+        const lookup = bookStr.trim().toLowerCase();
+        return BIBLE.Books().find(
+            b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
+        ) || null;
+    }
+
+    static isValidBibleReference(): boolean {
+
     }
     
     static findMaxVerse(book: Book, chapter: number): number {
@@ -117,5 +133,30 @@ export class BIBLE {
         throw new Error(
             'BIBLE.findMaxVerse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!'
         );
+    }
+}
+
+/**
+ *  Use static contructor: `bibleReference.fromString("Genesis:5:1")`
+ * 
+ *  Use: `bibleRef.valid`, to check whether the instance refers to a real bible, that actually exists
+ */
+export class BibleReference {
+    private constructor(
+        public book: Book,
+        public chapter: number,
+        public verse: number,
+        public valid: boolean
+    ) {}
+
+
+    /**
+        STATIC CONSTRUCTOR
+
+        @param string - e.g: "Genesis:5:1", "Gen:5:1"
+    */
+    static fromString(string:string): BibleReference | null  {
+
+        return null;
     }
 }
