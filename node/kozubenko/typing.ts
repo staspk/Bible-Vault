@@ -68,9 +68,9 @@ export function assert_list(varName: string, list: any, minLen?:number, maxLen?:
 
     Example Use: `const book = new Book('Revelation', 'Rev', 22, 66); assert_class('book', book, Book)`
 */
-export function assert_class(varName: string, object: any, _class: any): true | Error {  
-    if (!(object instanceof _class)) 
-        throw new Error(`${varName} must be a ${_class.name}, but is: ${object.constructor.name}`);
+export function assert_class(varName: string, object: any, _class: any): boolean {  
+    if (!(object instanceof _class))
+        return false;   // throw new Error(`${varName} must be a ${_class.name}, but is: ${object.constructor.name}`);
 
     return true;
 }
