@@ -100,11 +100,11 @@ export class BIBLE {
 
 /**
  *  Returns a `BIBLE.Book` or `null`, if no match is found:
- *   - `string`: matches `Book.name` (e.g: "Genesis") or `Book.abbr` (e.g: "Gen")
+ *   - `string`: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
  *   - `number`: matches `Book.index` (e.g: 1 for Genesis, 66 for Revelation)
  */
     static getBook(book: string | number): Book | null {
-        if (typeof book === "number") {
+        if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === book) || null;
         }
 
@@ -146,7 +146,7 @@ export class BIBLE {
 }
 
 /**
- *  Use static contructor: `bibleReference.fromString("Genesis:5:1")`
+ *  Use static contructor: `bibleReference.fromString('Genesis:5:1')`
  * 
  *  Use: `bibleRef.valid`, to check whether the instance refers to a real bible, that actually exists
  */
@@ -162,7 +162,7 @@ export class BibleReference {
     /**
         STATIC CONSTRUCTOR
 
-        @param string - e.g: "Genesis:5:1", "Gen:5:1"
+        @param string - e.g: 'Genesis:5:1', 'Gen:5:1'
     */
     static fromString(string:string): BibleReference | null  {
 
