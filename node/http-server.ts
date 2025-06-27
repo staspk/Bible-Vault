@@ -6,7 +6,6 @@ import { print, printGreen, printYellow } from './kozubenko/print';
 import { BIBLE } from './models/Bible';
 
 print('process.argv', process.argv);
-print('__dirname', __dirname);
 print()
 
 const PORT = 8080;
@@ -21,24 +20,21 @@ const server = http.createServer((request, response) => {
     }
 
     const urlObj = new URL(request.url, `http://localhost:${PORT}`);
-    if (urlObj.pathname === '/passage') {                                               // GET /passage?book=Matthew&chapter=22&translation=NKJV;ESV
+    if (urlObj.pathname === '/') {                                               // GET /passage?book=Matthew&chapter=22&translation=NKJV;ESV
         const param1: string = urlObj.searchParams.get('book') ?? '';
         const param2: string = urlObj.searchParams.get('chapter') ?? '';
         const param3: string = urlObj.searchParams.get('translation') ?? '';
-        
+
         const book = BIBLE.getBook(param1);
         const chapter = parseInt(param2, 10);
         const translations = param3.split(';').filter(translation => translation);
-
-        let errorMessage = 'Error fetching from API';
-            errorMessage += `book:`
 
         if (!book || !chapter || translations.length < 0) {
             response.writeHead(400, { 'Content-Type': 'application/json' });
             response.end(JSON.stringify({ error: 'Missing required query params' }));
             return;
         }
-
+        
         fs.readFile(INDEX_HTML, (error, data) => {
             if (error) {
                 response.writeHead(500, { 'Content-Type': 'text/html'});
@@ -50,7 +46,6 @@ const server = http.createServer((request, response) => {
             response.end(data);
         });
     }
-
     if (urlObj.pathname === '/index.js') {
         fs.readFile(INDEX_JS, (error, data) => {
             if (error) {
@@ -62,7 +57,6 @@ const server = http.createServer((request, response) => {
             response.end(data);
         });
     }
-
     if (urlObj.pathname === '/index.css') {
         fs.readFile(INDEX_CSS, (error, data) => {
             if (error) {
@@ -74,9 +68,26 @@ const server = http.createServer((request, response) => {
             response.end(data);
         });
     }
+
+    if (urlObj.pathname === '/api/') {
+    const param1: string = urlObj.searchParams.get('book') ?? '';
+    const param2: string = urlObj.searchParams.get('chapter') ?? '';
+    const param3: string = urlObj.searchParams.get('translation') ?? '';
+
+    const book = BIBLE.getBook(param1);
+    const chapter = parseInt(param2, 10);
+    const translations = param3.split(';').filter(translation => translation);
+
+    if (!book || !chapter || translations.length < 0) {
+        response.writeHead(400, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({ error: 'Missing required query params' }));
+        return;
+    }
 });
 
 
 server.listen(PORT, () => {
-    printGreen(`Server Serving! Try: http://localhost:${PORT}/passage?book=Genesis&chapter=3&translations=KJV;NKJV;RSV;NRSV;NASB`);
+    printGreen('Endpoints: ');
+    printGreen(`  http://localhost:${PORT}/`)
+    printGreen(`  http://localhost:${PORT}/passage?book=Genesis&chapter=3&translations=KJV;NKJV;RSV;NRSV;NASB`)
 });
