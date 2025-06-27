@@ -111,15 +111,23 @@ class BIBLE:
     JUDE                 = Book(name="Jude",                abbr="Jude",     chapters=1,     index=65)
     REVELATION           = Book(name="Revelation",          abbr="Rev",      chapters=22,    index=66)
 
+    _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
+
+    def Book(index:int) -> Book:
+        assert_int("index", index, 1, 66)
+        return BIBLE.Books()[index]
+
     def Books() -> list[Book]:
         """
         returns the standard 66 books as a list[Book]
         """
-        _list:Book = []
-        for name, book in BIBLE.__dict__.items():
-            if not name.startswith("__") and isinstance(book, Book):
-                _list.append(book)
-        return _list
+        if BIBLE._Books is None:
+            BIBLE._Books = []
+            for name, book in BIBLE.__dict__.items():
+                if not name.startswith("__") and isinstance(book, Book):
+                    BIBLE._Books.append(book)
+
+        return BIBLE._Books        
 
     def find_max_verse(book:Book, chapter:int) -> int:
         assert_class("book", book, Book)
