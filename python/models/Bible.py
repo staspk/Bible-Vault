@@ -114,12 +114,15 @@ class BIBLE:
     _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
 
     def Book(index:int) -> Book:
+        """
+        returns a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
+        """
         assert_int("index", index, 1, 66)
-        return BIBLE.Books()[index]
+        return BIBLE.Books()[index - 1]
 
     def Books() -> list[Book]:
         """
-        returns the standard 66 books as a list[Book]
+        returns the standard 66 books as a list[Book].
         """
         if BIBLE._Books is None:
             BIBLE._Books = []

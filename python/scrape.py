@@ -35,7 +35,7 @@ class ProblemChapter:
 
     def __str__(self) -> str:
         return (
-            f"Problem Chapter Collision Time: {str(self.dt)}\n"
+            f"Problem Chapter Found At: {str(self.dt)}\n"
             f"{self.book.name}:{self.chapter} [{self.translation}]"
         )
 
@@ -206,7 +206,7 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
             except:
                 problem = ProblemChapter(translation, book, chapter, datetime.now())
                 problem_chapters.append(problem)
-                print_yellow(f"Problem: {problem}")
+                print_yellow(f"Issue: {problem}")
 
     driver.quit()
     TOR.stop()
@@ -217,17 +217,16 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
 
     return problem_chapters
 
-def scrape_bible_txt(target_translations:list[str], offset_book_start = 0, offset_book_end = 66):
+def scrape_bible_txt(target_translations:list[str], index_book_start = 1, index_book_end = 66):
     """
     * target_translations: supported length: 1-5
-    * offset_book_index : (*optional*) - use when past partial scrapes have been done (1-65)
+    * index_book_start   : (*optional*) - when past partial scrapes have been done (1-66)
+    * index_book_end     : (*optional*) - when past partial scrapes have been done (index_book_start-65)
     """
     
-    if offset_book_start != 0:
-        assert_int("offset_book_index", offset_book_start, min_val=1, max_val=65)
-    if offset_book_end != 66:
-        assert_int("offset_book_end", offset_book_end, min_val=offset_book_start, max_val=66)
+    assert_int("index_book_start", index_book_start, min_val=1, max_val=66)
+    assert_int("index_book_end", index_book_end, min_val=index_book_start, max_val=66)
     
-    for book in BIBLE.Books()[offset_book_start:offset_book_end]:
+    for book in BIBLE.Books()[index_book_start - 1:index_book_end - 1]:
         scrape_bible_book(book, target_translations)
         print_green(f"{target_translations}:{book.name} Done.")
