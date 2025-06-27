@@ -8,16 +8,22 @@ from scrape import *
 Skip Psalms for now...
 Issues also in Song of Solomon
 
+skipped Psalms / Proverbs for ['ESV', 'NIV', 'NET', 'RUSV', 'NRT']
+
 Judges:20 [NRSV] -> verses 22/23 transposed
+
+
 """
 
 start_scrape_index = int(ScriptArg_1(1))
+
+print_red(f'{start_scrape_index} - {BIBLE.Book(start_scrape_index)}')
 
 eng_translations = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
 russ_translations = ['RUSV', 'NRT']
 
 
-scrape_bible_txt(['ESV', 'NIV', 'NET', 'RUSV', 'NRT'], 19)      # offset: 19 == Proverbs
+scrape_bible_txt(['ESV', 'NIV', 'NET', 'RUSV', 'NRT'], start_scrape_index)      # offset: 19 == Proverbs
 
 # scrape_bible_txt(['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'], start_scrape_index)        # passed through entire bible once (see problem_chapters in ./reports)
 
