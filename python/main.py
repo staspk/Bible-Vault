@@ -17,14 +17,12 @@ Judges:20 [NRSV] -> verses 22/23 transposed
 
 start_scrape_index = int(ScriptArg_1(1))
 
-print_red(f'{start_scrape_index} - {BIBLE.Book(start_scrape_index)}')
 
-eng_translations = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
+eng_translations  = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
 russ_translations = ['RUSV', 'NRT']
+current           = ['ESV', 'NIV', 'NET', 'RUSV', 'NRT']
 
 
-scrape_bible_txt(['ESV', 'NIV', 'NET', 'RUSV', 'NRT'], start_scrape_index)      # offset: 19 == Proverbs
+scrape_bible_txt(current, start_scrape_index)      # offset: 22 == Isaiah
 
-# scrape_bible_txt(['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'], start_scrape_index)        # passed through entire bible once (see problem_chapters in ./reports)
-
-# scrape_bible_txt(['NIV', 'NET', 'ESV', 'NLT', 'CEV'])
+# scrape_bible_book(BIBLE.ISAIAH, current, startChapter=3)
