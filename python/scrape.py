@@ -194,7 +194,7 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
             split_text = chapter_text.split(' ', 1)
             drop_cap = try_parse_int(split_text[0])
             if drop_cap != chapter:
-                print_red(f"Skipping {book.name} for: {translation} - Expected drop_cap: {chapter}. Actual Text: {split_text[0]}.")
+                print_red(f"Skipping {book.name} at: {translation} - Expected drop_cap: {chapter}. Actual Text: {split_text[0]}.")
                 return
             try:
                 final_chapter_text = ""
@@ -230,6 +230,6 @@ def scrape_bible_txt(target_translations:list[str], index_book_start = 1, index_
     assert_int("index_book_start", index_book_start, min_val=1, max_val=66)
     assert_int("index_book_end", index_book_end, min_val=index_book_start, max_val=66)
     
-    for book in BIBLE.Books()[index_book_start - 1:index_book_end - 1]:
+    for book in BIBLE.Books()[index_book_start - 1:index_book_end]:
         scrape_bible_book(book, target_translations)
         print_green(f"{target_translations}:{book.name} Done.")
