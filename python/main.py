@@ -12,17 +12,17 @@ skipped Psalms / Proverbs for ['ESV', 'NIV', 'NET', 'RUSV', 'NRT']
 
 Judges:20 [NRSV] -> verses 22/23 transposed
 
+Lamentations [NET] -> starts with: א (Alef)
 
 """
 
-start_scrape_index = int(ScriptArg_1(1))
+start_scrape_index = int(ScriptArg_1())
 
+print_yellow(f'{start_scrape_index}: {BIBLE.Book(start_scrape_index)}')
 
 eng_translations  = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
 russ_translations = ['RUSV', 'NRT']
-current           = ['ESV', 'NIV', 'NET', 'RUSV', 'NRT']
+current           = ['ESV', 'NIV', 'RUSV', 'NRT']                            # ESV;NIV;NET;RUSV;NRT
 
 
-scrape_bible_txt(current, start_scrape_index)      # offset: 22 == Isaiah
-
-# scrape_bible_book(BIBLE.ISAIAH, current, startChapter=3)
+scrape_bible_txt(current, start_scrape_index)      # offset: 26 == Ezekiel
