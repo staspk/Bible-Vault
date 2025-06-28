@@ -16,7 +16,7 @@ from definitions import *
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.time import Time
-from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, assert_str, Utils
+from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, assert_str, Utils, try_parse_int
 from tor.tor import Tor
 from models.Bible import BIBLE, Book
 
@@ -125,7 +125,10 @@ class BibleGatewayOptions:
         )
 
 
-def report_exception_and_EXIT(exception:Exception=None, report:str=None):
+def report_exception(exception:Exception=None, report:str=None):
+    """
+    Needs a re-write. Do not use until you do so!
+    """
     FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
 
     if exception is not None and isinstance(exception, Exception):
@@ -140,9 +143,7 @@ def report_exception_and_EXIT(exception:Exception=None, report:str=None):
     with open(FILE, 'w', encoding='UTF-8') as file:
         file.write(report)
     
-    print_red(f"See exception report at: {FILE}")
-    print_red('sys.exit()...')
-    sys.exit()
+    print_red(f"report_exception(): see report at: {FILE}")
 
 def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1) -> list[ProblemChapter]:
     """
@@ -191,8 +192,10 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
             chapter_text = element.text.replace('\n', '')
 
             split_text = chapter_text.split(' ', 1)
-            if int(split_text[0]) != chapter:
-                report_exception_and_EXIT(report=f"Current html text is an unexpected chapter. Expected Chapter: {chapter}. Actual Chapter: {split_text[0]}.\ntranslation: {translation}\ndriver.page_source\n{driver.page_source}")
+            drop_cap = try_parse_int(split_text[0])
+            if drop_cap != chapter:
+                print_red(f"Skipping {book.name} for: {translation} - Expected drop_cap: {chapter}. Actual Text: {split_text[0]}.")
+                return
             try:
                 final_chapter_text = ""
                 for verse in range(2, max_verse+1):
