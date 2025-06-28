@@ -17,13 +17,18 @@ const PATHS      = {
 
     '/js/utils.js'             : path.join(__dirname, 'frontend', 'js', 'utils.js'),
     '/js/Timer.js'             : path.join(__dirname, 'frontend', 'js', 'Timer.js'),
-    '/js/Bible-Search-Terms.js': path.join(__dirname, 'frontend', 'js', 'Bible-Search-Terms.js')
+    '/js/Bible.js'             : path.join(__dirname, 'frontend', 'js', 'Bible.js')
 };
 
 
-function handleResourceRequest(pathname:string, response: http.ServerResponse): void {
+function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
     const path = PATHS[pathname];
-    if (!path) return;
+    // printYellow(`path: ${path}`);
+    if (!path) {
+        response.writeHead(204, { 'Content-Type': 'text/plain' });              // 204 - No Content
+        response.end();
+        return;
+    }
 
     fs.readFile(path, (error, data) => {
         if (error) {
@@ -37,7 +42,7 @@ function handleResourceRequest(pathname:string, response: http.ServerResponse): 
 
         if (pathname.split('.')[1].toLowerCase() === 'js')
             response.writeHead(200, { 'Content-Type': 'application/javascript' });
-        
+
         if (pathname.split('.')[1].toLowerCase() === 'css')
             response.writeHead(200, { 'Content-Type': 'text/css' });
 
@@ -49,6 +54,7 @@ const server = http.createServer((request, response) => {
     if (!request.url) return;
     
     const urlObj = new URL(request.url, `http://localhost:${PORT}`);
+    // printYellow(`CURRENT PATHNAME: ${urlObj.pathname}`);
     if (urlObj.pathname === '/') {                                               // GET /?book=Matthew&chapter=22&translation=NKJV;ESV 
         fs.readFile(INDEX_HTML, (error, data) => {
             if (error) {
@@ -59,9 +65,10 @@ const server = http.createServer((request, response) => {
             response.writeHead(200, {'Content-Type': 'text/html'});
             response.end(data);
         });
+        return;
     }
 
-    if (urlObj.pathname === '/api/') {
+    else if (urlObj.pathname === '/api/') {
         printYellow(`API Request: ${urlObj.pathname}`);
         
         const param1: string = urlObj.searchParams.get('book') ?? '';
