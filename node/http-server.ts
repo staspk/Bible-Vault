@@ -12,9 +12,12 @@ const PORT = 8080;
 
 const INDEX_HTML = path.join(__dirname, 'frontend', 'index.html');
 const PATHS      = {
-    '/Timer.js' : path.join(__dirname, 'frontend', 'Timer.js'),
     '/index.js' : path.join(__dirname, 'frontend', 'index.js'),
     '/index.css': path.join(__dirname, 'frontend', 'index.css'),
+
+    '/js/utils.js'             : path.join(__dirname, 'frontend', 'js', 'utils.js'),
+    '/js/Timer.js'             : path.join(__dirname, 'frontend', 'js', 'Timer.js'),
+    '/js/Bible-Search-Terms.js': path.join(__dirname, 'frontend', 'js', 'Bible-Search-Terms.js')
 };
 
 
@@ -31,8 +34,10 @@ function handleResourceRequest(pathname:string, response: http.ServerResponse): 
         
         if (pathname.split('.')[1].toLowerCase() === 'html')
             response.writeHead(200, {'Content-Type': 'text/html'});
+
         if (pathname.split('.')[1].toLowerCase() === 'js')
             response.writeHead(200, { 'Content-Type': 'application/javascript' });
+        
         if (pathname.split('.')[1].toLowerCase() === 'css')
             response.writeHead(200, { 'Content-Type': 'text/css' });
 
