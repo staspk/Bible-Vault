@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path'
 
-import { print, printGreen, printYellow } from './kozubenko/print';
+import { print, printGreen, printRed, printYellow } from './kozubenko/print';
 import { BIBLE } from './models/Bible';
 
 print('process.argv', process.argv);
@@ -10,9 +10,9 @@ print()
 
 const PORT = 8080;
 
-const INDEX_HTML = path.join(__dirname, '..', 'frontend', 'index.html');
-const INDEX_JS   = path.join(__dirname, '..', 'frontend', 'index.js');
-const INDEX_CSS  = path.join(__dirname, '..', 'frontend', 'index.css');
+const INDEX_HTML = path.join(__dirname, 'frontend', 'index.html');
+const INDEX_JS   = path.join(__dirname, 'frontend', 'index.js');
+const INDEX_CSS  = path.join(__dirname, 'frontend', 'index.css');
 
 const server = http.createServer((request, response) => {
     if (!request.url) {
@@ -20,21 +20,7 @@ const server = http.createServer((request, response) => {
     }
 
     const urlObj = new URL(request.url, `http://localhost:${PORT}`);
-    if (urlObj.pathname === '/') {                                               // GET /passage?book=Matthew&chapter=22&translation=NKJV;ESV
-        const param1: string = urlObj.searchParams.get('book') ?? '';
-        const param2: string = urlObj.searchParams.get('chapter') ?? '';
-        const param3: string = urlObj.searchParams.get('translation') ?? '';
-
-        const book = BIBLE.getBook(param1);
-        const chapter = parseInt(param2, 10);
-        const translations = param3.split(';').filter(translation => translation);
-
-        if (!book || !chapter || translations.length < 0) {
-            response.writeHead(400, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ error: 'Missing required query params' }));
-            return;
-        }
-        
+    if (urlObj.pathname === '/') {                                               // GET /?book=Matthew&chapter=22&translation=NKJV;ESV 
         fs.readFile(INDEX_HTML, (error, data) => {
             if (error) {
                 response.writeHead(500, { 'Content-Type': 'text/html'});
@@ -70,18 +56,21 @@ const server = http.createServer((request, response) => {
     }
 
     if (urlObj.pathname === '/api/') {
-    const param1: string = urlObj.searchParams.get('book') ?? '';
-    const param2: string = urlObj.searchParams.get('chapter') ?? '';
-    const param3: string = urlObj.searchParams.get('translation') ?? '';
+        printYellow(`API Request: ${urlObj.pathname}`);
 
-    const book = BIBLE.getBook(param1);
-    const chapter = parseInt(param2, 10);
-    const translations = param3.split(';').filter(translation => translation);
+        const param1: string = urlObj.searchParams.get('book') ?? '';
+        const param2: string = urlObj.searchParams.get('chapter') ?? '';
+        const param3: string = urlObj.searchParams.get('translations') ?? '';
 
-    if (!book || !chapter || translations.length < 0) {
-        response.writeHead(400, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({ error: 'Missing required query params' }));
-        return;
+        const book = BIBLE.getBook(param1);
+        const chapter = parseInt(param2, 10);
+        const translations = param3.split(';').filter(translation => translation);
+
+        if (!book || !chapter || translations.length < 0) {
+            response.writeHead(400, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({ error: 'Missing required query params' }));
+            return;
+        }
     }
 });
 
@@ -89,5 +78,5 @@ const server = http.createServer((request, response) => {
 server.listen(PORT, () => {
     printGreen('Endpoints: ');
     printGreen(`  http://localhost:${PORT}/`)
-    printGreen(`  http://localhost:${PORT}/passage?book=Genesis&chapter=3&translations=KJV;NKJV;RSV;NRSV;NASB`)
+    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV;NKJV;RSV;NRSV;NASB`)
 });
