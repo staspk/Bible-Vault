@@ -2,7 +2,7 @@
 /**
  * For browser JavaScript. `Timer.start()`. `Timer.stop()`
  */
-class Timer {
+export class Timer {
     static startTime = null;
 
     static start() {
