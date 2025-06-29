@@ -1,4 +1,4 @@
-export const BIBLE_SEARCH_TERMS = [
+const _BIBLE_SEARCH_TERMS = [
     'Genesis', 'Gen',
     'Exodus',  'Exod',
     'Leviticus', 'Lev',
@@ -64,7 +64,7 @@ export const BIBLE_SEARCH_TERMS = [
     '2 John',  '2 John', '2John',  '2John',
     '3 John',  '3 John', '3John',  '3John',
     'Jude',
-    'Revelation', 'Rev', 'Apocalypse', 'Apoc',
+    'Revelation of John', 'Revelations', 'Revelation', 'Rev', 'Apocalypse', 'Apoc',
 
     // Apocrypha
     'Tobit', 'Tobias', 'Tob',
@@ -80,6 +80,10 @@ export const BIBLE_SEARCH_TERMS = [
     '4 Maccabees', '4 Mac', '4Maccabees', '4Macc',
     'Prayer of Manasseh', 'Manasseh'
 ];
+_BIBLE_SEARCH_TERMS.sort((a, b) => b.length - a.length);    // Sorted longest to shortest. Ensures search algorithm works correctly, e.g: not splitting 'Revelation of John' when search term: 'John'.
+
+
+export const BIBLE_SEARCH_TERMS = _BIBLE_SEARCH_TERMS;
 
 export class Book {
     constructor(name, abbr, index, chapters) {
