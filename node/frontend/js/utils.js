@@ -1,25 +1,45 @@
-function debounce(fn, delay) {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args). delay);
-    }
+
+export function print(varName, value) {
+    console.log(`%c${varName}:%c ${value}`, 'color: gold', 'color: yellow');
 }
-searchInput.addEventListener('input', debounce(async (event) => {
-    const value = event.target.value.trim();
-    if (!value) return;
+
+export function printGreen(text) {
+    console.log('%c' + text, 'color: green');
+}
+
+export function printYellow(text) {
+    console.log('%c' + text, 'color: goldenrod');
+}
+
+export function printRed(text) {
+    console.log('%c' + text, 'color: red');
+}
+
+
+// EXPERIMENTAL debounce function
+
+// function debounce(fn, delay) {
+//     let timeoutId;
+//     return (...args) => {
+//         clearTimeout(timeoutId);
+//         timeoutId = setTimeout(() => fn(...args). delay);
+//     }
+// }
+// searchInput.addEventListener('input', debounce(async (event) => {
+//     const value = event.target.value.trim();
+//     if (!value) return;
     
-    try {
-        const response = await fetch(`/api/?book=${book}&chapter=${chapter}&translations=${translations}`);
-        if (!response.ok) throw new Error('Network Error');
+//     try {
+//         const response = await fetch(`/api/?book=${book}&chapter=${chapter}&translations=${translations}`);
+//         if (!response.ok) throw new Error('Network Error');
 
-        const data = await response.json();
-        console.log('Search results:', data);
+//         const data = await response.json();
+//         console.log('Search results:', data);
 
-    } catch (error) {
-        console.error()
-    }
-}, 1500));
+//     } catch (error) {
+//         console.error()
+//     }
+// }, 1500));
 
 
 /// some messed up code
