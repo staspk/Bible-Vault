@@ -29,18 +29,31 @@ export function printGreen(text) {
 }
 
 export function printYellow(text) {
-    console.log('%c' + text, 'color: goldenrod');
+    console.log('%c' + text, 'color: yellow');
 }
 
 export function printRed(text) {
     console.log('%c' + text, 'color: red');
 }
 
+/**
+ *  Necessary in browser js to get vscode intellisense
+ */
 export function assertInt(str) {
     const result = parseInt(str, 10);
     if (isNaN(result))
         return null;
     return result;
+}
+
+/**
+ *  Necessary in browser js to get vscode intellisense
+ */
+export function assertStr(str) {
+    const result = String(str);
+    if (str !== undefined && str !== null && str !== '')
+        return result;
+    return null;
 }
 
 
