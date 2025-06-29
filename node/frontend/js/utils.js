@@ -1,6 +1,27 @@
-
-export function print(varName, value) {
-    console.log(`%c${varName}:%c ${value}`, 'color: gold', 'color: yellow');
+/**
+* pretty-prints pairs of `varName:string`, `value:any` to console. Prints to one line. Keep `str[].length < ~10`
+* 
+* Required: `vars.length % 2 === 0`
+*
+* Example Usage: `print('name', name, 'age', 30, 'aList', aList)`
+*/
+export function print(...vars) {
+    if (vars.length % 2 !== 0) {
+        console.error(`print expects an even number of arguments. got: ${vars.length}`);    return;
+    }
+    
+    let formatString = '';
+    for (let i = 0; i < vars.length; i += 2) {
+        const varName = vars[i];
+        let   value   = vars[i + 1];
+        if (Array.isArray(value)) {
+            value = ((value) => 
+                '[' + (value.map(el => typeof el === 'string' ? `'${el}'` : el).join(', ')) + ']'
+            )(value);
+        }
+        formatString += `%c${varName}:%c ${value} `;
+    }
+    console.log(formatString.trim(), ...new Array(vars.length / 2).fill(['color: gold', 'color: yellow']).flat());
 }
 
 export function printGreen(text) {
@@ -15,20 +36,27 @@ export function printRed(text) {
     console.log('%c' + text, 'color: red');
 }
 
+export function assertInt(str) {
+    const result = parseInt(str, 10);
+    if (isNaN(result))
+        return null;
+    return result;
+}
+
 
 // EXPERIMENTAL debounce function
 
 // function debounce(fn, delay) {
 //     let timeoutId;
 //     return (...args) => {
-//         clearTimeout(timeoutId);
+    //         clearTimeout(timeoutId);
 //         timeoutId = setTimeout(() => fn(...args). delay);
 //     }
 // }
 // searchInput.addEventListener('input', debounce(async (event) => {
-//     const value = event.target.value.trim();
+    //     const value = event.target.value.trim();
 //     if (!value) return;
-    
+
 //     try {
 //         const response = await fetch(`/api/?book=${book}&chapter=${chapter}&translations=${translations}`);
 //         if (!response.ok) throw new Error('Network Error');
