@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import { assert_number, assert_class } from './../kozubenko/typing';
 
+
 const BIBLE_NUMERICAL_MAP = path.join(__dirname, '..', '..', '..', 'bible_numerical_map');
 
 export class Book {

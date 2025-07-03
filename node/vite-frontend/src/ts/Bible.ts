@@ -81,8 +81,6 @@ const _BIBLE_SEARCH_TERMS = [
     'Prayer of Manasseh', 'Manasseh'
 ];
 _BIBLE_SEARCH_TERMS.sort((a, b) => b.length - a.length);    // Sorted longest to shortest. Ensures search algorithm works correctly, e.g: not splitting 'Revelation of John' when search term: 'John'.
-
-
 export const BIBLE_SEARCH_TERMS = _BIBLE_SEARCH_TERMS;
 
 export class Book {

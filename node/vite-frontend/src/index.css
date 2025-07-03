@@ -1,0 +1,45 @@
+:root {
+    /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+    
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; */
+}
+@media (prefers-color-scheme: light) {
+    /* :root {
+        color: #213547;  
+        background-color: #ffffff;
+    }
+    a:hover {
+        color: #747bff;
+    }
+    button {
+        background-color: #f9f9f9;
+    } */
+}
+/* Above brought over from a vite vanilla typescript eg */
+
+
+body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;  /* horizontal */
+}
+
+.search-div {
+    margin: 40px 0px;
+}
+
+#search-input {
+    width: 200px;
+    height: 20px;
+    text-align: center;
+}

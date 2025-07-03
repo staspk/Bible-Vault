@@ -1,5 +1,6 @@
-import { Timer } from './js/Timer.js';
-import { BIBLE, BIBLE_SEARCH_TERMS } from './js/Bible.js';
+import { Timer } from './ts/Timer.js';
+import { print } from './ts/utils.js';
+import { BIBLE, BIBLE_SEARCH_TERMS } from './ts/Bible.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const searchInput = document.getElementById('search-input');
@@ -14,13 +15,16 @@ let searchDebounceTimerID;
 searchInput.addEventListener('input', (event) => {
     clearTimeout(searchDebounceTimerID);
     
-    const value = event.target.value.trim();
-    if (!value) return;
+    const searchStr = event.target.value.trim();
+    if (!searchStr) return;
     
     searchDebounceTimerID = setTimeout(async () => {
-        Timer.start()
-        BIBLE_SEARCH_TERMS.includes(value)
-        Timer.stop() 
+        print('searchStr', searchStr)
+        // Timer.start()
+        if(!BIBLE_SEARCH_TERMS.includes(searchStr)) return;
+
+        searchstr
+        // Timer.stop()
 
 
         try {

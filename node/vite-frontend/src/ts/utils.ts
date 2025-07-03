@@ -36,6 +36,23 @@ export function printRed(text) {
     console.log('%c' + text, 'color: red');
 }
 
+
+/**
+ * Extracts an integer from the end of the given string.
+ *
+ * @param {string} string - The input string to process.
+ * @returns {[number, string]} A tuple where the first element is the integer
+ *                              yanked from the end of the string, and the second
+ *                              is the remaining string with the integer removed.
+ *
+ * @example
+ * yankIntFromEnd("chapter42") // returns [42, "chapter"]
+ * yankIntFromEnd("file007")   // returns [7, "file"]
+ */
+export function yankIntFromEnd(string) {
+    
+}
+
 /**
  *  Necessary in browser js to get vscode intellisense
  */
