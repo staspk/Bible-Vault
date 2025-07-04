@@ -3,34 +3,27 @@ import * as fs from 'fs';
 import * as path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './kozubenko/print';
+import { combinePaths } from './kozubenko/utils';
 import { BIBLE } from './models/Bible';
+
 
 print('process.argv', process.argv);
 print()
 
 const PORT = 8080;
 
-const INDEX_HTML = path.join(__dirname, 'frontend', 'index.html');
-const PATHS      = {
-    '/index.js' : path.join(__dirname, 'frontend', 'index.js'),
-    '/index.css': path.join(__dirname, 'frontend', 'index.css'),
-
-    '/js/utils.js'             : path.join(__dirname, 'frontend', 'js', 'utils.js'),
-    '/js/Timer.js'             : path.join(__dirname, 'frontend', 'js', 'Timer.js'),
-    '/js/Bible.js'             : path.join(__dirname, 'frontend', 'js', 'Bible.js')
-};
-
+const INDEX_HTML = path.join(__dirname, 'vite-frontend', 'dist', 'index.html');
+const DIST       = path.join(__dirname, 'vite-frontend', 'dist');
 
 function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
-    const path = PATHS[pathname];
-    // printYellow(`path: ${path}`);
-    if (!path) {
+    const requestedResource = combinePaths(DIST, pathname);
+    if(!fs.existsSync(requestedResource)) {
         response.writeHead(204, { 'Content-Type': 'text/plain' });              // 204 - No Content
         response.end();
         return;
     }
 
-    fs.readFile(path, (error, data) => {
+    fs.readFile(requestedResource, (error, data) => {
         if (error) {
             response.writeHead(404, { 'Content-Type': 'text/plain' });
             response.end(`Not Found: ${pathname.substring}`);
