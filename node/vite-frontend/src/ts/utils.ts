@@ -1,11 +1,16 @@
 /**
 * pretty-prints pairs of `varName:string`, `value:any` to console. Prints to one line. Keep `str[].length < ~10`
 * 
-* Required: `vars.length % 2 === 0`
+* Required: `vars.length === 1 || vars.length === % 2 == 0`
 *
 * Example Usage: `print('name', name, 'age', 30, 'aList', aList)`
 */
 export function print(...vars) {
+    if (vars.length === 1) {
+        console.log(vars[0]);
+        return;
+    }
+    
     if (vars.length % 2 !== 0) {
         console.error(`print expects an even number of arguments. got: ${vars.length}`);    return;
     }
