@@ -1,97 +1,97 @@
 const _BIBLE_SEARCH_TERMS = [
-    'Genesis', 'Gen',
-    'Exodus',  'Exod',
-    'Leviticus', 'Lev',
-    'Numbers', 'Num',
-    'Deuteronomy', 'Deut',
-    'Joshua', 'Josh',
-    'Judges', 'Judg',
-    'Ruth',
-    '1 Samuel', '1 Sam', '1Samuel', '1Sam',
-    '2 Samuel', '2 Sam', '2Samuel', '2Sam',
-    '1 Kings', '1 Kgs', '1Kings', '1Kgs',
-    '2 Kings', '2 Kgs', '2Kings', '2Kgs',
-    '1 Chronicles', '1 Chr', '1Chronicles', '1Chr',
-    '2 Chronicles', '2 Chr', '2Chronicles', '2Chr',
-    'Ezra',
-    'Nehemiah', 'Neh',
-    'Esther',  'Esth',
-    'Job',
-    'Psalms', 'Psalm', 'Ps',
-    'Proverbs',  'Prov',
-    'Ecclesiastes', 'Eccl',
-    'Song of Solomon', 'Song', 'Canticle of Canticles', 'Canticles', 'Cant',
-    'Isaiah', 'Isa',
-    'Jeremiah', 'Jer',
-    'Lamentations', 'Lam',
-    'Ezekiel', 'Ezek',
-    'Daniel',  'Dan',
-    'Hosea',   'Hos',
-    'Joel',
-    'Amos',
-    'Obadiah', 'Obad',
-    'Jonah',
-    'Micah',    'Mic',
-    'Nahum',    'Nah',
-    'Habakkuk', 'Hab',
-    'Zephaniah', 'Zeph',
-    'Haggai',   'Hag',
-    'Zechariah', 'Zech',
-    'Malachi', 'Mal',
-    'Matthew', 'Matt',
-    'Mark',
-    'Luke',
-    'John',
-    'Acts',
-    'Romans', 'Rom',
-    '1 Corinthians', '1 Cor', '1Corinthians', '1Cor',
-    '2 Corinthians', '2 Cor', '2Corinthians', '2Cor',
-    'Galatians',  'Gal',
-    'Ephesians',  'Eph',
-    'Philippians', 'Phil',
-    'Colossians', 'Col',
-    '1 Thessalonians', '1 Thess', '1Thessalonians', '1Thess',
-    '2 Thessalonians', '2 Thess', '2Thessalonians', '2Thess',
-    '1 Timothy', '1 Tim', '1Timothy', '1Tim',
-    '2 Timothy', '2 Tim', '2Timothy', '2Tim',
-    'Titus',
-    'Philemon', 'Phlm',
-    'Hebrews', 'Heb',
-    'James',  'Jas',
-    '1 Peter', '1 Pet',  '1Peter', '1Pet',
-    '2 Peter', '2 Pet',  '2Peter', '2Pet',
-    '1 John',  '1 John', '1John',  '1John',
-    '2 John',  '2 John', '2John',  '2John',
-    '3 John',  '3 John', '3John',  '3John',
-    'Jude',
-    'Revelation of John', 'Revelations', 'Revelation', 'Rev', 'Apocalypse', 'Apoc',
-
+    ['Genesis', 'Gen'],
+    ['Exodus', 'Exod'],
+    ['Leviticus', 'Lev'],
+    ['Numbers', 'Num'],
+    ['Deuteronomy', 'Deut'],
+    ['Joshua', 'Josh'],
+    ['Judges', 'Judg'],
+    ['Ruth'],
+    ['1 Samuel', '1 Sam', '1Samuel', '1Sam'],
+    ['2 Samuel', '2 Sam', '2Samuel', '2Sam'],
+    ['1 Kings', '1 Kgs', '1Kings', '1Kgs'],
+    ['2 Kings', '2 Kgs', '2Kings', '2Kgs'],
+    ['1 Chronicles', '1 Chr', '1Chronicles', '1Chr'],
+    ['2 Chronicles', '2 Chr', '2Chronicles', '2Chr'],
+    ['Ezra'],
+    ['Nehemiah', 'Neh'],
+    ['Esther', 'Esth'],
+    ['Job'],
+    ['Psalms', 'Psalm', 'Ps'],
+    ['Proverbs', 'Prov'],
+    ['Ecclesiastes', 'Eccl'],
+    ['Song of Solomon', 'Song', 'Canticle of Canticles', 'Canticles', 'Cant'],
+    ['Isaiah', 'Isa'],
+    ['Jeremiah', 'Jer'],
+    ['Lamentations', 'Lam'],
+    ['Ezekiel', 'Ezek'],
+    ['Daniel', 'Dan'],
+    ['Hosea', 'Hos'],
+    ['Joel'],
+    ['Amos'],
+    ['Obadiah', 'Obad'],
+    ['Jonah'],
+    ['Micah', 'Mic'],
+    ['Nahum', 'Nah'],
+    ['Habakkuk', 'Hab'],
+    ['Zephaniah', 'Zeph'],
+    ['Haggai', 'Hag'],
+    ['Zechariah', 'Zech'],
+    ['Malachi', 'Mal'],
+    ['Matthew', 'Matt'],
+    ['Mark'],
+    ['Luke'],
+    ['John'],
+    ['Acts'],
+    ['Romans', 'Rom'],
+    ['1 Corinthians', '1 Cor', '1Corinthians', '1Cor'],
+    ['2 Corinthians', '2 Cor', '2Corinthians', '2Cor'],
+    ['Galatians', 'Gal'],
+    ['Ephesians', 'Eph'],
+    ['Philippians', 'Phil'],
+    ['Colossians', 'Col'],
+    ['1 Thessalonians', '1 Thess', '1Thessalonians', '1Thess'],
+    ['2 Thessalonians', '2 Thess', '2Thessalonians', '2Thess'],
+    ['1 Timothy', '1 Tim', '1Timothy', '1Tim'],
+    ['2 Timothy', '2 Tim', '2Timothy', '2Tim'],
+    ['Titus'],
+    ['Philemon', 'Phlm'],
+    ['Hebrews', 'Heb'],
+    ['James', 'Jas'],
+    ['1 Peter', '1 Pet', '1Peter', '1Pet'],
+    ['2 Peter', '2 Pet', '2Peter', '2Pet'],
+    ['1 John', '1 John', '1John', '1John'],
+    ['2 John', '2 John', '2John', '2John'],
+    ['3 John', '3 John', '3John', '3John'],
+    ['Jude'],
+    ['Revelation of John', 'Revelations', 'Revelation', 'Rev', 'Apocalypse', 'Apoc'],
+    
     // Apocrypha
-    'Tobit', 'Tobias', 'Tob',
-    'Judith', 'Jdt',
-    'Wisdom of Solomon', 'Wisdom', 'Wisd',
-    'Sirach', 'Sir', 'Ecclesiasticus',
-    'Baruch',
-    'Letter of Jeremiah', 'Epistle of Jeremiah',
-    'Prayer of Azariah', 'Song of the Three Children', 'Azariah',
-    '1 Maccabees', '1 Mac', '1Maccabees', '1Macc',
-    '2 Maccabees', '2 Mac', '2Maccabees', '2Macc',
-    '3 Maccabees', '3 Mac', '3Maccabees', '3Macc',
-    '4 Maccabees', '4 Mac', '4Maccabees', '4Macc',
-    'Prayer of Manasseh', 'Manasseh'
-];
-_BIBLE_SEARCH_TERMS.sort((a, b) => b.length - a.length);    // Sorted longest to shortest. Ensures search algorithm works correctly, e.g: not splitting 'Revelation of John' when search term: 'John'.
-export const BIBLE_SEARCH_TERMS = _BIBLE_SEARCH_TERMS;
+    ['Tobit', 'Tobias', 'Tob'],
+    ['Judith', 'Jdt'],
+    ['Wisdom of Solomon', 'Wisdom', 'Wisd'],
+    ['Sirach', 'Sir', 'Ecclesiasticus'],
+    ['Baruch'],
+    ['Letter of Jeremiah', 'Epistle of Jeremiah'],
+    ['Prayer of Azariah', 'Song of the Three Children', 'Azariah'],
+    ['1 Maccabees', '1 Mac', '1Maccabees', '1Macc'],
+    ['2 Maccabees', '2 Mac', '2Maccabees', '2Macc'],
+    ['3 Maccabees', '3 Mac', '3Maccabees', '3Macc'],
+    ['4 Maccabees', '4 Mac', '4Maccabees', '4Macc'],
+    ['Prayer of Manasseh', 'Manasseh']
+];    
+export const BIBLE_SEARCH_TERMS = _BIBLE_SEARCH_TERMS.flat().sort((a, b) => b.length - a.length);   // Sorted longest to shortest. Ensures search algorithm works correctly, e.g: not splitting 'Revelation of John' when search term: 'John'.
+
 
 export class Book {
-    constructor(name, abbr, index, chapters) {
-        this.name = name;           // e.g: 'Genesis'
-        this.abbr = abbr;           // most common abbreviation, e.g: 'Gen'
-        this.index = index;         // numerical appearance in the bible, 1-66
-        this.chapters = chapters;   // total chapters, e.g. 50
-    }
-
-    toString() {
+    constructor(
+        public name: string,
+        public abbr: string,
+        public index: number,
+        public chapters: number
+    ) {}
+    
+    toString(): string {
         return this.name;
     }
 }
@@ -163,4 +163,47 @@ export class BIBLE {
     static THIRD_JOHN           = new Book('3 John',              '3John',    64,   1);
     static JUDE                 = new Book('Jude',                'Jude',     65,   1);
     static REVELATION           = new Book('Revelation',          'Rev',      66,  22);
+    
+    private static _Books: Book[];
+    
+    public static Books(): Book[] {
+        if (!BIBLE._Books) {
+            BIBLE._Books = Object.values(BIBLE).filter(
+                (book): book is Book => book instanceof Book
+            );
+        }
+        return BIBLE._Books;
+    }
+    
+    /**
+     * Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`)
+     */
+    static getBook(book: string | number): Book | null {
+        if (typeof book === 'number') {
+            return BIBLE.Books().find(b => b.index === (book - 1)) || null;
+        }
+        
+        if (typeof book === 'string') {
+            const lookup = book.trim().toLowerCase();
+            return BIBLE.Books().find(
+                b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
+            ) || null;
+        }
+        
+        throw new Error('Not Implemented in BIBLE.getBook()');
+    }
+
+    /**
+     * Search for `BIBLE.Book`, using `_BIBLE_SEARCH_TERMS`
+     */
+    static searchBook(searchTerm:string): Book | null {
+        searchTerm = searchTerm.trim();
+        for (let i = 0; i < _BIBLE_SEARCH_TERMS.length; i++) {
+            for (const term of _BIBLE_SEARCH_TERMS[i]) {
+                if (searchTerm.toLowerCase() === term.toLowerCase())
+                    return BIBLE.getBook(i);
+            }
+        }
+        return null;
+    }
 }

@@ -43,19 +43,28 @@ export function printRed(text) {
 
 
 /**
- * Extracts an integer from the end of the given string.
+ * Extracts an unsigned int from the end of a given string.
  *
- * @param {string} string - The input string to process.
- * @returns {[number, string]} A tuple where the first element is the integer
- *                              yanked from the end of the string, and the second
- *                              is the remaining string with the integer removed.
- *
+ * @returns {[number, string]} Tuple [number, string]:
+ *   - A positive number (or null, if last letter's charCode <48 || >57).
+ *   - Remaining string (or '', if entire string was a number)
+ * 
  * @example
  * yankIntFromEnd("chapter42") // returns [42, "chapter"]
- * yankIntFromEnd("file007")   // returns [7, "file"]
+ * yankIntFromEnd("file007")   // returns [7, "file00"]
  */
-export function yankIntFromEnd(string) {
-    
+export function yankUIntFromEnd(string:string): [number, string] {
+    let i = string.length - 1;
+    for(i; i > -1; i--) {
+        const charCode = string.charCodeAt(i);   // 48-57
+        if(charCode < 48 || charCode > 57) {
+            if(i === string.length - 1)
+                return [null, string];
+            break;
+        }
+    }
+    const int:number = parseInt(string.substring(i, string.length), 10)
+    return [int, string.substring(0, (string.length - int.toString().length))];
 }
 
 /**
