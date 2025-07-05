@@ -1,19 +1,23 @@
 import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path'
+import { fileURLToPath } from 'url';
 
-import { print, printGreen, printRed, printYellow } from './kozubenko/print';
-import { combinePaths } from './kozubenko/utils';
-import { BIBLE } from './models/Bible';
+import { print, printGreen, printRed, printYellow } from './kozubenko/print.js';
+import { respondBadRequest } from './kozubenko/http.js';
+import { combinePaths } from './kozubenko/utils.js';
+import { BIBLE } from './models/Bible.js';
 
-
+const __dirname = import.meta.dirname
 print('process.argv', process.argv);
 print()
+
 
 const PORT = 8080;
 
 const INDEX_HTML = path.join(__dirname, 'vite-frontend', 'dist', 'index.html');
 const DIST       = path.join(__dirname, 'vite-frontend', 'dist');
+const BIBLE_TXT  = path.join(__dirname, '..', 'bible_txt');
 
 function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
     const requestedResource = combinePaths(DIST, pathname);
@@ -62,21 +66,23 @@ const server = http.createServer((request, response) => {
     }
 
     else if (urlObj.pathname === '/api/') {
-        printYellow(`API Request: ${urlObj.pathname}`);
+        printYellow(`API Request: ${urlObj.pathname}`); printYellow(urlObj.searchParams.toString())
         
-        const param1: string = urlObj.searchParams.get('book') ?? '';
-        const param2: string = urlObj.searchParams.get('chapter') ?? '';
-        const param3: string = urlObj.searchParams.get('translations') ?? '';
+        const param1:string = urlObj.searchParams.get('book') ?? '';
+        const param2:string = urlObj.searchParams.get('chapter') ?? '';
+        const param3:string = urlObj.searchParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB';
+
+        if (!param1 || !param2) {  respondBadRequest(response); return;  }
         
         const book = BIBLE.getBook(param1);
         const chapter = parseInt(param2, 10);
-        const translations = param3.split(';').filter(translation => translation);
+        const translations = param3 ? param3.split(',').filter(translation => translation) : ['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'];
         
-        if (!book || !chapter || translations.length < 0) {
-            response.writeHead(400, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ error: 'Missing required query params' }));
-            return;
-        }
+        if (!book || !chapter || translations.length < 1) {  respondBadRequest(response); return;  }
+
+        if (chapter < 1 || chapter > book.chapters) {  respondBadRequest(response, `${book.name}:${chapter} does not exist.`); return;  }
+
+
     }
 
     else
@@ -87,5 +93,5 @@ const server = http.createServer((request, response) => {
 server.listen(PORT, () => {
     printGreen('Endpoints: ');
     printGreen(`  http://localhost:${PORT}/`)
-    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV;NKJV;RSV;NRSV;NASB`)
+    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSVNASB`)
 });

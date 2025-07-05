@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { assert_number, assert_class } from './../kozubenko/typing';
 
-
-const BIBLE_NUMERICAL_MAP = path.join(__dirname, '..', '..', '..', 'bible_numerical_map');
+const BIBLE_NUMERICAL_MAP = path.join(import.meta.dirname, '..', '..', '..', 'bible_numerical_map');
 
 export class Book {
     constructor(
@@ -105,7 +103,7 @@ export class BIBLE {
      */
     static getBook(book: string | number): Book | null {
         if (typeof book === 'number') {
-            return BIBLE.Books().find(b => b.index === book) || null;
+            return BIBLE.Books().find(b => b.index === (book - 1)) || null;
         }
 
         if (typeof book === 'string') {
