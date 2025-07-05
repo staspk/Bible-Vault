@@ -82,7 +82,13 @@ const server = http.createServer((request, response) => {
 
         if (chapter < 1 || chapter > book.chapters) {  respondBadRequest(response, `${book.name}:${chapter} does not exist.`); return;  }
 
-
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({
+            book,
+            chapter,
+            translations,
+            message: 'Data retrieved successfully.'
+        }));
     }
 
     else
