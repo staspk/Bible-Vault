@@ -8,7 +8,7 @@ const searchInput = document.getElementById('search-input') as HTMLInputElement;
 
 const BOOK         = urlParams.get('book');
 const CHAPTER      = urlParams.get('chapter');
-const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV;NKJV;RSV;NRSV;NASB').split(';').filter(translation => translation);
+const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB').split(',').filter(translation => translation);
 
 let searchDebounceTimerID;
 
