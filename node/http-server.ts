@@ -93,5 +93,5 @@ const server = http.createServer((request, response) => {
 server.listen(PORT, () => {
     printGreen('Endpoints: ');
     printGreen(`  http://localhost:${PORT}/`)
-    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSVNASB`)
+    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
 });
