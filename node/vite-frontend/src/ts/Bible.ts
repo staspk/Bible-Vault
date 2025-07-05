@@ -180,7 +180,7 @@ export class BIBLE {
      */
     static getBook(book: string | number): Book | null {
         if (typeof book === 'number') {
-            return BIBLE.Books().find(b => b.index === (book - 1)) || null;
+            return BIBLE.Books().find(b => b.index === (book)) || null;
         }
         
         if (typeof book === 'string') {
@@ -201,7 +201,7 @@ export class BIBLE {
         for (let i = 0; i < _BIBLE_SEARCH_TERMS.length; i++) {
             for (const term of _BIBLE_SEARCH_TERMS[i]) {
                 if (searchTerm.toLowerCase() === term.toLowerCase())
-                    return BIBLE.getBook(i);
+                    return BIBLE.getBook(i + 1);
             }
         }
         return null;
