@@ -66,7 +66,7 @@ const server = http.createServer((request, response) => {
     }
 
     else if (urlObj.pathname === '/api/') {
-        printYellow(`API Request: ${urlObj.pathname}`); printYellow(urlObj.searchParams.toString())
+        printYellow(`API Request: ${urlObj.pathname}?${urlObj.searchParams.toString()}`);
         
         const param1:string = urlObj.searchParams.get('book') ?? '';
         const param2:string = urlObj.searchParams.get('chapter') ?? '';
@@ -89,6 +89,8 @@ const server = http.createServer((request, response) => {
             translations,
             message: 'Data retrieved successfully.'
         }));
+
+        printGreen(`Response sent: ${book.name}:${chapter} - ${translations}`)
     }
 
     else
