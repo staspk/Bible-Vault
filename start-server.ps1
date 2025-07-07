@@ -18,7 +18,7 @@ $watcherJob = Start-ThreadJob -ScriptBlock {
 
 
     while ($true) {
-        Start-Sleep -Milliseconds 750
+        Start-Sleep -Milliseconds 420
 
         $last_changed = (Get-Item "$index_html").LastWriteTimeUtc.Ticks
         if($last_changed -gt $VITE_LAST_BUILT) {
