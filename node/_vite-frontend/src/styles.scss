@@ -27,6 +27,7 @@
 /* Above brought over from a vite vanilla typescript eg */
 
 
+$header-color          : #fefafc;
 $page-margins-color    : #952004;
 $page-background-color : #fafafd;
 $column-color          : #fefdfc;
@@ -57,6 +58,7 @@ body > * {
 
 header {
     border: $header-border;
+    background-color: $header-color;
 }
 #search-input {
     display: block;
