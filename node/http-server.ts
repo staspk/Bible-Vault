@@ -48,8 +48,16 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
 }
 
 /**
- * @returns 
- */
+* Assumption: each line in the file maps to one verse.
+*
+* @returns Plain object (aka: dict) mapping verse numbers to verse text, or null on error.
+* @example
+* {
+*   "1": "In the beginning God created the heavens and the earth.",
+*   "2": "And the earth was without form, and void; and darkness was upon the face of the deep.",
+*   "3": "And the Spirit of God moved upon the face of the waters."
+* }
+*/
 async function loadChapterIntoMemory(path:string): Promise<object|null> { 
     try {
         const data = await fs.promises.readFile(path, 'utf-8');
@@ -60,23 +68,11 @@ async function loadChapterIntoMemory(path:string): Promise<object|null> {
             lines.map((line, i) => [ (i + 1).toString(), line ])
         );
     } catch (error) {
-        printRed(`readChapter(): ${error}`);
+        printRed(`loadChapterIntoMemory(): ${error}`);
         return null;
     }
 }
 
-/**
-* Tests using the data: array object's value of the 1'st property
-* data { 'nkjv': null, 'rsv': `${data}` }
-*
-*/
-function checkStatus(data): Status {
-    
-    if(data.every(obj => Object.values(obj)[0] !== null))
-        return Status.Success;
-        return Status.Error;
-    return Status.Partial;
-}
 
 const server = http.createServer((request, response) => {
     if (!request.url) return;
@@ -95,7 +91,7 @@ const server = http.createServer((request, response) => {
         });
         return;
     }
-
+    
     else if (urlObj.pathname === '/api/') {
         printYellow(`API Request: ${urlObj.pathname}?${urlObj.searchParams.toString()}`);
         
@@ -118,13 +114,13 @@ const server = http.createServer((request, response) => {
                 const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
                 if (fs.existsSync(chapterFile))
                     // return await loadChapterIntoMemory(chapterFile);
-                    return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
+                return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
                 
                 return { [translation.toUpperCase()]: null };
             });
             
             const data = await Promise.all(promises);
-
+            
             if (data.every(obj => Object.values(obj)[0] !== null)) {
                 response.writeHead(200, { 'Content-Type': 'application/json' });
                 response.end(JSON.stringify({
@@ -143,7 +139,7 @@ const server = http.createServer((request, response) => {
             }
         })();
     }
-
+    
     else
         handleResourceRequest(urlObj.pathname, response);
 });
