@@ -15,9 +15,9 @@ print()
 
 const PORT = 8080;
 
-const INDEX_HTML = Path.join(__dirname, 'vite-frontend', 'dist', 'index.html');
-const DIST       = Path.join(__dirname, 'vite-frontend', 'dist');
+const DIST       = Path.join(__dirname, '_vite-frontend', 'dist');
 const BIBLE_TXT  = Path.join(__dirname, '..', 'bible_txt');
+const INDEX_HTML = Path.join(DIST, 'index.html');
 
 function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
     const requestedResource = combinePaths(DIST, pathname);

@@ -7,7 +7,7 @@ $START_PATH = $PWD.Path
 
 
 $watcherJob = Start-ThreadJob -ScriptBlock {
-    $VITE_ROOT = "$PWD/node/vite-frontend"
+    $VITE_ROOT = "$PWD/node/_vite-frontend"
     cd $VITE_ROOT
     npm run build
     $VITE_LAST_BUILT = [datetime]::UtcNow.Ticks
