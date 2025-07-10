@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as Path from 'path'
 
-import { print, printGreen, printRed, printYellow } from './kozubenko/print.js';
+import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest, Status } from './kozubenko/http.js';
 import { combinePaths } from './kozubenko/utils.js';
 import { BIBLE } from './models/Bible.js';
