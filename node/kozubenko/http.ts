@@ -1,11 +1,22 @@
-import { ServerResponse } from 'http';
+import * as http from 'http';
+
+
+/**
+* 204 - No Content (bodyless)
+*
+* Server successfully processed client’s request but nothing needs to be returned. e.g: POST, PUT, DELETE requests
+*/
+export function handleNoContent(response:http.ServerResponse, errorMsg = 'Malformed/Invalid Required Query Params'): void {
+    response.writeHead(204);
+    response.end();
+}
 
 /**
 * 400 - Bad Request `{ 'Content-Type': 'application/json' }`
 *
-* Intended to be used when the client provides malformed or invalid request parameters.
+* Client provided malformed or invalid request parameters.
 */
-export function respondBadRequest(response:ServerResponse, errorMsg = 'Malformed/Invalid Required Query Params'): void {
+export function handleBadRequest(response:http.ServerResponse, errorMsg = 'Malformed/Invalid Required Query Params'): void {
     response.writeHead(400, { 'Content-Type': 'application/json' });
     response.end(JSON.stringify({ ok: false, error: errorMsg }));
 }
@@ -13,11 +24,11 @@ export function respondBadRequest(response:ServerResponse, errorMsg = 'Malformed
 /**
 * 404 - Not Found `{ 'Content-Type': 'application/json' }`
 *
-* Intended to be used when the requested resource(s) could not be found.
+* Server could not find the requested resource(s).
 */
-export function handleNotFound(response:ServerResponse, errorMsg = 'Requested resource(s) '): void {
+export function handleNotFound(response:http.ServerResponse, errorMsg = 'Not Found'): void {
     response.writeHead(404, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify({ ok: false, error: errorMsg }));
+    response.end(JSON.stringify({ error: errorMsg }));
 }
 
 
