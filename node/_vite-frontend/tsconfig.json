@@ -24,11 +24,6 @@
     "noImplicitAny": false,  /* Recommended False in Browser-JS for less hastle */
   },
   "include": [
-    "src",
-    "../_shared/print.ts",
-    "../_shared/Timer.ts",
-    "../_shared/enums.ts",
-    "../_shared/interfaces.ts",
-    "../_shared/Bible.ts"
+    "src", "index.ts", "../_shared"
   ]
 }
