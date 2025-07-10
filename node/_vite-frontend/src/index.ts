@@ -19,8 +19,6 @@ searchInput.addEventListener('input', (event) => {
     if (!searchStr) return;
     
     searchDebounceTimerID = setTimeout(async () => {
-        print('searchStr', searchStr)
-
         const result = yankUIntFromEnd(searchStr);
         if (!result[0]) return;
 
@@ -29,16 +27,12 @@ searchInput.addEventListener('input', (event) => {
 
         if (result[0] < 0 || result[0] > book.chapters) return;
 
-        try {
-            const response = await fetch(`/api/?book=${book.name}&chapter=${result[0]}&translations=${TRANSLATIONS.join(',')}`);
-            if (!response.ok) throw new Error('index.js: Network Error');
+        const response = await fetch(`/api/?book=${book.name}&chapter=${result[0]}&translations=${TRANSLATIONS.join(',')}`);
+        if (response.status !== 200) return;
+        
+        const data = await response.json();
+        console.log('Search results:', data);
             
-            const data = await response.json();
-            console.log('Search results:', data);
-            
-        } catch (error) {
-            console.error()
-        }
     }, 750);
 });
 
