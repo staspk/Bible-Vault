@@ -1,4 +1,3 @@
-import { Timer } from '../_shared/Timer.js';
 import { print, yankUIntFromEnd } from './src/ts/utils.js';
 import { BIBLE, Book } from '../_shared/Bible.js';
 import type { IChapterResponse } from '../_shared/interfaces.js';
