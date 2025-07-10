@@ -1,52 +1,69 @@
 <#
-    Starts the http server that serves the frontend: ./node/http-server.ts
-    In the background: Watches for changes in vite-frontend, rebuilding project when necessary
+    Starts the http server with: 'npx tsx http-server.ts'.
+    Background Thread: On change in $PATHS_TO_WATCH:Array<file|dir>, rebuilds frontend project into dist.
 #>
 
-$START_PATH = $PWD.Path
+<# Main Thread #>
+$HTTP_SERVER_PROJECT_ROOT = "$PWD\node"
+
+<# Background Thread Parameters #>
+$VITE_ROOT  = "$PWD\node\_vite-frontend"
+$PATHS_TO_WATCH = @(
+    "$VITE_ROOT\index.html",
+    "$VITE_ROOT\index.ts",
+    "$VITE_ROOT\src",
+    "$VITE_ROOT\..\_shared"
+)
 
 
-$watcherJob = Start-ThreadJob -ScriptBlock {
-    $VITE_ROOT = "$PWD/node/_vite-frontend"
-    cd $VITE_ROOT
-    npm run build
-    $VITE_LAST_BUILT = [datetime]::UtcNow.Ticks
+$tokenSource = [System.Threading.CancellationTokenSource]::new()
+$token = $tokenSource.Token
+Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost $Host -ScriptBlock  {
+    param($npm_project_dir, $paths_to_watch, $token)
 
+    $paths_to_watch | ForEach-Object {
+        if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
+    }
 
-    $index_html = "$VITE_ROOT/index.html"; if(-not(Test-Path $index_html)) {  Write-Host "SERIOUS ERROR! `$index_html not real path" -ForegroundColor DarkRed  }
-    $src_folder = "$VITE_ROOT/src";        if(-not(Test-Path $src_folder)) {  Write-Host "SERIOUS ERROR! `$src_folder not real path" -ForegroundColor DarkRed  }
+    function NpmBuild {
+        cd $npm_project_dir
+        npm run build | Out-Null
+        return [datetime]::UtcNow.Ticks;
+    }
 
-
-    while ($true) {
+    $vite_last_built = NpmBuild
+    while (-not $token.IsCancellationRequested) {
         Start-Sleep -Milliseconds 420
-
-        $last_changed = (Get-Item "$index_html").LastWriteTimeUtc.Ticks
-        if($last_changed -gt $VITE_LAST_BUILT) {
-            cd $VITE_ROOT
-            npm run build
-            $VITE_LAST_BUILT = [datetime]::UtcNow.Ticks
-            continue
-        }
-        Get-ChildItem -Path $src_folder -Recurse -File | ForEach-Object {
-            if($((Get-Item $_).LastWriteTimeUtc.Ticks) -gt $VITE_LAST_BUILT) {
-                cd $VITE_ROOT
-                npm run build
-                $VITE_LAST_BUILT = [datetime]::UtcNow.Ticks
-                continue
+        foreach ($path in $paths_to_watch) {
+            if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
+                $vite_last_built = NpmBuild; break;
             }
+            $change_detected = $false;
+            if((Get-Item $path).PSIsContainer) {
+                foreach($file in $(Get-ChildItem -Path $path -Recurse -File)) {
+                    if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
+                        $vite_last_built = NpmBuild; $change_detected = $true; break;  }
+                }
+            }
+            if($change_detected) {  break;  }
         }
     }
 }
 
+<#
+    MAIN THREAD
+#>
+$START_PATH = $PWD.Path
+
 Clear-Host
 try {
-    cd "$START_PATH/node"
+    cd $HTTP_SERVER_PROJECT_ROOT
     npx tsx http-server.ts
     $exitCode = $LASTEXITCODE
 }
 finally {
-    Set-Location $START_PATH
-    if($exitCode -eq 0) {
-        Clear-Host
-    }
+    $tokenSource.Cancel()
+    Start-Sleep -Milliseconds 75
+
+    cd $START_PATH
 }
