@@ -1,8 +1,8 @@
-import { Status, SupportedBibleTranslations } from "./enums.js";
+import { Status } from "./enums.js";
 
 
 /**
-* Example:
+* **Example:**
 * ```json
 * {
 *   "status": "partial",
@@ -32,8 +32,30 @@ import { Status, SupportedBibleTranslations } from "./enums.js";
 export interface IChapterResponse {
     status: `${Status}`;
     data: {
-        [translation in SupportedBibleTranslations]: {
-            [verseNumber: string]: string;
-        } | null;
-    };
+        [translation: string]: { [verseNumber: string]: string } | null;
+    }
 }
+/**
+* Alternate interfaces for IChapterResponse:
+* 
+* export interface IChapterResponse {
+*     status: `${Status}`;
+*     data: {
+*         [translation in SupportedBibleTranslations]?: {
+*             [verseNumber: string]: string;
+*         } | null;
+*     };
+* }
+* 
+* export interface IChapterResponse {
+*     status: `${Status}`;
+*     data: Array<{
+*         translation: SupportedBibleTranslations;
+*         verses: {
+*             [verseNumber: string]: string;
+*         } | null;
+*     }>;
+* }
+*/
+
+

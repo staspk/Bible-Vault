@@ -1,7 +1,6 @@
-import { Timer } from '../_shared/Timer.js';
 import { print, yankUIntFromEnd } from './src/ts/utils.js';
-import { BIBLE, BIBLE_SEARCH_TERMS } from '../_shared/Bible.js';
-import { printOrange, printYellow } from '../_shared/print.js';
+import { BIBLE } from '../_shared/Bible.js';
+import type { IChapterResponse } from '../_shared/interfaces.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const searchInput = document.getElementById('search-input') as HTMLInputElement;
