@@ -29,18 +29,6 @@ export function print(...vars) {
     console.log(formatString.trim(), ...new Array(vars.length / 2).fill(['color: gold', 'color: yellow']).flat());
 }
 
-export function printGreen(text) {
-    console.log('%c' + text, 'color: green');
-}
-
-export function printYellow(text) {
-    console.log('%c' + text, 'color: yellow');
-}
-
-export function printRed(text) {
-    console.log('%c' + text, 'color: red');
-}
-
 
 /**
  * Extracts an unsigned int from the end of a given string.
