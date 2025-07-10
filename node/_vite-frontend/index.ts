@@ -1,37 +1,44 @@
+import { Timer } from '../_shared/Timer.js';
 import { print, yankUIntFromEnd } from './src/ts/utils.js';
 import { BIBLE, Book } from '../_shared/Bible.js';
 import type { IChapterResponse } from '../_shared/interfaces.js';
 
-
 const urlParams = new URLSearchParams(window.location.search);
-const searchInput = document.getElementById('search-input') as HTMLInputElement;
 
 const BOOK         = urlParams.get('book');
 const CHAPTER      = urlParams.get('chapter');
 const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB').split(',').filter(translation => translation);
 
-if (BOOK && CHAPTER)
-    searchInput.value = `${BOOK} ${CHAPTER}`;
+
+const searchInput = document.getElementById('search-input') as HTMLInputElement;
+if(BOOK && CHAPTER) searchInput.value = `${BOOK} ${CHAPTER}`;
 
 
 function generatePassageDiv(book:Book, chapter:number, data:IChapterResponse) {
-    const columns: HTMLDivElement[] = [];
+    const oldPassageDiv = document.getElementById('passage-div');
+    const newPassageDiv = Object.assign(document.createElement('div'), {
+        id: oldPassageDiv?.id
+    });
+    
+    // const columns: Array<HTMLDivElement|null> = [];
     for (const [i, [translation, chapterMap]] of Object.entries(data.data).entries()) {
-        if (!chapterMap)
-            continue;
+        if (chapterMap == null) continue;
 
-        columns[i] = Object.assign(document.createElement('div'), {
+        const chapterColumn = Object.assign(document.createElement('div'), {
             className: 'chapter-column',
             id: translation
         });
+        
         for (const [verseNumber, verseText] of Object.entries(chapterMap)) {
-            columns[i].append(Object.assign(document.createElement('div'), {
-                id: `${verseNumber}`,
+            chapterColumn.append(Object.assign(document.createElement('div'), {
+                id: `${translation}-${chapter}-${verseNumber}`,
+                // class: `verse-${verseNumber}`,
                 innerHTML: `<strong>${verseNumber}</strong> ${verseText}`
             }))
         }
+        newPassageDiv.append(chapterColumn);
     }
-    return columns;
+    oldPassageDiv?.replaceWith(newPassageDiv);
 }
 
 let searchDebounceTimerID;
@@ -53,22 +60,7 @@ searchInput.addEventListener('input', (event) => {
 
         const response = await fetch(`/api/?book=${book.name}&chapter=${chapter}&translations=${TRANSLATIONS.join(',')}`);
         if (response.status !== 200) return;
-
-        const data: IChapterResponse = await response.json();
-
-        console.log(data)
         
-        // createPassageDiv(data.data);
-
-
-        
+        generatePassageDiv(book, chapter, await response.json());
     }, 750);
 });
-
-if (BOOK && CHAPTER)
-    searchInput.value = `${BOOK} ${CHAPTER}`;
-
-
-for (let translation of TRANSLATIONS) {
-    
-}

@@ -82,17 +82,19 @@ header {
     background-color: $page-margins-color;
 }
 
-.passage-div {
+#passage-div {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(50px, .5fr));
     // grid-template-columns: repeat(5, 1fr);
     gap: .6rem;
+    justify-content: center;
 }
-.chapter-column {
+.chapter-column {   
     display: grid;
     gap: 0.25rem;
     background-color: $column-color;
     border: 1px solid #ccc;
+    grid-auto-rows: max-content;
 }
 .verse {
     padding: 4px;
