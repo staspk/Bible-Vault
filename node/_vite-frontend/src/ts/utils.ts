@@ -63,7 +63,7 @@ export function yankUIntFromEnd(string:string): [number, string] {
             break;
         }
     }
-    const int:number = parseInt(string.substring(i, string.length), 10)
+    const int:number = parseInt(string.substring(i + 1, string.length), 10)
     return [int, string.substring(0, (string.length - int.toString().length))];
 }
 
