@@ -23,5 +23,5 @@
     "strictNullChecks": true,
     "noImplicitAny": false,  /* Recommended in Browser-JS for less hastle */
   },
-  "include": ["src", "../_shared/Bible.ts"]
+  "include": ["src", "../_shared/Bible.ts", "../_shared/Timer.ts"]
 }
