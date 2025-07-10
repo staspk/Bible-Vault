@@ -30,10 +30,3 @@ export function handleNotFound(response:http.ServerResponse, errorMsg = 'Not Fou
     response.writeHead(404, { 'Content-Type': 'application/json' });
     response.end(JSON.stringify({ error: errorMsg }));
 }
-
-
-export enum Status {
-    Success = "success",
-    Partial = "partial",
-    Error   = "error"
-}

@@ -3,9 +3,10 @@ import * as fs from 'fs';
 import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
-import { handleNotFound, handleBadRequest, Status } from './kozubenko/http.js';
+import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { combinePaths } from './kozubenko/utils.js';
 import { BIBLE } from './models/Bible.js';
+import { Status } from './_shared/enums.js';
 
 const __dirname = import.meta.dirname
 print('process.argv', process.argv);
@@ -45,9 +46,15 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
     });
 }
 
+
+/**
+* Currently only one API endpoint:
+* 
+*   `/api/?book=Genesis&chapter=5&translations=KJV,NKJV,RSV,NRSV,NASB`  ***RETURNS***: `IChapterResponse`
+*/
 async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     printYellow(`API Request: ${URL.pathname}?${URL.searchParams.toString()}`);
-        
+    
     const param1:string = URL.searchParams.get('book') ?? '';
     const param2:string = URL.searchParams.get('chapter') ?? '';
     const param3:string = URL.searchParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB';
@@ -112,7 +119,7 @@ const server = http.createServer((request, response) => {
         handleApiRequest(urlObj, response);
     
     else
-        handleResourceRequest(urlObj.pathname, response);
+    handleResourceRequest(urlObj.pathname, response);
 });
 
 server.listen(PORT, () => {
