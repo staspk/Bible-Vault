@@ -30,7 +30,7 @@
 $header-color          : #fefafc;
 $page-margins-color    : #952004;
 $page-background-color : #fafafd;
-$column-color          : #fefdfc;
+$chapter-column-color  : #fff;
 
 $header-border   : 2px solid #952004;
 $standard-border : #dddcda;
@@ -38,6 +38,9 @@ $standard-border : #dddcda;
 $font-family: Segoe UI, Roboto, system-ui, -apple-system, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
 $font-size  : 1rem; 
 
+* {
+    box-sizing: border-box;                             // Makes padding/border INCLUDED in the total size of the element, instead of adding to the size of the element
+}
 
 body {
     background-color: $page-background-color;
@@ -48,7 +51,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    
     font-family: $font-family;
     font-size: $font-size;
 }
@@ -73,7 +76,6 @@ header {
     display: grid;
     height: 100%;
     grid-template-columns: 40px 1fr 40px;
-    gap: 20px;
 }
 
 .left-margin-div,
@@ -82,20 +84,45 @@ header {
     background-color: $page-margins-color;
 }
 
+
 #passage-div {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(50px, .5fr));
-    // grid-template-columns: repeat(5, 1fr);
-    gap: .6rem;
     justify-content: center;
+    margin: 1rem auto;
+    gap: .75rem;
 }
+#passage-div.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
+#passage-div.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
+#passage-div.cols-3 {  width: 75%; grid-template-columns: repeat(3, minmax(222px, 1fr));  }
+#passage-div.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
+#passage-div.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
+
 .chapter-column {   
-    display: grid;
-    gap: 0.25rem;
-    background-color: $column-color;
+    // display: grid;
+    background-color: $chapter-column-color;
     border: 1px solid #ccc;
     grid-auto-rows: max-content;
+    gap: 0.25rem;
+    padding-top: 20px;
 }
-.verse {
-    padding: 4px;
+.chapter-column > div {  // i.e: verses
+    padding: 0px 1rem;
+    line-height: 175%;
+}
+.chapter-dropcap {
+    display: inline-block;
+    transform: translate(.15rem, .2rem);
+    // position: relative;
+    // top: .1rem;
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-right: .25em;
+    // margin: 0 .25em -.25em 0;
+}
+.versenum {
+    display: inline-block;
+    transform: translate(.15rem, .2rem);
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-right: .25em;
 }
