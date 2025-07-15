@@ -33,7 +33,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
 
     $vite_last_built = NpmBuild
     while (-not $token.IsCancellationRequested) {
-        Start-Sleep -Milliseconds 420
+        Start-Sleep -Milliseconds 250
         foreach ($path in $paths_to_watch) {
             if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
                 $vite_last_built = NpmBuild; break;
