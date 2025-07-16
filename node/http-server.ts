@@ -13,7 +13,17 @@ print('process.argv', process.argv);
 print()
 
 
-const PORT = 8080;
+/**
+ * Ports under 1024 privileged on unix systems. Temporarily using: "sudo setcap 'cap_net_bind_service=+ep' $(which node)".
+ * Eventually: use Nginx/Apache as a reverse-proxy server on ports 80/443 and forward requests to your Node.js app on 8080.
+ */
+const HTTP_PORT  = 80;
+const HTTPS_PORT = 443;
+const DEV_PORT   = 8080;
+
+const HOST:string = process.platform === 'linux' ? '35.247.126.199' : '127.0.0.1';
+const PORT:number = process.platform === 'linux' ? HTTP_PORT        :  DEV_PORT;
+
 
 const DIST       = Path.join(__dirname, '_vite-frontend', 'dist');
 const BIBLE_TXT  = Path.join(__dirname, '..', 'bible_txt');
@@ -122,10 +132,20 @@ const server = http.createServer((request, response) => {
     handleResourceRequest(urlObj.pathname, response);
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
-    printGreen(`  http://localhost:${PORT}/`)
-    printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+    if (PORT === DEV_PORT) {
+        printGreen(`  http://${HOST}:${PORT}/`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+    }
+    else if (PORT === HTTP_PORT) {
+        printGreen(`  http://${HOST}/`)
+        printGreen(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+    }
+    else if (PORT === HTTPS_PORT) {
+        printGreen(`  https://${HOST}/`)
+        printGreen(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+    }
 });
 
 
