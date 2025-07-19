@@ -20,7 +20,9 @@ print()
 const HTTP_PORT  = 80;
 const HTTPS_PORT = 443;
 const DEV_PORT   = 8080;
-const PORT:number = process.platform === 'win32' ? DEV_PORT : HTTP_PORT;
+
+const HOST:string = process.platform === 'linux' ? '35.247.126.199' : '127.0.0.1';
+const PORT:number = process.platform === 'linux' ? HTTP_PORT        :  DEV_PORT;
 
 
 const DIST       = Path.join(__dirname, '_vite-frontend', 'dist');
@@ -133,16 +135,16 @@ const server = http.createServer((request, response) => {
 server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
-        printGreen(`  http://localhost:${PORT}/`)
-        printGreen(`  http://localhost:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  http://${HOST}:${PORT}/`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
     }
     else if (PORT === HTTP_PORT) {
-        printGreen(`  http://35.247.126.199/`)
-        printGreen(`  http://35.247.126.199/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  http://${HOST}/`)
+        printGreen(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
     }
     else if (PORT === HTTPS_PORT) {
-        printGreen(`  https://35.247.126.199/`)
-        printGreen(`  https://35.247.126.199/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  https://${HOST}/`)
+        printGreen(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
     }
 });
 
