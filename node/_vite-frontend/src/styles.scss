@@ -40,54 +40,43 @@ $font-size  : 1rem;
 
 * {
     box-sizing: border-box;                             // Makes padding/border INCLUDED in the total size of the element, instead of adding to the size of the element
+    margin: 0; padding: 0;
 }
 
 body {
-    background-color: $page-background-color;
-    
-    margin: 0;
-    padding: 0;
+    display: grid;
+    grid-template-rows: 91px 1fr;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     
-    font-family: $font-family;
     font-size: $font-size;
-}
-body > * {
-    width: 100%;
+    font-family: $font-family;
+    background-color: $page-background-color;
 }
 
 header {
+    grid-row: 1;
     border: $header-border;
     background-color: $header-color;
 }
 #search-input {
     display: block;
-    margin: 40px auto 20px auto;
-    width: 300px;
-    height: 30px;
+    margin: 40px auto auto auto;
+    width: 300px; height: 2rem;
     text-align: center;
-    font-size: 17px;
+    font-size: 1.2rem;
 }
 
-.content {
-    display: grid;
-    height: 100%;
+#passage-view {
+    grid-row: 2;
+    display:grid;
     grid-template-columns: 40px 1fr 40px;
 }
-
-.left-margin-div,
-.right-margin-div {
-    height: 100%;
-    background-color: $page-margins-color;
-}
-
+#passage-view > :nth-child(1) {  grid-column: 1; background-color: $page-margins-color;  }
+#passage-view > :nth-child(3) {  grid-column: 3; background-color: $page-margins-color;  }
 
 #passage-div {
+    grid-column: 2;
     display: grid;
-    justify-content: center;
     margin: 1rem auto;
     gap: .75rem;
 }
@@ -97,13 +86,11 @@ header {
 #passage-div.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
 #passage-div.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
 
-.chapter-column {   
-    // display: grid;
-    background-color: $chapter-column-color;
-    border: 1px solid #ccc;
+.chapter-column {
     grid-auto-rows: max-content;
-    gap: 0.25rem;
-    padding-top: 20px;
+    padding: 20px 0;
+    border: 1px solid #ccc;
+    background-color: $chapter-column-color;
 }
 .chapter-column > div {  // i.e: verses
     padding: 0px 1rem;
@@ -111,18 +98,24 @@ header {
 }
 .chapter-dropcap {
     display: inline-block;
-    transform: translate(.15rem, .2rem);
-    // position: relative;
-    // top: .1rem;
+    transform: translate(.15rem, .15rem);
     font-size: 1.5em;
     font-weight: 600;
-    margin-right: .25em;
-    // margin: 0 .25em -.25em 0;
+    margin-right: .3em;
 }
 .versenum {
     display: inline-block;
-    transform: translate(.15rem, .2rem);
-    font-size: 1.1em;
-    font-weight: 600;
-    margin-right: .25em;
+    transform: translate(.1em, -.3em);
+    font-size: .8em;
+    font-weight: 650;
+    margin: 0 .15em 0 .075em;
 }
+
+
+
+// --- WIDTHS ------------------
+
+// samsung fold 5          : 344
+// iphone 14 pro max       : 430
+
+// samsung fold 5 unfolded : 690
