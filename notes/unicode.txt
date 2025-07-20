@@ -1,0 +1,6 @@
+𝔓 {
+	U+1D513			Unicode Code Point
+	F0 9D 94 93		UTF-8 Encoding
+	&#120083;		HTML Entity (decimal)
+	&#x1D513;		HTML Entity (hex)
+}
