@@ -58,7 +58,7 @@ function isBrowserConsole() {
 */
 export function printGreen(text:string, newLine:boolean=true): void {
     if (isBrowserConsole()) {
-        console.log(`%c${text}`, 'color: green');
+        console.log(`%c${text}`, 'color: limegreen');
     } else {
         process.stdout.write(`${TerminalColors.Green}${text}${TerminalColors.Reset}`);
         if(newLine)
