@@ -37,7 +37,7 @@ watch_vite() {
 	last_built=$(npm_build)
 
 	while true; do
-		sleep 0.25
+		sleep 0.15
 		for path in "${PATHS_TO_WATCH[@]}"; do
 			if is_file "$path"; then
 				modified=$(stat -c %Y "$path")
