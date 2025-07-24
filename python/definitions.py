@@ -20,7 +20,7 @@ BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt
 
 BIBLE_NUMERICAL_MAP           =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_numerical_map')
 
-
+TEMP_OUTPUT                   =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')
 
 
 # ENV                   =  os.path.join(PROJECT_ROOT_DIRECTORY, '.env', '.env')
