@@ -145,3 +145,39 @@ class BIBLE:
                     return int(line.split(':')[2])
         
         raise Exception("Bible.py:find_max_verse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!")
+
+
+class Abbreviations:
+    """
+    abbreviations for bible books as tuples:
+    #1 - BibleGateway's
+    #2 - ApiBible
+    """
+    MATTHEW              = ("Matt",   "MAT")
+    MARK                 = ("Mark",   "MRK")
+    LUKE                 = ("Luke",   "LUK")
+    JOHN                 = ("John",   "JHN")
+    ACTS                 = ("Acts",   "ACT")
+    ROMANS               = ("Rom",    "ROM")
+    FIRST_CORINTHIANS    = ("1Cor",   "1CO")
+    SECOND_CORINTHIANS   = ("2Cor",   "2CO")
+    GALATIANS            = ("Gal",    "GAL")
+    EPHESIANS            = ("Eph",    "EPH")
+    PHILIPPIANS          = ("Phil",   "PHP")
+    COLOSSIANS           = ("Col",    "COL")
+    FIRST_THESSALONIANS  = ("1Thess", "1TH")
+    SECOND_THESSALONIANS = ("2Thess", "2TH")
+    FIRST_TIMOTHY        = ("1Tim",   "1TI")
+    SECOND_TIMOTHY       = ("2Tim",   "2TI")
+    TITUS                = ("Titus",  "TIT")
+    PHILEMON             = ("Phlm",   "PHM")
+    HEBREWS              = ("Heb",    "HEB")
+    JAMES                = ("Jas",    "JAS")
+    FIRST_PETER          = ("1Pet",   "1PE")
+    SECOND_PETER         = ("2Pet",   "2PE")
+    FIRST_JOHN           = ("1John",  "1JN")
+    SECOND_JOHN          = ("2John",  "2JN")
+    THIRD_JOHN           = ("3John",  "3JN")
+    JUDE                 = ("Jude",   "JUD")
+    REVELATION           = ("Rev",    "REV")
+
