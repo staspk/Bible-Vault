@@ -4,8 +4,8 @@
             "name": "Python: Debug main.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
-            "justMyCode": false
+            "program": "${workspaceFolder}/ApiBible.py",
+            "justMyCode": true
         }
     ]
 }
