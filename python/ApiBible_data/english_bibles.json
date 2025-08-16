@@ -1,0 +1,1357 @@
+{
+  "data": [
+    {
+      "id": "685d1470fe4d5c3b-01",
+      "dblId": "685d1470fe4d5c3b",
+      "relatedDbl": null,
+      "name": "American Standard Version (Byzantine Text with Apocrypha)",
+      "nameLocal": "American Standard Version Byzantine Text with Apocrypha",
+      "abbreviation": "ASVBT",
+      "abbreviationLocal": "ASVBT",
+      "description": null,
+      "descriptionLocal": null,
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T18:57:14.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This Public Domain Bible translation is brought to you by Adam Boyd and <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "bba9f40183526463-01",
+      "dblId": "bba9f40183526463",
+      "relatedDbl": null,
+      "name": "Berean Standard Bible",
+      "nameLocal": "English: Berean Standard Bible",
+      "abbreviation": "BSB",
+      "abbreviationLocal": "BSB",
+      "description": "Berean Standard Bible",
+      "descriptionLocal": "English: Berean Standard Bible",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        },
+        {
+          "id": "AU",
+          "name": "Australia",
+          "nameLocal": "Australia"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        },
+        {
+          "id": "AG",
+          "name": "Antigua and Barbuda",
+          "nameLocal": "Antigua and Barbuda"
+        },
+        {
+          "id": "BS",
+          "name": "Bahamas",
+          "nameLocal": "Bahamas"
+        },
+        {
+          "id": "BB",
+          "name": "Barbados",
+          "nameLocal": "Barbados"
+        },
+        {
+          "id": "BZ",
+          "name": "Belize",
+          "nameLocal": "Belize"
+        },
+        {
+          "id": "DM",
+          "name": "Dominica",
+          "nameLocal": "Dominica"
+        },
+        {
+          "id": "DO",
+          "name": "Dominican Republic",
+          "nameLocal": "Dominican Republic"
+        },
+        {
+          "id": "AS",
+          "name": "American Samoa",
+          "nameLocal": "American Samoa"
+        },
+        {
+          "id": "GU",
+          "name": "Guam",
+          "nameLocal": "Guam"
+        },
+        {
+          "id": "HT",
+          "name": "Haiti",
+          "nameLocal": "Haiti"
+        },
+        {
+          "id": "GY",
+          "name": "Guyana",
+          "nameLocal": "Guyana"
+        },
+        {
+          "id": "IL",
+          "name": "Israel",
+          "nameLocal": "Israel"
+        },
+        {
+          "id": "IE",
+          "name": "Ireland",
+          "nameLocal": "Ireland"
+        },
+        {
+          "id": "JM",
+          "name": "Jamaica",
+          "nameLocal": "Jamaica"
+        },
+        {
+          "id": "MT",
+          "name": "Malta",
+          "nameLocal": "Malta"
+        },
+        {
+          "id": "NZ",
+          "name": "New Zealand",
+          "nameLocal": "New Zealand"
+        },
+        {
+          "id": "PH",
+          "name": "Philippines",
+          "nameLocal": "Philippines"
+        },
+        {
+          "id": "KN",
+          "name": "Saint Kitts and Nevis",
+          "nameLocal": "Saint Kitts and Nevis"
+        },
+        {
+          "id": "LC",
+          "name": "Saint Lucia",
+          "nameLocal": "Saint Lucia"
+        },
+        {
+          "id": "VC",
+          "name": "Saint Vincent and the Grenadines",
+          "nameLocal": "Saint Vincent and the Grenadines"
+        },
+        {
+          "id": "TT",
+          "name": "Trinidad and Tobago",
+          "nameLocal": "Trinidad and Tobago"
+        },
+        {
+          "id": "NG",
+          "name": "Nigeria",
+          "nameLocal": "Nigeria"
+        },
+        {
+          "id": "ZA",
+          "name": "South Africa",
+          "nameLocal": "South Africa"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T00:44:58.000Z",
+      "copyright": "The Holy Bible, Berean Standard Bible, BSB is produced in cooperation with Bible Hub, Discovery Bible, OpenBible.com, and the Berean Bible Translation Committee. This text of God's Word has been dedicated to the public domain",
+      "info": "<p>https://berean.bible/</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "6bab4d6c61b31b80-01",
+      "dblId": "6bab4d6c61b31b80",
+      "relatedDbl": null,
+      "name": "Brenton English Septuagint (Updated Spelling and Formatting)",
+      "nameLocal": "Brenton English Septuagint (Updated Spelling and Formatting)",
+      "abbreviation": "engLXXup",
+      "abbreviationLocal": "LXXup",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "ZZ",
+          "name": "Unspecific",
+          "nameLocal": "Unspecific"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:11:26.000Z",
+      "copyright": "public domain",
+      "info": "<p>This public domain Bible text is provided to you courtesy of <a href=\"https://eBible.org\">eBible.org</a> and Adam Boyd.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "65bfdebd704a8324-01",
+      "dblId": "65bfdebd704a8324",
+      "relatedDbl": null,
+      "name": "Brenton English translation of the Septuagint",
+      "nameLocal": "Brenton English translation of the Septuagint",
+      "abbreviation": "engbrent",
+      "abbreviationLocal": "Brenton",
+      "description": "Septuagint",
+      "descriptionLocal": "Septuagint",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        },
+        {
+          "id": "US",
+          "name": "United States",
+          "nameLocal": "United States"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T18:50:23.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This Public Domain text is brought to you by <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "55212e3cf5d04d49-01",
+      "dblId": "55212e3cf5d04d49",
+      "relatedDbl": null,
+      "name": "Cambridge Paragraph Bible of the KJV",
+      "nameLocal": "Cambridge Paragraph Bible of the KJV",
+      "abbreviation": "engKJVCPB",
+      "abbreviationLocal": "KJVCPB",
+      "description": "Common",
+      "descriptionLocal": "Common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States",
+          "nameLocal": "United States"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T17:55:54.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This Public Domain (not copyrighted) Bible text is made available to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "179568874c45066f-01",
+      "dblId": "179568874c45066f",
+      "relatedDbl": null,
+      "name": "Douay-Rheims American 1899",
+      "nameLocal": "Douay-Rheims American 1899",
+      "abbreviation": "engDRA",
+      "abbreviationLocal": "DRA",
+      "description": "The Holy Bible in English, Douay-Rheims American Edition of 1899, translated from the Latin Vulgate",
+      "descriptionLocal": "Catholic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States",
+          "nameLocal": "United States"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T14:31:19.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This public domain Bible translation is brought to you by <a href=\"https://eBible.org\">eBible.org</a>. For additional formats and download options, please see <a href=\"https://ebible.org/find/details.php?id=engDRA\">https://ebible.org/find/details.php?id=engDRA</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "55ec700d9e0d77ea-01",
+      "dblId": "55ec700d9e0d77ea",
+      "relatedDbl": null,
+      "name": "English Majority Text Version",
+      "nameLocal": "English Majority Text Version",
+      "abbreviation": "engEMTV",
+      "abbreviationLocal": "EMTV",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States",
+          "nameLocal": "United States"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T18:01:52.000Z",
+      "copyright": "© 2014 Dr. Paul W. Esposito",
+      "info": "<p>Translated by Dr. Paul W. Esposito.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "65eec8e0b60e656b-01",
+      "dblId": "65eec8e0b60e656b",
+      "relatedDbl": null,
+      "name": "Free Bible Version",
+      "nameLocal": "Free Bible Version",
+      "abbreviation": "FBV",
+      "abbreviationLocal": "FBV",
+      "description": "Protestant FBV full 3.0 beta",
+      "descriptionLocal": "Protestant FBV full 3.0 beta",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T18:50:59.000Z",
+      "copyright": "Dr. Jonathan Gallagher. Released under Creative Commons Attribution-ShareAlike 4.0 Unported License. Version 4.1. For corrections send email to jonathangallagherfbv@gmail.com",
+      "info": "<p>FBV: this translation is directly from the Hebrew and Greek text. It is licensed under a Creative Commons Attribution-ShareAlike 4.0 Unported License. This means this work can be copied and used as long as it is identified as the Free Bible Version and any adaptations are identified. Any derivative work is to be released under the same license. (A full description of the license is at https://creativecommons.org/licenses/by-sa/4.0/legalcode). The intent is to be as faithful as possible to the original meaning without being awkward or misleading. The style is contemporary English, avoiding slang or colloquialisms, speaking to our modern society in a way people will understand. The Free Bible Version is a project of Free Bible Ministry www.freebibleministry.org</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "c315fa9f71d4af3a-01",
+      "dblId": "c315fa9f71d4af3a",
+      "relatedDbl": null,
+      "name": "Geneva Bible",
+      "nameLocal": "Geneva Bible",
+      "abbreviation": "enggnv",
+      "abbreviationLocal": "GNV",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T01:21:00.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This public domain Bible translation is made available to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "bf8f1c7f3f9045a5-01",
+      "dblId": "bf8f1c7f3f9045a5",
+      "relatedDbl": null,
+      "name": "JPS TaNaKH 1917",
+      "nameLocal": "JPS TaNaKH 1917",
+      "abbreviation": "engojps",
+      "abbreviationLocal": "OJPS",
+      "description": "Jewish",
+      "descriptionLocal": "Jewish",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States",
+          "nameLocal": "United States"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T01:01:15.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This copy of the Old JPS TaNaKH by the <a href=\"https://jps.org\">Jewish Publication Society</a> is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>. For the new JPS TaNaKH (1972, 1978, 1980), please see <a href=\"https://jps.org\">jps.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "de4e12af7f28f599-01",
+      "dblId": "de4e12af7f28f599",
+      "relatedDbl": null,
+      "name": "King James (Authorised) Version",
+      "nameLocal": "King James Version",
+      "abbreviation": "engKJV",
+      "abbreviationLocal": "KJV",
+      "description": "Ecumenical",
+      "descriptionLocal": "Ecumenical",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T04:03:56.000Z",
+      "copyright": "PUBLIC DOMAIN except in the United Kingdom, where a Crown Copyright applies to printing the KJV. See http://www.cambridge.org/about-us/who-we-are/queens-printers-patent",
+      "info": "<p>This historical translation of the Holy Bible is brought to you in quality digital format by the <a href=\"https://crosswire.org/\">Crosswire Bible Society</a> and <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "de4e12af7f28f599-02",
+      "dblId": "de4e12af7f28f599",
+      "relatedDbl": null,
+      "name": "King James (Authorised) Version",
+      "nameLocal": "King James Version",
+      "abbreviation": "engKJV",
+      "abbreviationLocal": "KJV",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T04:04:35.000Z",
+      "copyright": "PUBLIC DOMAIN except in the United Kingdom, where a Crown Copyright applies to printing the KJV. See http://www.cambridge.org/about-us/who-we-are/queens-printers-patent",
+      "info": "<p>This historical translation of the Holy Bible is brought to you in quality digital format by the <a href=\"https://crosswire.org/\">Crosswire Bible Society</a> and <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "01b29f4b342acc35-01",
+      "dblId": "01b29f4b342acc35",
+      "relatedDbl": null,
+      "name": "Literal Standard Version",
+      "nameLocal": "Literal Standard Version",
+      "abbreviation": "LSV",
+      "abbreviationLocal": "LSV",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        },
+        {
+          "id": "AU",
+          "name": "Australia",
+          "nameLocal": "Australia"
+        },
+        {
+          "id": "ZA",
+          "name": "South Africa",
+          "nameLocal": "South Africa"
+        },
+        {
+          "id": "NZ",
+          "name": "New Zealand",
+          "nameLocal": "New Zealand"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-27T21:39:40.000Z",
+      "copyright": "The Literal Standard Version of The Holy Bible is a registered copyright of Covenant Press and the Covenant Christian Coalition (© 2020), but has been subsequently released under the Creative Commons Attribution-ShareAlike license (CC BY-SA) per our desire to provide God’s word freely. Covenant Press requests that the text remain unaltered in the English language and that translations based on the LSV maintain the same spirit of faithfulness to the original Hebrew, Aramaic, and Greek text. Attribution of minor citations for personal or non-commercial use can be provided as simply “LSV” or “Literal Standard Version.” Citations for commercial use, or distribution of the entire LSV Bible or entire book(s) of the LSV Bible, must be fully attributed and include both “Literal Standard Version (LSV)” and the name of our organization. Covenant Press is soliciting partnerships with Bible publishers that are interested in the LSV project. For queries about partnering with us, please email the translation team at covenantpress@ccc.one. To learn more, visit lsvbible.com. The purpose behind the LSV is to provide readers with a modern, easy-to-read, literal, and accurate translation of the Bible that is free to read, distribute, and translate from. We pray that God will use the LSV to illuminate the hearts and minds of multitudes with the good news that His Son Jesus Christ came in the flesh, died for our sins as a substitutionary sacrifice, rose bodily from the dead, and is coming back again.",
+      "info": null,
+      "audioBibles": []
+    },
+    {
+      "id": "40072c4a5aba4022-01",
+      "dblId": "40072c4a5aba4022",
+      "relatedDbl": null,
+      "name": "Revised Version 1885",
+      "nameLocal": "Revised Version 1885",
+      "abbreviation": "engRV",
+      "abbreviationLocal": "RV",
+      "description": "Interconfessional",
+      "descriptionLocal": "Interconfessional",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T16:46:43.000Z",
+      "copyright": "Public Domain",
+      "info": "<p>This public domain text is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "ec290b5045ff54a5-01",
+      "dblId": "ec290b5045ff54a5",
+      "relatedDbl": null,
+      "name": "Targum Onkelos Etheridge",
+      "nameLocal": "Targum Onkelos Etheridge",
+      "abbreviation": "engOKE",
+      "abbreviationLocal": "OKE",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "ZZ",
+          "name": "Unspecific",
+          "nameLocal": "Unspecific"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T05:31:23.000Z",
+      "copyright": "J. W. Etheridge, The Targums of Onkelos and Jonathan ben Uzziel on the Pentateuch: with the fragments of the Jerusalem Targum (London: Longman, Green, Longman, and Roberts, 1862-1865).",
+      "info": "<p>This public domain Bible translation text is made available to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "2f0fd81d7b85b923-01",
+      "dblId": "2f0fd81d7b85b923",
+      "relatedDbl": null,
+      "name": "The English New Testament According to Family 35",
+      "nameLocal": "The English New Testament According to Family 35",
+      "abbreviation": "engF35",
+      "abbreviationLocal": "F35",
+      "description": "Common",
+      "descriptionLocal": "Common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "ZZ",
+          "name": "Unspecific",
+          "nameLocal": "Unspecific"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T15:49:57.000Z",
+      "copyright": "Copyright © 2016 Wilbur N. Pickering This work is made available under a Creative Commons Attribution-ShareAlike 3.0 Unported License.",
+      "info": "<p>Courtesy of William N. Pickering</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "06125adad2d5898a-01",
+      "dblId": "06125adad2d5898a",
+      "relatedDbl": null,
+      "name": "The Holy Bible, American Standard Version",
+      "nameLocal": "The Holy Bible, American Standard Version",
+      "abbreviation": "ASV",
+      "abbreviationLocal": "ASV",
+      "description": "Bible",
+      "descriptionLocal": "Bible",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T13:36:08.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p> <p>For additional formats and downloads, please see <a href=\"https://eBible.org/find/details.php?id=eng-asv\">https://eBible.org/find/details.php?id=eng-asv</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "c89622d31b60c444-02",
+      "dblId": "c89622d31b60c444",
+      "relatedDbl": null,
+      "name": "The Orthodox Jewish Bible",
+      "nameLocal": "The Orthodox Jewish Bible",
+      "abbreviation": "TOJB2011",
+      "abbreviationLocal": "TOJB2011",
+      "description": "OT follows Tanakh order, NT follows usual Protestant order",
+      "descriptionLocal": "OT follows Tanakh order, NT follows usual Protestant order",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "IL",
+          "name": "Israel",
+          "nameLocal": "Israel"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T01:55:15.000Z",
+      "copyright": "THE ORTHODOX JEWISH BIBLE FOURTH EDITION © Artists For Israel Intl Inc., 2002-2011, 2021.",
+      "info": "<h3>THE ORTHODOX JEWISH BIBLE</h3> <p>Tanakh and Orthodox Jewish Brit Chadasha - The Holy Bible</p> <p> <a href=\"https://www.afii.org/\">Artists For Israel Intl Inc.</a> </p>",
+      "audioBibles": []
+    },
+    {
+      "id": "32339cf2f720ff8e-01",
+      "dblId": "32339cf2f720ff8e",
+      "relatedDbl": null,
+      "name": "The Text-Critical English New Testament",
+      "nameLocal": "The Text-Critical English New Testament",
+      "abbreviation": "TCENT",
+      "abbreviationLocal": "TCENT",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T16:02:46.000Z",
+      "copyright": "Copyright © 2022 Robert Adam Boyd The Text-Critical English New Testament and the Byzantine Text Version are made available to you under the terms of the Creative Commons Attribution license 4.0. You are free to: Share — copy and redistribute the material in any medium or format Adapt — remix, transform, and build upon the material for any purpose, even commercially, Under the following terms: Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use. No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits. \"The Text-Critical English New Testament\" and \"Byzantine Text Version\" are trademarks of Robert Adam Boyd. If you adapt, remix, transform, or in any other way change the translation or footnotes, you may not call it \"The Text-Critical English New Testament\" or \"Byzantine Text Version\".",
+      "info": "<p>This open access New Testament is brought to you courtesy of Robert Adam Boyd and <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "66c22495370cdfc0-01",
+      "dblId": "66c22495370cdfc0",
+      "relatedDbl": null,
+      "name": "Translation for Translators",
+      "nameLocal": "Translation for Translators",
+      "abbreviation": "T4T",
+      "abbreviationLocal": "T4T",
+      "description": "common",
+      "descriptionLocal": "common",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T18:53:49.000Z",
+      "copyright": "Copyright © 2008-2017 Ellis W. Deibler. Released under the Creative Commons Attribution Share-Alike license 4.0.",
+      "info": "<p>Many thanks to Ellis W. Deibler and his translation team for sharing this great work!</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "9879dbb7cfe39e4d-01",
+      "dblId": "9879dbb7cfe39e4d",
+      "relatedDbl": null,
+      "name": "World English Bible",
+      "nameLocal": "World English Bible",
+      "abbreviation": "WEB",
+      "abbreviationLocal": "WEB",
+      "description": "Ecumenical",
+      "descriptionLocal": "Ecumenical",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T21:52:13.000Z",
+      "copyright": "\n          PUBLIC DOMAIN\n        ",
+      "info": "\n        See http://WorldEnglish.Bible\n      ",
+      "audioBibles": [
+        {
+          "id": "105a06b6146d11e7-01",
+          "name": "English - World English Bible 2013 (Drama NT)",
+          "nameLocal": "English - World English Bible 2013 (Drama NT)",
+          "dblId": "105a06b6146d11e7"
+        }
+      ]
+    },
+    {
+      "id": "9879dbb7cfe39e4d-02",
+      "dblId": "9879dbb7cfe39e4d",
+      "relatedDbl": null,
+      "name": "World English Bible",
+      "nameLocal": "World English Bible",
+      "abbreviation": "WEB",
+      "abbreviationLocal": "WEB",
+      "description": "Catholic",
+      "descriptionLocal": "Catholic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T21:52:43.000Z",
+      "copyright": "\n          PUBLIC DOMAIN\n        ",
+      "info": "\n        See http://WorldEnglish.Bible\n      ",
+      "audioBibles": [
+        {
+          "id": "105a06b6146d11e7-01",
+          "name": "English - World English Bible 2013 (Drama NT)",
+          "nameLocal": "English - World English Bible 2013 (Drama NT)",
+          "dblId": "105a06b6146d11e7"
+        }
+      ]
+    },
+    {
+      "id": "9879dbb7cfe39e4d-03",
+      "dblId": "9879dbb7cfe39e4d",
+      "relatedDbl": null,
+      "name": "World English Bible",
+      "nameLocal": "World English Bible",
+      "abbreviation": "WEB",
+      "abbreviationLocal": "WEB",
+      "description": "Orthodox",
+      "descriptionLocal": "Orthodox",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T21:53:12.000Z",
+      "copyright": "\n          PUBLIC DOMAIN\n        ",
+      "info": "\n        See http://WorldEnglish.Bible\n      ",
+      "audioBibles": [
+        {
+          "id": "105a06b6146d11e7-01",
+          "name": "English - World English Bible 2013 (Drama NT)",
+          "nameLocal": "English - World English Bible 2013 (Drama NT)",
+          "dblId": "105a06b6146d11e7"
+        }
+      ]
+    },
+    {
+      "id": "9879dbb7cfe39e4d-04",
+      "dblId": "9879dbb7cfe39e4d",
+      "relatedDbl": null,
+      "name": "World English Bible",
+      "nameLocal": "World English Bible",
+      "abbreviation": "WEB",
+      "abbreviationLocal": "WEB",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T21:53:41.000Z",
+      "copyright": "\n          PUBLIC DOMAIN\n        ",
+      "info": "\n        See http://WorldEnglish.Bible\n      ",
+      "audioBibles": [
+        {
+          "id": "105a06b6146d11e7-01",
+          "name": "English - World English Bible 2013 (Drama NT)",
+          "nameLocal": "English - World English Bible 2013 (Drama NT)",
+          "dblId": "105a06b6146d11e7"
+        }
+      ]
+    },
+    {
+      "id": "7142879509583d59-01",
+      "dblId": "7142879509583d59",
+      "relatedDbl": null,
+      "name": "World English Bible British Edition",
+      "nameLocal": "World English Bible British Edition",
+      "abbreviation": "WEBBE",
+      "abbreviationLocal": "WEBBE",
+      "description": "Ecumenical",
+      "descriptionLocal": "Ecumenical",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:31:15.000Z",
+      "copyright": "PUBLIC DOMAIN. \"World English Bible\" is trademark of eBible.org.",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "7142879509583d59-02",
+      "dblId": "7142879509583d59",
+      "relatedDbl": null,
+      "name": "World English Bible British Edition",
+      "nameLocal": "World English Bible British Edition",
+      "abbreviation": "WEBBE",
+      "abbreviationLocal": "WEBBE",
+      "description": "Catholic",
+      "descriptionLocal": "Catholic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:31:43.000Z",
+      "copyright": "PUBLIC DOMAIN. \"World English Bible\" is trademark of eBible.org.",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "7142879509583d59-03",
+      "dblId": "7142879509583d59",
+      "relatedDbl": null,
+      "name": "World English Bible British Edition",
+      "nameLocal": "World English Bible British Edition",
+      "abbreviation": "WEBBE",
+      "abbreviationLocal": "WEBBE",
+      "description": "Orthodox",
+      "descriptionLocal": "Orthodox",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:32:10.000Z",
+      "copyright": "PUBLIC DOMAIN. \"World English Bible\" is trademark of eBible.org.",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "7142879509583d59-04",
+      "dblId": "7142879509583d59",
+      "relatedDbl": null,
+      "name": "World English Bible British Edition",
+      "nameLocal": "World English Bible British Edition",
+      "abbreviation": "WEBBE",
+      "abbreviationLocal": "WEBBE",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "GB",
+          "name": "United Kingdom",
+          "nameLocal": "United Kingdom"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:32:36.000Z",
+      "copyright": "PUBLIC DOMAIN. \"World English Bible\" is trademark of eBible.org.",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "72f4e6dc683324df-01",
+      "dblId": "72f4e6dc683324df",
+      "relatedDbl": null,
+      "name": "World English Bible Updated",
+      "nameLocal": "World English Bible Updated",
+      "abbreviation": "engWEBU",
+      "abbreviationLocal": "WEBU",
+      "description": "Ecumenical",
+      "descriptionLocal": "Ecumenical",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:40:34.000Z",
+      "copyright": "No copyright, but \"World English Bible\" is a Trademark of eBible.org that can only be used with faithful copies of the World English Bible as published on eBible.org.",
+      "info": "<p>This Public Domain text is brought to you by <a href=\"https://eBible.org/\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "72f4e6dc683324df-02",
+      "dblId": "72f4e6dc683324df",
+      "relatedDbl": null,
+      "name": "World English Bible Updated",
+      "nameLocal": "World English Bible Updated",
+      "abbreviation": "engWEBU",
+      "abbreviationLocal": "WEBU",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:41:04.000Z",
+      "copyright": "No copyright, but \"World English Bible\" is a Trademark of eBible.org that can only be used with faithful copies of the World English Bible as published on eBible.org.",
+      "info": "<p>This Public Domain text is brought to you by <a href=\"https://eBible.org/\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "72f4e6dc683324df-03",
+      "dblId": "72f4e6dc683324df",
+      "relatedDbl": null,
+      "name": "World English Bible Updated",
+      "nameLocal": "World English Bible Updated",
+      "abbreviation": "engWEBU",
+      "abbreviationLocal": "WEBU",
+      "description": "Catholic",
+      "descriptionLocal": "Catholic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T19:41:27.000Z",
+      "copyright": "No copyright, but \"World English Bible\" is a Trademark of eBible.org that can only be used with faithful copies of the World English Bible as published on eBible.org.",
+      "info": "<p>This Public Domain text is brought to you by <a href=\"https://eBible.org/\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "32664dc3288a28df-01",
+      "dblId": "32664dc3288a28df",
+      "relatedDbl": null,
+      "name": "World English Bible, American English Edition, without Strong's Numbers",
+      "nameLocal": "World English Bible, American English Edition, without Strong's Numbers",
+      "abbreviation": "engWEBUS",
+      "abbreviationLocal": "WEBUS",
+      "description": "Ecumenical",
+      "descriptionLocal": "Ecumenical",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T16:04:23.000Z",
+      "copyright": "PUBLIC DOMAIN (not copyrighted)",
+      "info": "<p>This Public Domain Bible text is courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "32664dc3288a28df-02",
+      "dblId": "32664dc3288a28df",
+      "relatedDbl": null,
+      "name": "World English Bible, American English Edition, without Strong's Numbers",
+      "nameLocal": "World English Bible, American English Edition, without Strong's Numbers",
+      "abbreviation": "engWEBUS",
+      "abbreviationLocal": "WEBUS",
+      "description": "Protestant",
+      "descriptionLocal": "Protestant",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T16:04:50.000Z",
+      "copyright": "PUBLIC DOMAIN (not copyrighted)",
+      "info": "<p>This Public Domain Bible text is courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "32664dc3288a28df-03",
+      "dblId": "32664dc3288a28df",
+      "relatedDbl": null,
+      "name": "World English Bible, American English Edition, without Strong's Numbers",
+      "nameLocal": "World English Bible, American English Edition, without Strong's Numbers",
+      "abbreviation": "engWEBUS",
+      "abbreviationLocal": "WEBUS",
+      "description": "Orthodox",
+      "descriptionLocal": "Orthodox",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T16:05:13.000Z",
+      "copyright": "PUBLIC DOMAIN (not copyrighted)",
+      "info": "<p>This Public Domain Bible text is courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "f72b840c855f362c-04",
+      "dblId": "f72b840c855f362c",
+      "relatedDbl": null,
+      "name": "World Messianic Bible",
+      "nameLocal": "World Messianic Bible",
+      "abbreviation": "WMB",
+      "abbreviationLocal": "WMB",
+      "description": "Messianic",
+      "descriptionLocal": "Messianic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "US",
+          "name": "United States of America",
+          "nameLocal": "United States of America"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-29T06:41:28.000Z",
+      "copyright": "PUBLIC DOMAIN",
+      "info": "<p>This public domain Bible translation is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    },
+    {
+      "id": "04da588535d2f823-04",
+      "dblId": "04da588535d2f823",
+      "relatedDbl": null,
+      "name": "World Messianic Bible British Edition",
+      "nameLocal": "World Messianic Bible British Edition",
+      "abbreviation": "WMBBE",
+      "abbreviationLocal": "WMBBE",
+      "description": "Messianic",
+      "descriptionLocal": "Messianic",
+      "language": {
+        "id": "eng",
+        "name": "English",
+        "nameLocal": "English",
+        "script": "Latin",
+        "scriptDirection": "LTR"
+      },
+      "countries": [
+        {
+          "id": "AU",
+          "name": "Australia",
+          "nameLocal": "Australia"
+        },
+        {
+          "id": "AS",
+          "name": "American Samoa",
+          "nameLocal": "American Samoa"
+        },
+        {
+          "id": "BS",
+          "name": "Bahamas",
+          "nameLocal": "Bahamas"
+        },
+        {
+          "id": "BZ",
+          "name": "Belize",
+          "nameLocal": "Belize"
+        },
+        {
+          "id": "IO",
+          "name": "British Indian Ocean Territory",
+          "nameLocal": "British Indian Ocean Territory"
+        },
+        {
+          "id": "VG",
+          "name": "Virgin Islands, British",
+          "nameLocal": "Virgin Islands, British"
+        },
+        {
+          "id": "CA",
+          "name": "Canada",
+          "nameLocal": "Canada"
+        },
+        {
+          "id": "KE",
+          "name": "Kenya",
+          "nameLocal": "Kenya"
+        },
+        {
+          "id": "FM",
+          "name": "Micronesia, Federated States of",
+          "nameLocal": "Micronesia, Federated States of"
+        },
+        {
+          "id": "NZ",
+          "name": "New Zealand",
+          "nameLocal": "New Zealand"
+        },
+        {
+          "id": "PG",
+          "name": "Papua New Guinea",
+          "nameLocal": "Papua New Guinea"
+        },
+        {
+          "id": "WS",
+          "name": "Samoa",
+          "nameLocal": "Samoa"
+        },
+        {
+          "id": "SG",
+          "name": "Singapore",
+          "nameLocal": "Singapore"
+        },
+        {
+          "id": "TO",
+          "name": "Tonga",
+          "nameLocal": "Tonga"
+        },
+        {
+          "id": "GB",
+          "name": "United Kingdom of Great Britain and Northern Ireland",
+          "nameLocal": "United Kingdom of Great Britain and Northern Ireland"
+        }
+      ],
+      "type": "text",
+      "updatedAt": "2024-06-28T13:32:27.000Z",
+      "copyright": "PUBLIC DOMAIN. \"World Messianic Bible\" is a trademark.",
+      "info": "<p>This public domain Bible translation text is brought to you courtesy of <a href=\"https://eBible.org\">eBible.org</a>.</p>",
+      "audioBibles": []
+    }
+  ]
+}

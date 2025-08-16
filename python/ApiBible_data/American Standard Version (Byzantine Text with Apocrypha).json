@@ -1,0 +1,158 @@
+{
+  "data": [
+    {
+      "id": "MAT",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Mt.",
+      "name": "Matthew",
+      "nameLong": "The Gospel According to Matthew"
+    },
+    {
+      "id": "MRK",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Mk.",
+      "name": "Mark",
+      "nameLong": "The Gospel According to Mark"
+    },
+    {
+      "id": "ACT",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Acts",
+      "name": "Acts",
+      "nameLong": "The Acts"
+    },
+    {
+      "id": "ROM",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Rom.",
+      "name": "Romans",
+      "nameLong": "The Epistle of Paul to the Romans"
+    },
+    {
+      "id": "1CO",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "1 Cor.",
+      "name": "1 Corinthians",
+      "nameLong": "The First Epistle of Paul to the Corinthians"
+    },
+    {
+      "id": "GAL",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Gal.",
+      "name": "Galatians",
+      "nameLong": "The Epistle of Paul to the Galatians"
+    },
+    {
+      "id": "EPH",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Eph.",
+      "name": "Ephesians",
+      "nameLong": "The Epistle of Paul to the Ephesians"
+    },
+    {
+      "id": "PHP",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Phil.",
+      "name": "Philippians",
+      "nameLong": "The Epistle of Paul to the Philippians"
+    },
+    {
+      "id": "COL",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Col.",
+      "name": "Colossians",
+      "nameLong": "The Epistle of Paul to the Colossians"
+    },
+    {
+      "id": "1TH",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "1 Th.",
+      "name": "1 Thessalonians",
+      "nameLong": "The First Epistle of Paul to the Thessalonians"
+    },
+    {
+      "id": "2TH",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "2 Th.",
+      "name": "2 Thessalonians",
+      "nameLong": "The Second Epistle of Paul to the Thessalonians"
+    },
+    {
+      "id": "1TI",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "1 Tim.",
+      "name": "1 Timothy",
+      "nameLong": "The First Epistle of Paul to Timothy"
+    },
+    {
+      "id": "2TI",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "2 Tim.",
+      "name": "2 Timothy",
+      "nameLong": "The Second Epistle of Paul to Timothy"
+    },
+    {
+      "id": "TIT",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Tit.",
+      "name": "Titus",
+      "nameLong": "The Epistle of Paul to Titus"
+    },
+    {
+      "id": "PHM",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Philem.",
+      "name": "Philemon",
+      "nameLong": "The Epistle of Paul to Philemon"
+    },
+    {
+      "id": "HEB",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Heb.",
+      "name": "Hebrews",
+      "nameLong": "The Epistle to the Hebrews"
+    },
+    {
+      "id": "JAS",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Jas.",
+      "name": "James",
+      "nameLong": "The Epistle of James"
+    },
+    {
+      "id": "1PE",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "1 Pet.",
+      "name": "1 Peter",
+      "nameLong": "The First Epistle of Peter"
+    },
+    {
+      "id": "1JN",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "1 Jn.",
+      "name": "1 John",
+      "nameLong": "The First Epistle of John"
+    },
+    {
+      "id": "2JN",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "2 Jn.",
+      "name": "2 John",
+      "nameLong": "The Second Epistle of John"
+    },
+    {
+      "id": "3JN",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "3 Jn.",
+      "name": "3 John",
+      "nameLong": "The Third Epistle of John"
+    },
+    {
+      "id": "JUD",
+      "bibleId": "685d1470fe4d5c3b-01",
+      "abbreviation": "Jude",
+      "name": "Jude",
+      "nameLong": "The Epistle of Jude"
+    }
+  ]
+}

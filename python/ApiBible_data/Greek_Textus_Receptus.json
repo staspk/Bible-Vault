@@ -1,0 +1,193 @@
+{
+  "data": [
+    {
+      "id": "MAT",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΚΑΤΑ ΜΑΤΘΑΙΟΝ",
+      "name": "ΚΑΤΑ ΜΑΤΘΑΙΟΝ",
+      "nameLong": "ΚΑΤΑ ΜΑΤΘΑΙΟΝ"
+    },
+    {
+      "id": "MRK",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΚΑΤΑ ΜΑΡΚΟΝ",
+      "name": "ΚΑΤΑ ΜΑΡΚΟΝ",
+      "nameLong": "ΚΑΤΑ ΜΑΡΚΟΝ"
+    },
+    {
+      "id": "LUK",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΚΑΤΑ ΛΟΥΚΑΝ",
+      "name": "ΚΑΤΑ ΛΟΥΚΑΝ",
+      "nameLong": "ΚΑΤΑ ΛΟΥΚΑΝ"
+    },
+    {
+      "id": "JHN",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΚΑΤΑ ΙΩΑΝΝΗΝ",
+      "name": "ΚΑΤΑ ΙΩΑΝΝΗΝ",
+      "nameLong": "ΚΑΤΑ ΙΩΑΝΝΗΝ"
+    },
+    {
+      "id": "ACT",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΑΞΕΙΣ ΑΠΟΣΤΟΛΩΝ",
+      "name": "ΠΡΑΞΕΙΣ ΑΠΟΣΤΟΛΩΝ",
+      "nameLong": "ΠΡΑΞΕΙΣ ΑΠΟΣΤΟΛΩΝ"
+    },
+    {
+      "id": "ROM",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΡΩΜΑΙΟΥΣ",
+      "name": "ΠΡΟΣ ΡΩΜΑΙΟΥΣ",
+      "nameLong": "ΠΡΟΣ ΡΩΜΑΙΟΥΣ"
+    },
+    {
+      "id": "1CO",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Α",
+      "name": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Α",
+      "nameLong": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Α"
+    },
+    {
+      "id": "2CO",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Β",
+      "name": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Β",
+      "nameLong": "ΠΡΟΣ ΚΟΡΙΝΘΙΟΥΣ Β"
+    },
+    {
+      "id": "GAL",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΓΑΛΑΤΑΣ",
+      "name": "ΠΡΟΣ ΓΑΛΑΤΑΣ",
+      "nameLong": "ΠΡΟΣ ΓΑΛΑΤΑΣ"
+    },
+    {
+      "id": "EPH",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΕΦΕΣΙΟΥΣ",
+      "name": "ΠΡΟΣ ΕΦΕΣΙΟΥΣ",
+      "nameLong": "ΠΡΟΣ ΕΦΕΣΙΟΥΣ"
+    },
+    {
+      "id": "PHP",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΦΙΛΙΠΠΗΣΙΟΥΣ",
+      "name": "ΠΡΟΣ ΦΙΛΙΠΠΗΣΙΟΥΣ",
+      "nameLong": "ΠΡΟΣ ΦΙΛΙΠΠΗΣΙΟΥΣ"
+    },
+    {
+      "id": "COL",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΚΟΛΟΣΣΑΕΙΣ",
+      "name": "ΠΡΟΣ ΚΟΛΟΣΣΑΕΙΣ",
+      "nameLong": "ΠΡΟΣ ΚΟΛΟΣΣΑΕΙΣ"
+    },
+    {
+      "id": "1TH",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Α",
+      "name": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Α",
+      "nameLong": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Α"
+    },
+    {
+      "id": "2TH",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Β",
+      "name": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Β",
+      "nameLong": "ΠΡΟΣ ΘΕΣΣΑΛΟΝΙΚΕΙΣ Β"
+    },
+    {
+      "id": "1TI",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Α",
+      "name": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Α",
+      "nameLong": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Α"
+    },
+    {
+      "id": "2TI",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Β",
+      "name": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Β",
+      "nameLong": "ΠΡΟΣ ΤΙΜΟΘΕΟΝ Β"
+    },
+    {
+      "id": "TIT",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΤΙΤΟΝ",
+      "name": "ΠΡΟΣ ΤΙΤΟΝ",
+      "nameLong": "ΠΡΟΣ ΤΙΤΟΝ"
+    },
+    {
+      "id": "PHM",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΦΙΛΗΜΟΝΑ",
+      "name": "ΠΡΟΣ ΦΙΛΗΜΟΝΑ",
+      "nameLong": "ΠΡΟΣ ΦΙΛΗΜΟΝΑ"
+    },
+    {
+      "id": "HEB",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΡΟΣ ΕΒΡΑΙΟΥΣ",
+      "name": "ΠΡΟΣ ΕΒΡΑΙΟΥΣ",
+      "nameLong": "ΠΡΟΣ ΕΒΡΑΙΟΥΣ"
+    },
+    {
+      "id": "JAS",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΙΑΚΩΒΟΥ",
+      "name": "ΙΑΚΩΒΟΥ",
+      "nameLong": "ΙΑΚΩΒΟΥ"
+    },
+    {
+      "id": "1PE",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΕΤΡΟΥ Α",
+      "name": "ΠΕΤΡΟΥ Α",
+      "nameLong": "ΠΕΤΡΟΥ Α"
+    },
+    {
+      "id": "2PE",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΠΕΤΡΟΥ Β",
+      "name": "ΠΕΤΡΟΥ Β",
+      "nameLong": "ΠΕΤΡΟΥ Β"
+    },
+    {
+      "id": "1JN",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΙΩΑΝΝΟΥ Α",
+      "name": "ΙΩΑΝΝΟΥ Α",
+      "nameLong": "ΙΩΑΝΝΟΥ Α"
+    },
+    {
+      "id": "2JN",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΙΩΑΝΝΟΥ Β",
+      "name": "ΙΩΑΝΝΟΥ Β",
+      "nameLong": "ΙΩΑΝΝΟΥ Β"
+    },
+    {
+      "id": "3JN",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΙΩΑΝΝΟΥ Γ",
+      "name": "ΙΩΑΝΝΟΥ Γ",
+      "nameLong": "ΙΩΑΝΝΟΥ Γ"
+    },
+    {
+      "id": "JUD",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΙΟΥΔΑ",
+      "name": "ΙΟΥΔΑ",
+      "nameLong": "ΙΟΥΔΑ"
+    },
+    {
+      "id": "REV",
+      "bibleId": "3aefb10641485092-01",
+      "abbreviation": "ΑΠΟΚΑΛΥΨΙΣ ΙΩΑΝΝΟΥ",
+      "name": "ΑΠΟΚΑΛΥΨΙΣ ΙΩΑΝΝΟΥ",
+      "nameLong": "ΑΠΟΚΑΛΥΨΙΣ ΙΩΑΝΝΟΥ"
+    }
+  ]
+}
