@@ -1,10 +1,10 @@
+sudo apt-get update
 
-latest_version=$(curl -fsSL https://nodejs.org/dist/index.json | grep '"version"' | grep -m1 -B1 '"lts": false' | head -n1 | sed 's/.*"version": "\(v[0-9.]*\)".*/\1/')
-
-echo "Latest current stable Node.js version: $latest_version"
-
-return
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
-export NVM_DIR="$HOME/.nvm"
+# export NVM_DIR="$HOME/.nvm"
+
+
+latest_lts_version=$(nvm list-remote --lts | tail -1 | grep -Eo 'v[0-9]+\.[0-9]+\.[0-9]+')
+echo "Latest LTS Node.js version: $latest_lts_version"
