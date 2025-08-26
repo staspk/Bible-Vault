@@ -1,4 +1,4 @@
-import { BIBLE, Book } from "../../../_shared/Bible";
+import { BIBLE, Book } from "../models/Bible";
 import type { IChapterResponse } from "../../../_shared/interfaces"
 import { printGreen, printYellow } from "../../../_shared/print";
 import { Timer } from "../../../_shared/Timer";

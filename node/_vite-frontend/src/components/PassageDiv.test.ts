@@ -1,5 +1,5 @@
 import { generatePassageDiv } from "./PassageDiv";
-import { Book } from "../../../_shared/Bible";
+import { Book } from "../models/Bible";
 import type { IChapterResponse } from "../../../_shared/interfaces";
 
 /**
