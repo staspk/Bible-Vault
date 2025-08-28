@@ -41,7 +41,7 @@ export function print(...vars) {
  * yankIntFromEnd("chapter42") // returns [42, "chapter"]
  * yankIntFromEnd("file007")   // returns [7, "file00"]
  */
-export function yankUIntFromEnd(string:string): [number, string] {
+export function yankUIntFromEnd(string:string): [number, string] | [null, string] {
     let i = string.length - 1;
     for(i; i > -1; i--) {
         const charCode = string.charCodeAt(i);   // 48-57
@@ -51,8 +51,8 @@ export function yankUIntFromEnd(string:string): [number, string] {
             break;
         }
     }
-    const int:number = parseInt(string.substring(i + 1, string.length), 10)
-    return [int, string.substring(0, (string.length - int.toString().length))];
+    const uint:number = parseInt(string.substring(i + 1, string.length), 10)
+    return [uint, string.substring(0, (string.length - uint.toString().length))];
 }
 
 /**
@@ -73,6 +73,27 @@ export function assertStr(str) {
     if (str !== undefined && str !== null && str !== '')
         return result;
     return null;
+}
+
+export function isUInt(value): boolean {
+    value = parseInt(value);
+    if (Number.isInteger(value) && value > 0)
+        return true;
+    return false;
+}
+
+/**
+ *  Essentially, a QoL extension of String.split() to allow direct access and easy manipulation, whether or not separator actually exists. Returned arrays always have a min length of 2.
+ * 
+ * @example
+ * safeSplit("Matthew 10", ":")      // returns ["Matthew 10", null]
+ * safeSplit("Matthew 10:12", ":")   // returns ["Matthew 10", "12"]
+ */
+export function safeSplit(str:string, separator:string|RegExp, limit?:number): string[] {
+    const array = str.split(separator, limit);
+    if(array == null)
+        return [str, null];
+    return array;
 }
 
 
