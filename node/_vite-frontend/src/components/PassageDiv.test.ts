@@ -1,36 +1,36 @@
-import { generatePassageDiv } from "./PassageDiv";
-import { Book } from "../models/Bible";
-import type { IChapterResponse } from "../../../_shared/interfaces";
+import { PassageDiv } from "./PassageDiv.js";
+import { Book } from "../models/Bible.js";
+import type { IChapterResponse } from "../../../_shared/interfaces.js";
+
 
 /**
-*  TESTING ENDPOINT: http://localhost:8080/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB
-*   to test: replace generatePassageDiv() calls with TEST_generatePassageDiv()
-* 
-*   Fakes data, so chapters 1-5 (corresponds to columns 1-5) of any Book can be used to observe/test grid column layouts of #passage-div
+ * TESTING ENDPOINT: http://localhost:8080/?translations=KJV,NKJV,RSV,NRSV,NASB&book=Genesis&chapter=3
+ * 
+ * Observe/test `PassageDiv` various grid layouts (1-5 columns, corresponding to chapters 1-5 of any Book). 
 */
-export function TEST_generatePassageDiv(book:Book, chapter:number, data:IChapterResponse) {
+export function TEST__PassageDiv_Generate(book:Book, chapter:number, data:IChapterResponse) {
     if(chapter === 1) {
         data.data.NASB = null;
         data.data.NRSV = null;
         data.data.RSV = null;
         data.data.NKJV = null;
-        generatePassageDiv(book, chapter, data);
+        PassageDiv.Generate(book, chapter, data);
     }
     else if(chapter === 2) {
         data.data.NASB = null;
         data.data.NRSV = null;
         data.data.RSV = null;
-        generatePassageDiv(book, chapter, data);
+        PassageDiv.Generate(book, chapter, data);
     }
     else if(chapter === 3) {
         data.data.NASB = null;
         data.data.NRSV = null;
-        generatePassageDiv(book, chapter, data);
+        PassageDiv.Generate(book, chapter, data);
     }
     else if(chapter === 4) {
         data.data.NASB = null;
-        generatePassageDiv(book, chapter, data);
+        PassageDiv.Generate(book, chapter, data);
     }
     else
-        generatePassageDiv(book, chapter, data);
+        PassageDiv.Generate(book, chapter, data);
 }
