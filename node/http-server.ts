@@ -4,9 +4,10 @@ import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
-import { combinePaths } from './kozubenko/utils.js';
+import { combinePaths, safeSplit } from './kozubenko/utils.js';
 import { BIBLE } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
+import { performance } from "node:perf_hooks";
 
 const __dirname = import.meta.dirname
 print('process.argv', process.argv);
@@ -21,8 +22,14 @@ const HTTP_PORT  = 80;
 const HTTPS_PORT = 443;
 const DEV_PORT   = 8080;
 
-const HOST:string = process.platform === 'linux' ? '35.247.126.199' : '127.0.0.1';
-const PORT:number = process.platform === 'linux' ? HTTP_PORT        :  DEV_PORT;
+// const GOOGLE_VM_EXTERNAL_IP = await fetch(
+//     "http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip", {
+//         headers: { "Metadata-Flavor": "Google" },
+//     }
+// ).then(res => res.text());
+
+const HOST:string = process.platform === 'linux' ? await GOOGLE_VM_EXTERNAL_IP() : '127.0.0.1';
+const PORT:number = process.platform === 'linux' ? HTTP_PORT                     :  DEV_PORT;
 
 
 const DIST       = Path.join(__dirname, '_vite-frontend', 'dist');
@@ -65,22 +72,32 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
 async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     printYellow(`API Request: ${URL.pathname}?${URL.searchParams.toString()}`);
     
-    const param1:string = URL.searchParams.get('book') ?? '';
-    const param2:string = URL.searchParams.get('chapter') ?? '';
-    const param3:string = URL.searchParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB';
+    const param1:string = URL.searchParams.get('translations') ?? '';
+    const param2:string = URL.searchParams.get('book')    ?? '';
+    const param3:string = URL.searchParams.get('chapter') ?? '';
+    const param4:string = URL.searchParams.get('verses')  ?? '';
+
+    if (!param2 || !param3) {  handleBadRequest(response); return;  }
     
-    if (!param1 || !param2) {  handleBadRequest(response); return;  }
+    const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'];  // Stan: all well, fyi
+    if(translations.length < 1) {  handleBadRequest(response); return;  }
     
-    const book = BIBLE.getBook(param1);     // Stan: yes, you handle garbage input well, fyi
-    const chapter = parseInt(param2, 10);   // Stan: yes, you handle garbage input well, fyi
-    const translations: string[] = param3 ? param3.split(',').filter(translation => translation) : ['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'];  // Stan: well, fyi
+    const book = BIBLE.getBook(param2);
+    if(!book) {  handleBadRequest(response); return;  }
+
+    const chapterStart = parseInt(safeSplit(param3, "-")[0], 10)
+    const chapterEnd   = parseInt(safeSplit(param3, "-")[1], 10)
+
+    if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
+
+    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters - 1) {
+        if(chapterEnd - chapterStart > 1) {  handleBadRequest (response, `API does not support GET requests on >2 chapters.`); return;  }
+    }
     
-    if (!book || !chapter || translations.length < 1) {  handleBadRequest(response); return;  }
-    
-    if (chapter < 1 || chapter > book.chapters) {  handleBadRequest(response, `${book.name}:${chapter} is not a real Bible chapter.`); return;  }
-    
+    const start = performance.now();
+
     const promises = await translations.map(async translation => {
-        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
+        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
         if (fs.existsSync(chapterFile))
             return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
         
@@ -88,6 +105,9 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     });
     
     const data = await Promise.all(promises);
+
+    const elapsed = performance.now() - start;
+    printRed(`Elapsed: ${elapsed.toFixed(3)} ms`)
     
     if (data.every(obj => Object.values(obj)[0] !== null)) {
         response.writeHead(200, { 'Content-Type': 'application/json' });
@@ -172,4 +192,13 @@ async function loadChapterIntoMemory(path:string): Promise<object|null> {
         printRed(`loadChapterIntoMemory(): ${error}`);
         return null;
     }
+}
+
+
+function GOOGLE_VM_EXTERNAL_IP() {
+    return fetch(
+        "http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip", {
+            headers: { "Metadata-Flavor": "Google" }
+        }
+    ).then(res => res.text());
 }
