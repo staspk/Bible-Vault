@@ -11,7 +11,7 @@ const urlParams = new URLSearchParams(window.location.search);
 const searchInput = document.getElementById('search-input') as HTMLInputElement;
 
 
-const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NKJV,RSV,NRSV,NASB').split(',').filter(translation => translation);     // filter is a sanitizing step
+const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT').split(',').filter(translation => translation) ;
 const BOOK         = urlParams.get('book');
 const CHAPTER      = urlParams.get('chapter');
 const VERSES       = urlParams.get('verses')
