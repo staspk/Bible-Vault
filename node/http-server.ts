@@ -22,12 +22,6 @@ const HTTP_PORT  = 80;
 const HTTPS_PORT = 443;
 const DEV_PORT   = 8080;
 
-// const GOOGLE_VM_EXTERNAL_IP = await fetch(
-//     "http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip", {
-//         headers: { "Metadata-Flavor": "Google" },
-//     }
-// ).then(res => res.text());
-
 const HOST:string = process.platform === 'linux' ? await GOOGLE_VM_EXTERNAL_IP() : '127.0.0.1';
 const PORT:number = process.platform === 'linux' ? HTTP_PORT                     :  DEV_PORT;
 
