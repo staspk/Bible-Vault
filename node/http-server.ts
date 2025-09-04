@@ -73,7 +73,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
 
     if (!param2 || !param3) {  handleBadRequest(response); return;  }
     
-    const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NKJV', 'RSV', 'NRSV', 'NASB'];  // Stan: all well, fyi
+    const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
     if(translations.length < 1) {  handleBadRequest(response); return;  }
     
     const book = BIBLE.getBook(param2);
@@ -87,9 +87,8 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters - 1) {
         if(chapterEnd - chapterStart > 1) {  handleBadRequest (response, `API does not support GET requests on >2 chapters.`); return;  }
     }
-    
-    const start = performance.now();
 
+    
     const promises = await translations.map(async translation => {
         const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
         if (fs.existsSync(chapterFile))
@@ -99,9 +98,6 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     });
     
     const data = await Promise.all(promises);
-
-    const elapsed = performance.now() - start;
-    printRed(`Elapsed: ${elapsed.toFixed(3)} ms`)
     
     if (data.every(obj => Object.values(obj)[0] !== null)) {
         response.writeHead(200, { 'Content-Type': 'application/json' });
@@ -150,15 +146,15 @@ server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
         printGreen(`  http://${HOST}:${PORT}/`)
-        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
     }
     else if (PORT === HTTP_PORT) {
         printGreen(`  http://${HOST}/`)
-        printGreen(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
     }
     else if (PORT === HTTPS_PORT) {
         printGreen(`  https://${HOST}/`)
-        printGreen(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NKJV,RSV,NRSV,NASB`)
+        printGreen(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
     }
 });
 
