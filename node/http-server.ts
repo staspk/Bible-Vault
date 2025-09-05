@@ -5,9 +5,10 @@ import * as Path from 'path'
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { combinePaths, safeSplit } from './kozubenko/utils.js';
-import { BIBLE } from './models/Bible.js';
+import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
 import { performance } from "node:perf_hooks";
+import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
 
 const __dirname = import.meta.dirname
 print('process.argv', process.argv);
@@ -84,17 +85,24 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
 
     if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
 
-    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters - 1) {
-        if(chapterEnd - chapterStart > 1) {  handleBadRequest (response, `API does not support GET requests on >2 chapters.`); return;  }
+    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters - 1) {    /*  multiple chapters call  */
+        if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
+
+        let chapterStartPromise = await loadChapterIntoMemory(book, chapterStart, translations);
+        let chapterEndPromise   = loadChapterIntoMemory(book, chapterStart, translations);
+
+        const promises = await translations.map(async translation => {
+            const chapterFile = Path.join(BIBLE_TXT, translation, book.name, )
+        })
     }
 
     
     const promises = await translations.map(async translation => {
         const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
-        if (fs.existsSync(chapterFile))
-            return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
-        
-        return { [translation.toUpperCase()]: null };
+        if (!fs.existsSync(chapterFile))
+            return { [translation.toUpperCase()]: null };
+
+        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
     });
     
     const data = await Promise.all(promises);
@@ -160,6 +168,25 @@ server.listen(PORT, '0.0.0.0', () => {
 
 
 
+
+
+// Caller should already know if operation is needed, (will just overwrite memory point)
+async function loadChapterIntoMemory(book:Book, chapter:number, translations:string[]): Promise<object|null> {
+
+}
+
+// Caller should already know if operation is needed, (will just overwrite memory point)
+async function getChapter(book:Book, chapter:number, translations:string[]): Promise<object|null> {
+    const promises = await translations.map(async translation => {
+        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
+        if (!fs.existsSync(chapterFile))
+            return { [translation.toUpperCase()]: null };
+
+        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
+    });
+}
+
+
 /**
 * Assumption: each line in the file maps to one verse.
 *
@@ -182,13 +209,4 @@ async function loadChapterIntoMemory(path:string): Promise<object|null> {
         printRed(`loadChapterIntoMemory(): ${error}`);
         return null;
     }
-}
-
-
-function GOOGLE_VM_EXTERNAL_IP() {
-    return fetch(
-        "http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip", {
-            headers: { "Metadata-Flavor": "Google" }
-        }
-    ).then(res => res.text());
 }
