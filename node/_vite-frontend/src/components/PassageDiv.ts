@@ -1,5 +1,5 @@
 import { BIBLE, Book } from "../models/Bible";
-import type { IChapterResponse } from "../../../_shared/interfaces"
+import type { IChapterResponse, IChaptersResponse } from "../../../_shared/interfaces"
 import { printGreen, printYellow } from "../../../_shared/print";
 import { Timer } from "../../../_shared/Timer";
 
@@ -9,8 +9,9 @@ const COLUMNS_CLASS = (num_of_cols) => `cols-${num_of_cols}`;
 export class PassageDiv {
     static ID = 'passage-div';
 
-    /**  Generates and mounts onto `PassageDiv.PLACEHOLDER` [`#passage-div`]  */
-    static Generate(book:Book, chapter:number, data:IChapterResponse) {
+    /**  Generates and mounts onto `PassageDiv.PLACEHOLDER` [`#passage-div`]  
+    *    `IChaptersResponse` potential is there, but `Generate` method implementation unfinished. Will be done the day a concrete need arises in such a feature.  */
+    static Generate(book:Book, chapter:number, data:IChapterResponse|IChaptersResponse) {
         const PLACEHOLDER = document.getElementById(PassageDiv.ID);
         const passageDiv = Object.assign(document.createElement('div'), {
             id: PLACEHOLDER?.id

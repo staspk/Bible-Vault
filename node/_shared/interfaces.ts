@@ -35,6 +35,42 @@ export interface IChapterResponse {
         [translation: string]: { [verseNumber: string]: string } | null;
     }
 }
+
+/**
+* **Example:**
+* ```json
+* {
+*   "status": "partial",
+*   "data": {
+*      "27": {
+*         "KJV": null,
+*         "NKJV": {
+*            "1": Now it came to pass, when Isaac was old and his eyes were so dim that he could not see, that he called Esau his older son and said to him, "My son." And he answered him, "Here I am.",
+*            "2": "Then he said, “Behold now, I am old. I do not know the day of my death.",
+*            ...
+*      },
+*      "28": {
+*         "KJV": {
+*            "1": "And Isaac called Jacob, and blessed him, and charged him, and said unto him, Thou shalt not take a wife of the daughters of Canaan.",
+*            "2": "Arise, go to Padanaram, to the house of Bethuel thy mother's father; and take thee a wife from thence of the daughers of Laban thy mother's brother."
+*         }
+*         "NKJV": {
+*            "1": "Then Isaac called Jacob and blessed him, and [a]charged him, and said to him: “You shall not take a wife from the daughters of Canaan.",
+*            "2": "Arise, go to Padan Aram, to the house of Bethuel your mother’s father; and take yourself a wife from there of the daughters of Laban your mother’s brother.",
+*            ...
+*          }
+*      }
+* }
+* ```
+*/
+export interface IChaptersResponse {
+    status: `${Status}`;
+    data: {
+        [chapterNumber: string]: {
+            [translation: string]: { [verseNumber: string]: string } | null;
+        }
+    }
+}
 /**
 * Alternate interfaces for IChapterResponse:
 * 

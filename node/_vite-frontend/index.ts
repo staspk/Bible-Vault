@@ -2,7 +2,7 @@ import { Timer } from '../_shared/Timer';
 import { isUInt, print, safeSplit, yankUIntFromEnd } from './src/ts/utils';
 import { BIBLE, Book } from './src/models/Bible';
 import { printGreen, printRed, printYellow } from '../_shared/print';
-import type { IChapterResponse } from '../_shared/interfaces';
+import type { IChapterResponse, IChaptersResponse } from '../_shared/interfaces';
 import { PassageDiv } from './src/components/PassageDiv';
 import { isNullOrWhitespace } from '../kozubenko/utils';
 
@@ -42,11 +42,11 @@ searchInput.addEventListener('input', (event) => {
         if (!book) return;
         if (chapterStart < 0 || chapterStart > book.chapters) return;
 
-        if(isUInt(chapterEnd)) {    // e.g: "Matthew 10-11" (does not support verses)
+        if(isUInt(chapterEnd)) {    // input looks like: "Matthew 10-11", as IChaptersResponse (does not support verses)
             const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
 
-            PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse);
+            PassageDiv.Generate(book, chapterStart, await response.json() as IChaptersResponse);
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             return;
         }
@@ -65,7 +65,6 @@ searchInput.addEventListener('input', (event) => {
                 if (response.status !== 200) return;
 
                 PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse)
-                // PassageDiv.Test.Generate(book, chapterStart, await response.json() as IChapterResponse);
                 window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`);
                 return;
             }
