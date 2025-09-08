@@ -4,10 +4,9 @@ import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
-import { combinePaths, safeSplit } from './kozubenko/utils.js';
+import { combinePaths, isNullOrWhitespace, safeSplit } from './kozubenko/utils.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
-import { performance } from "node:perf_hooks";
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
 
 const __dirname = import.meta.dirname
@@ -80,12 +79,12 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     const book = BIBLE.getBook(param2);
     if(!book) {  handleBadRequest(response); return;  }
 
-    const chapterStart = parseInt(safeSplit(param3, "-")[0], 10)
-    const chapterEnd   = parseInt(safeSplit(param3, "-")[1], 10)
+    const chapterStart = parseInt(safeSplit(param3, "-")[0], 10);
+    const chapterEnd   = parseInt(safeSplit(param3, "-")[1], 10);
 
     if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
 
-    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call  */
+    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call. See: _shared/IChaptersResponse  */
         if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
 
         let chapters = {
@@ -99,6 +98,24 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             data: chapters
         }));
         return;
+    }
+
+    if(!isNullOrWhitespace(param4)) {
+        const verseStart = parseInt(safeSplit(param4, "-")[0], 10);
+        const verseEnd   = parseInt(safeSplit(param4, "-")[1], 10);
+
+        if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses being > 89 if not Psalms */
+            if(verseEnd && verseEnd > 1 && ((verseEnd <= 176 && book === BIBLE.PSALMS)   || verseEnd <= 89) ) {
+                if(verseStart < verseEnd) {
+                    /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
+                    
+                } else {
+                    handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
+                }
+            }
+
+            /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
+        }
     }
 
     
