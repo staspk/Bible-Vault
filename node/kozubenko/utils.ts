@@ -32,3 +32,11 @@ export function safeSplit(str:string, separator:string|RegExp, limit?:number): s
         return [str, null];
     return array;
 }
+
+
+export function isUInt(value): boolean {
+    value = parseInt(value);
+    if (Number.isInteger(value) && value > 0)
+        return true;
+    return false;
+}
