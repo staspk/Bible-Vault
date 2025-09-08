@@ -75,7 +75,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     if (!param2 || !param3) {  handleBadRequest(response); return;  }
     
     const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
-    if(translations.length < 1) {  handleBadRequest(response); return;  }
+    if(translations.length < 1 || translations.length > 10) {  handleBadRequest(response); return;  }
     
     const book = BIBLE.getBook(param2);
     if(!book) {  handleBadRequest(response); return;  }
@@ -85,15 +85,20 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
 
     if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
 
-    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters - 1) {    /*  multiple chapters call  */
+    if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call  */
         if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
 
-        let chapterStartPromise = await loadChapterIntoMemory(book, chapterStart, translations);
-        let chapterEndPromise   = loadChapterIntoMemory(book, chapterStart, translations);
+        let chapters = {
+            [chapterStart]: Object.assign({}, ...Object.values(await getChapter(book, chapterStart, translations))),
+            [chapterEnd]: Object.assign({}, ...Object.values(await getChapter(book, chapterEnd, translations)))
+        }
 
-        const promises = await translations.map(async translation => {
-            const chapterFile = Path.join(BIBLE_TXT, translation, book.name, )
-        })
+        response.writeHead(200, { 'Content-Type': 'application/json' });
+        response.end(JSON.stringify({
+            status: Status.Success,
+            data: chapters
+        }));
+        return;
     }
 
     
@@ -170,20 +175,25 @@ server.listen(PORT, '0.0.0.0', () => {
 
 
 
-// Caller should already know if operation is needed, (will just overwrite memory point)
-async function loadChapterIntoMemory(book:Book, chapter:number, translations:string[]): Promise<object|null> {
-
-}
-
-// Caller should already know if operation is needed, (will just overwrite memory point)
-async function getChapter(book:Book, chapter:number, translations:string[]): Promise<object|null> {
+/**
+* @returns Plain object (aka: dict) mapping verse numbers to verse text, or null on error.
+* @example
+* {
+*   "1": "In the beginning God created the heavens and the earth.",
+*   "2": "And the earth was without form, and void; and darkness was upon the face of the deep.",
+*   "3": "And the Spirit of God moved upon the face of the waters."
+* }
+*/
+async function getChapter(book:Book, chapter:number, translations:string[]): Promise<object[]> {
     const promises = await translations.map(async translation => {
-        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
+        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
         if (!fs.existsSync(chapterFile))
             return { [translation.toUpperCase()]: null };
 
         return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
     });
+
+    return await Promise.all(promises);
 }
 
 
