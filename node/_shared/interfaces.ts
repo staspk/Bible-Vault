@@ -71,27 +71,30 @@ export interface IChaptersResponse {
         }
     }
 }
-/**
-* Alternate interfaces for IChapterResponse:
-* 
-* export interface IChapterResponse {
-*     status: `${Status}`;
-*     data: {
-*         [translation in SupportedBibleTranslations]?: {
-*             [verseNumber: string]: string;
-*         } | null;
-*     };
-* }
-* 
-* export interface IChapterResponse {
-*     status: `${Status}`;
-*     data: Array<{
-*         translation: SupportedBibleTranslations;
-*         verses: {
-*             [verseNumber: string]: string;
-*         } | null;
-*     }>;
-* }
-*/
 
+export class IResponses {
+    /**  Transform an `IChaptersResponse` to an `IChapterResponse`  */
+    static transform(chapter:number, from:IChaptersResponse): IChapterResponse {
+        let chapterObject;
+        for (const [i, [key, value]] of Object.entries(from.data).entries())
+            if(parseInt(key) === chapter)
+                chapterObject = value;
 
+        if (Object.values(chapterObject).every(value => value !== null)) {
+            return {
+                status: Status.Success,
+                data: chapterObject
+            }
+        } else if (Object.values(chapterObject).every(value => value === null)) {
+            return {
+                status: Status.NotFound,
+                data: chapterObject
+            }
+        } else {
+            return {
+                status: Status.Partial,
+                data: chapterObject
+            }
+        }
+    }
+}
