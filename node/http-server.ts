@@ -104,7 +104,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
         const verseStart = parseInt(safeSplit(param4, "-")[0], 10);
         const verseEnd   = parseInt(safeSplit(param4, "-")[1], 10);
 
-        if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses being > 89 if not Psalms */
+        if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses being > 89, 176 if Psalms */
             if(verseEnd && verseEnd > 1 && ((verseEnd <= 176 && book === BIBLE.PSALMS)   || verseEnd <= 89) ) {
                 if(verseStart < verseEnd) {
                     /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
@@ -176,7 +176,9 @@ server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
         printGreen(`  http://${HOST}:${PORT}/`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
     }
     else if (PORT === HTTP_PORT) {
         printGreen(`  http://${HOST}/`)
