@@ -1,4 +1,5 @@
 import { Status } from "./enums.js";
+import { printGreen, printOrange, printYellow } from "./print.js";
 
 
 /**
@@ -73,7 +74,23 @@ export interface IChaptersResponse {
 }
 
 export class IResponses {
-    /**  Transform an `IChaptersResponse` to an `IChapterResponse`  */
+    /**  Pick a (0-based) `from`-`to` range of `translation(s)` to keep, cutting out the excluded ones out of `IChapterResponse.data`  
+    * param: `to` is exclusive  
+    * *No sanity checks, caller beware.*  */
+    static range(from:number, to:number, response:IChapterResponse): IChapterResponse {
+        let translations: object[] = [];
+        for (const [i, [key, value]] of Object.entries(response.data).entries())
+            if(from <= i && i < to)
+                translations.push({[key]:value});
+
+        return {
+            status: response.status,
+            data: Object.assign({}, ...translations)
+        }
+    }
+
+    /**  Transform an `IChaptersResponse` to an `IChapterResponse`.  
+    * No sanity checks, caller beware.  */ 
     static transform(chapter:number, from:IChaptersResponse): IChapterResponse {
         let chapterObject;
         for (const [i, [key, value]] of Object.entries(from.data).entries())
