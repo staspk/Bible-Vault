@@ -4,6 +4,7 @@ import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_s
 import { BIBLE } from './src/models/Bible';
 import { PassageDiv } from './src/components/PassageDiv';
 
+import './src/keyboard';
 
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -19,68 +20,68 @@ const VERSES       = urlParams.get('verses')
 let searchDebounceTimerID;
 searchInput.addEventListener('input', (event) => {
     clearTimeout(searchDebounceTimerID);
-
+    
     const searchStr = (event.target as HTMLInputElement).value.trim();
     if (!searchStr) return;
     
     searchDebounceTimerID = setTimeout(async () => {
         const potentialBookChapter = safeSplit(searchStr, ":")[0];
         const potentialVerses      = safeSplit(searchStr, ":")[1];
-
+        
         if(isNullOrWhitespace(potentialBookChapter)) return;
-
+        
         let book, chapterStart, chapterEnd, verseStart, verseEnd, QueryString;
-
+        
         const [uint, potentialBook] = yankUIntFromEnd(safeSplit(potentialBookChapter, "-")[0]);
         if (!uint) return;
         
         book         = BIBLE.searchBook(potentialBook.trim());
         chapterStart = uint;
         chapterEnd   = safeSplit(potentialBookChapter, "-")[1];
-
+        
         if (!book) return;
         if (chapterStart < 0 || chapterStart > book.chapters) return;
-
+        
         if(isUInt(chapterEnd)) {    // searchStr looks like: "Matthew 10-11", as IChaptersResponse (does not support verses)
             const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
-
+            
             PassageDiv.Generate(book, chapterStart, IResponses.transform(chapterStart, await response.json() as IChaptersResponse));
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             /* SAVE chapterEnd local, so don't have to ping server for next chapter */
             return;
         }
-
+        
         if(!isNullOrWhitespace(potentialVerses)) {
             verseStart = safeSplit(potentialVerses, "-")[0];
             verseEnd   = safeSplit(potentialVerses, "-")[1];
-
+            
             if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server for just the book/chapter, if the verses string is not legit  */
-
+            
             QueryString = `/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;
-
+            
             if(isUInt(verseEnd))
                 QueryString += `-${verseEnd}`;
-
+            
             const response = await fetch(QueryString);
             if (response.status !== 200) return;
-
+            
             PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse)
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`);
             return;
         }
-
+        
         // searchStr looks like: "Matthew 10"
         const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
-
+        
         PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse);
         window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
     }, 750);
 });
 
 
-if(BOOK && CHAPTER) {
+if(BOOK && CHAPTER) {   /*  if urlParams, set page state */
     searchInput.value = `${BOOK} ${CHAPTER}`;
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
