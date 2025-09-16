@@ -1,11 +1,12 @@
 import { Book } from "../models/Bible";
 import { IResponses, type IChapterResponse } from "../../../_shared/interfaces"
+import { printGreen, printYellow } from "../../../_shared/print";
 
 
 enum View {
     None = 'none',
-    One = 'view1',
-    Two = 'view2'
+    One  = 'view1',
+    Two  = 'view2'
 }
 
 /** CSS class that's used to determine `width` and `grid-template-columns` for: `#passage-div` */
@@ -33,7 +34,7 @@ export class PassageDiv {
         for (const [i, [key, value]] of Object.entries(data.data).entries())
             total_translations++;
         
-        if(PassageDiv.mirrorOption && (total_translations === 6 || total_translations === 8)) {
+        if(PassageDiv.mirrorOption && (total_translations % 2 === 0)) {
             view1_translations = total_translations / 2;
             view2_translations = total_translations / 2;
         } else {
@@ -43,10 +44,10 @@ export class PassageDiv {
             } else 
                 view1_translations = total_translations;
         }
-        
+
         PassageDiv.view1 = PassageDiv.generateView(chapter, view1_translations, IResponses.range(0, view1_translations, data));
         if(view2_translations > 0)
-            PassageDiv.view2 = PassageDiv.generateView(chapter, view2_translations, IResponses.range(view1_translations-1, (view1_translations+view2_translations), data));
+            PassageDiv.view2 = PassageDiv.generateView(chapter, view2_translations, IResponses.range(view1_translations, (view1_translations+view2_translations), data));
         
         PLACEHOLDER.replaceWith(PassageDiv.view1);
         PassageDiv.currentView = View.One;
