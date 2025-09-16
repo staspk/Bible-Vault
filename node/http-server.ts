@@ -9,15 +9,16 @@ import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
 
+
 const __dirname = import.meta.dirname
 print('process.argv', process.argv);
 print()
 
 
 /**
- * Ports under 1024 privileged on unix systems. Temporarily using: "sudo setcap 'cap_net_bind_service=+ep' $(which node)".
- * Eventually: use Nginx/Apache as a reverse-proxy server on ports 80/443 and forward requests to your Node.js app on 8080.
- */
+* Ports under 1024 privileged on unix systems. Temporarily using: "sudo setcap 'cap_net_bind_service=+ep' $(which node)".
+* Eventually: use Nginx/Apache as a reverse-proxy server on ports 80/443 and forward requests to your Node.js app on 8080.
+*/
 const HTTP_PORT  = 80;
 const HTTPS_PORT = 443;
 const DEV_PORT   = 8080;
@@ -70,7 +71,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     const param2:string = URL.searchParams.get('book')    ?? '';
     const param3:string = URL.searchParams.get('chapter') ?? '';
     const param4:string = URL.searchParams.get('verses')  ?? '';
-
+    
     if (!param2 || !param3) {  handleBadRequest(response); return;  }
     
     const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
@@ -78,20 +79,20 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     
     const book = BIBLE.getBook(param2);
     if(!book) {  handleBadRequest(response); return;  }
-
+    
     const chapterStart = parseInt(safeSplit(param3, "-")[0], 10);
     const chapterEnd   = parseInt(safeSplit(param3, "-")[1], 10);
-
+    
     if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
-
+    
     if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call. See: _shared/IChaptersResponse  */
         if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
-
+        
         let chapters = {
             [chapterStart]: Object.assign({}, ...Object.values(await getChapter(book, chapterStart, translations))),
             [chapterEnd]: Object.assign({}, ...Object.values(await getChapter(book, chapterEnd, translations)))
         }
-
+        
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({
             status: Status.Success,
@@ -99,11 +100,11 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
         }));
         return;
     }
-
+    
     if(!isNullOrWhitespace(param4)) {
         const verseStart = parseInt(safeSplit(param4, "-")[0], 10);
         const verseEnd   = parseInt(safeSplit(param4, "-")[1], 10);
-
+        
         if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses being > 89, 176 if Psalms */
             if(verseEnd && verseEnd > 1 && ((verseEnd <= 176 && book === BIBLE.PSALMS)   || verseEnd <= 89) ) {
                 if(verseStart < verseEnd) {
@@ -113,36 +114,28 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
                     handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
                 }
             }
-
+            
             /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
         }
     }
-
     
-    const promises = await translations.map(async translation => {
-        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapterStart}.txt`);
-        if (!fs.existsSync(chapterFile))
-            return { [translation.toUpperCase()]: null };
-
-        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
-    });
     
-    const data = await Promise.all(promises);
+    let chapter = await getChapter(book, chapterStart, translations);
     
-    if (data.every(obj => Object.values(obj)[0] !== null)) {
+    if (chapter.every(translation => Object.values(translation)[0] !== null)) {
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({
             status: Status.Success,
-            data: Object.assign({}, ...data)
+            data: Object.assign({}, ...chapter)
         }));
         return;
-    } else if (data.every(obj => Object.values(obj)[0] === null)) {
+    } else if (chapter.every(translation => Object.values(translation)[0] === null)) {
         handleNotFound(response); return;
     } else {
         response.writeHead(200, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({
             status: Status.Partial,
-            data: Object.assign({}, ...data)
+            data: Object.assign({}, ...chapter)
         }));
     }
 }
@@ -169,13 +162,14 @@ const server = http.createServer((request, response) => {
         handleApiRequest(urlObj, response);
     
     else
-    handleResourceRequest(urlObj.pathname, response);
+        handleResourceRequest(urlObj.pathname, response);
 });
 
 server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
         printGreen(`  http://${HOST}:${PORT}/`)
+        printGreen(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
@@ -208,10 +202,10 @@ async function getChapter(book:Book, chapter:number, translations:string[]): Pro
         const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
         if (!fs.existsSync(chapterFile))
             return { [translation.toUpperCase()]: null };
-
-        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
+        
+        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) }
     });
-
+    
     return await Promise.all(promises);
 }
 
