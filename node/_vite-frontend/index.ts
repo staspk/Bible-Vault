@@ -4,7 +4,16 @@ import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_s
 import { BIBLE } from './src/models/Bible';
 import { PassageDiv } from './src/components/PassageDiv';
 
+import { debounce } from './src/debounce';
+import { printGreen, printYellow } from '../_shared/print';
+
 import './src/keyboard';
+
+
+
+const logClientWidth = debounce(() => {
+    printGreen(document.documentElement.clientWidth);
+}, 100);
 
 
 const urlParams = new URLSearchParams(window.location.search);
