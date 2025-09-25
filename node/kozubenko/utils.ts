@@ -1,13 +1,16 @@
 
-/**
- * Combines paths together (handles paths with forward `/`, backslashes `\`, or both)
- *
- * @returns {string} Returns a path with forward slashes `/`
- */
-export function combinePaths(...paths: string[]): string {
-    return paths
-        .flatMap(path => path.split(/[\\/]/))
-        .join('/');
+export class Paths {
+    /**
+     * Handles paths with any combination of forward `/` and backslashes `\`.
+     *
+     * @returns {string} Returns a path with forward slashes `/`
+     */
+    static safeJoin(...paths: string[]): string {
+        return paths
+            .flatMap(path => path.split(/[\\/]/))
+            .filter(path => path)
+            .join('/');
+    }
 }
 
 /**

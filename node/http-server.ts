@@ -4,7 +4,7 @@ import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
-import { combinePaths, isNullOrWhitespace, safeSplit } from './kozubenko/utils.js';
+import { Paths, isNullOrWhitespace, safeSplit } from './kozubenko/utils.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
@@ -32,7 +32,7 @@ const BIBLE_TXT  = Path.join(__dirname, '..', 'bible_txt');
 const INDEX_HTML = Path.join(DIST, 'index.html');
 
 function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
-    const requestedResource = combinePaths(DIST, pathname);
+    const requestedResource = Paths.safeJoin(DIST, pathname);
     if(!fs.existsSync(requestedResource)) {
         handleNotFound(response);
         return;
@@ -60,9 +60,8 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
 
 
 /**
-* Currently only one API endpoint:
-* 
-*   `/api/?book=Genesis&chapter=5&translations=KJV,NKJV,RSV,NRSV,NASB`  ***RETURNS***: `IChapterResponse`
+*   `/api/?translations=KJV,NKJV&book=Genesis&chapter=5`    ***RETURNS***: `IChapterResponse`  
+*   `/api/?translations=KJV,NKJV&book=Genesis&chapter=5-6`  ***RETURNS***: `IChaptersResponse`
 */
 async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     printYellow(`API Request: ${URL.pathname}?${URL.searchParams.toString()}`);
@@ -151,11 +150,12 @@ const server = http.createServer((request, response) => {
                 response.writeHead(500, { 'Content-Type': 'text/html'});
                 response.end('Error Loading: index.html');
                 return;
+            } else {
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.end(data);
+                return;
             }
-            response.writeHead(200, {'Content-Type': 'text/html'});
-            response.end(data);
         });
-        return;
     }
     
     else if (urlObj.pathname === '/api/')
@@ -169,10 +169,11 @@ server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
         printGreen(`  http://${HOST}:${PORT}/`)
+        printGreen(`  http://${HOST}:${PORT}/report/`)
         printGreen(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
-        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
-        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
+        // printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
+        // printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
     }
     else if (PORT === HTTP_PORT) {
         printGreen(`  http://${HOST}/`)
