@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
-import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
+import { HtmlPage, handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { Paths, isNullOrWhitespace, safeSplit } from './kozubenko/utils.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
@@ -29,8 +29,13 @@ const PORT:number = process.platform === 'linux' ? HTTP_PORT                    
 
 const DIST       = Path.join(__dirname, '_vite-frontend', 'dist');
 const BIBLE_TXT  = Path.join(__dirname, '..', 'bible_txt');
-const INDEX_HTML = Path.join(DIST, 'index.html');
+const PAGES = [
+    new HtmlPage('/'      , Path.join(DIST, 'index.html')),
+    new HtmlPage('/report', Path.join(DIST, 'report.html'))
+]
 
+
+/**  Technically, this is meant to handle asset-like resource requests. ie: `index.js`/`index.css` requests after being served `index.html`. */
 function handleResourceRequest(pathname:string, response:http.ServerResponse): void {
     const requestedResource = Paths.safeJoin(DIST, pathname);
     if(!fs.existsSync(requestedResource)) {
@@ -142,25 +147,14 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
 const server = http.createServer((request, response) => {
     if (!request.url) return;
     
-    const urlObj = new URL(request.url, `http://localhost:${PORT}`);
-    // printYellow(`CURRENT PATHNAME: ${urlObj.pathname}`);
-    if (urlObj.pathname === '/') {
-        fs.readFile(INDEX_HTML, (error, data) => {
-            if (error) {
-                response.writeHead(500, { 'Content-Type': 'text/html'});
-                response.end('Error Loading: index.html');
-                return;
-            } else {
-                response.writeHead(200, {'Content-Type': 'text/html'});
-                response.end(data);
-                return;
-            }
-        });
-    }
+    const urlObj = new URL(request.url, `http://localhost:${PORT}`);             /* CHECK THIS LINE NEXT TIME YOU SPIN UP A GOOGLE VM: why does localhost work? */
+    const page = PAGES.find(page => page.route === urlObj.pathname);
+
+    if(page)
+        page.handle(response);
     
     else if (urlObj.pathname === '/api/')
         handleApiRequest(urlObj, response);
-    
     else
         handleResourceRequest(urlObj.pathname, response);
 });
@@ -169,7 +163,7 @@ server.listen(PORT, '0.0.0.0', () => {
     printGreen('Endpoints: ');
     if (PORT === DEV_PORT) {
         printGreen(`  http://${HOST}:${PORT}/`)
-        printGreen(`  http://${HOST}:${PORT}/report/`)
+        printGreen(`  http://${HOST}:${PORT}/report`)
         printGreen(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
         printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
         // printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)

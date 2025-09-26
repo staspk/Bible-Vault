@@ -1,5 +1,28 @@
 import * as http from 'http';
+import { readFile as fs_readFile } from 'fs';
 
+
+export class HtmlPage {
+    constructor(
+        /** equivalent to Node's `URL.pathname` */
+        public route: string,
+        public path_to_resource: string
+    ) {}
+
+    handle(response:http.ServerResponse) {
+       fs_readFile(this.path_to_resource, (error, data) => {
+            if (error) {
+                response.writeHead(500, { 'Content-Type': 'text/html'});
+                response.end(`Error Loading Route: ${this.route}`);
+                return;
+            } else {
+                response.writeHead(200, {'Content-Type': 'text/html'});
+                response.end(data);
+                return;
+            }
+        });
+    }
+}
 
 /**
 * 204 - No Content (bodyless)
