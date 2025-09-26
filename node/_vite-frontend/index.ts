@@ -85,3 +85,9 @@ if(BOOK && CHAPTER) {   /*  if urlParams, set page state */
     searchInput.value = `${BOOK} ${CHAPTER}`;
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
+
+
+/* Helpful Debug Statement for when you want to tackle issue: non-symmetric changes between   */
+// const logClientWidth = debounce(() => {
+//     printGreen(document.documentElement.clientWidth);
+// }, 100);
