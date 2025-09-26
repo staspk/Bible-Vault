@@ -2,7 +2,7 @@ import { isUInt, safeSplit, yankUIntFromEnd } from './src/ts/utils';
 import { isNullOrWhitespace } from '../kozubenko/utils';
 import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_shared/interfaces';
 import { BIBLE } from './src/models/Bible';
-import { PassageDiv } from './src/components/PassageDiv';
+import { PassageView } from './src/components/PassageView';
 
 import './src/keyboard';
 
@@ -46,7 +46,7 @@ searchInput.addEventListener('input', (event) => {
             const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
             
-            PassageDiv.Generate(book, chapterStart, IResponses.transform(chapterStart, await response.json() as IChaptersResponse));
+            PassageView.Generate(book, chapterStart, IResponses.transform(chapterStart, await response.json() as IChaptersResponse));
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             /* SAVE chapterEnd local, so don't have to ping server for next chapter */
             return;
@@ -66,7 +66,7 @@ searchInput.addEventListener('input', (event) => {
             const response = await fetch(QueryString);
             if (response.status !== 200) return;
             
-            PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse)
+            PassageView.Generate(book, chapterStart, await response.json() as IChapterResponse)
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`);
             return;
         }
@@ -75,7 +75,7 @@ searchInput.addEventListener('input', (event) => {
         const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
-        PassageDiv.Generate(book, chapterStart, await response.json() as IChapterResponse);
+        PassageView.Generate(book, chapterStart, await response.json() as IChapterResponse);
         window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
     }, 750);
 });

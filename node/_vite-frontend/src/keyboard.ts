@@ -1,12 +1,12 @@
-import { PassageDiv } from "./components/PassageDiv";
+import { PassageView } from "./components/PassageView";
 
 
 document.addEventListener("keydown", (event) => {
     if(event.key === "ArrowLeft") {
-        PassageDiv.toggleView();
+        PassageView.toggleView();
     }
 
     if(event.key === "ArrowRight") {
-        PassageDiv.toggleView();
+        PassageView.toggleView();
     }
 });

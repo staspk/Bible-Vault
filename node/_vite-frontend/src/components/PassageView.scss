@@ -1,0 +1,37 @@
+$chapter-column-color  : #fff;
+
+#passage-view {
+    display: grid;
+    margin: 1rem auto;
+    gap: .75rem;
+}
+#passage-view.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
+#passage-view.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
+#passage-view.cols-3 {  width: 75%; grid-template-columns: repeat(3, minmax(222px, 1fr));  }
+#passage-view.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
+#passage-view.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
+
+.chapter-column {
+    grid-auto-rows: max-content;
+    padding: 20px 0;
+    border: 1px solid #ccc;
+    background-color: $chapter-column-color;
+}
+.chapter-column > div {  // i.e: verses
+    padding: 0px 1rem;
+    line-height: 175%;
+}
+.chapter-dropcap {
+    display: inline-block;
+    transform: translate(.15rem, .15rem);
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-right: .3em;
+}
+.versenum {
+    display: inline-block;
+    transform: translate(.1em, -.3em);
+    font-size: .8em;
+    font-weight: 650;
+    margin: 0 .15em 0 .075em;
+}

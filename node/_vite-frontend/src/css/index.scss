@@ -16,7 +16,7 @@ $font-size  : 1rem;
 
 body {
     display: grid;
-    grid-template-rows: 91px 1fr;
+    grid-template-rows: 86px 1fr;   /* header, #content-view */
     height: 100vh;
     
     font-size: $font-size;
@@ -31,56 +31,19 @@ header {
 }
 #search-input {
     display: block;
-    margin: 40px auto auto auto;
+    margin: 33px auto auto auto;
     width: 300px; height: 2rem;
     text-align: center;
     font-size: 1.2rem;
 }
 
-#passage-view {
+#content-view {
     grid-row: 2;
-    display:grid;
-    grid-template-columns: 40px 1fr 40px;
+    display: flex;      /*  40px 1fr 40px;  */
 }
-#passage-view > :nth-child(1) {  grid-column: 1; background-color: $page-margins-color;  }
-#passage-view > :nth-child(3) {  grid-column: 3; background-color: $page-margins-color;  }
+#content-view > :nth-child(1) {  width: 40px; background-color: $page-margins-color;  }
+#content-view > :nth-child(3) {  width: 40px; background-color: $page-margins-color;  }
 
-#passage-div {
-    grid-column: 2;
-    display: grid;
-    margin: 1rem auto;
-    gap: .75rem;
-}
-#passage-div.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
-#passage-div.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
-#passage-div.cols-3 {  width: 75%; grid-template-columns: repeat(3, minmax(222px, 1fr));  }
-#passage-div.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
-#passage-div.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
-
-.chapter-column {
-    grid-auto-rows: max-content;
-    padding: 20px 0;
-    border: 1px solid #ccc;
-    background-color: $chapter-column-color;
-}
-.chapter-column > div {  // i.e: verses
-    padding: 0px 1rem;
-    line-height: 175%;
-}
-.chapter-dropcap {
-    display: inline-block;
-    transform: translate(.15rem, .15rem);
-    font-size: 1.5em;
-    font-weight: 600;
-    margin-right: .3em;
-}
-.versenum {
-    display: inline-block;
-    transform: translate(.1em, -.3em);
-    font-size: .8em;
-    font-weight: 650;
-    margin: 0 .15em 0 .075em;
-}
 
 
 

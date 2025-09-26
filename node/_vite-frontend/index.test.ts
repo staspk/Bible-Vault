@@ -7,7 +7,6 @@
 import { IChapterResponse } from "../_shared/interfaces.js";
 import { printGreen, printRed, printYellow } from "../_shared/print.js"
 import { isNullOrWhitespace } from "../kozubenko/utils.js"
-import { generatePassageDiv } from "./src/components/PassageDiv.js";
 import { BIBLE } from "./src/models/Bible.js";
 import { isUInt, safeSplit, yankUIntFromEnd } from "./src/ts/utils.js"
 
