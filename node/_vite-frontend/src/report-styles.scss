@@ -1,0 +1,93 @@
+$header-color          : #fefafc;
+$page-margins-color    : #952004;
+$page-background-color : #fafafd;
+$chapter-column-color  : #fff;
+
+$header-border   : 2px solid #952004;
+$standard-border : #dddcda;
+
+$font-family: Segoe UI, Roboto, system-ui, -apple-system, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+$font-size  : 1rem; 
+
+* {
+    box-sizing: border-box;                             // Makes padding/border INCLUDED in the total size of the element, instead of adding to the size of the element
+    margin: 0; padding: 0;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 75px 1fr;
+    height: 100vh;
+    
+    font-size: $font-size;
+    font-family: $font-family;
+    background-color: $page-background-color;
+}
+
+header {
+    grid-row: 1;
+    display: grid; grid-template-columns: 38.5px 1fr 38.5px;
+    border: $header-border;
+    background-color: $header-color;
+}
+#search-input {
+    display: block;
+    margin: 26px auto auto auto;
+    width: 300px; height: 2rem;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+#passage-view {
+    grid-row: 2;
+    display:grid;
+    grid-template-columns: 40px 1fr 40px;
+}
+#passage-view > :nth-child(1) {  grid-column: 1; background-color: $page-margins-color;  }
+#passage-view > :nth-child(3) {  grid-column: 3; background-color: $page-margins-color;  }
+
+#passage-div {
+    grid-column: 2;
+    display: grid;
+    margin: 1rem auto;
+    gap: .75rem;
+}
+#passage-div.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
+#passage-div.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
+#passage-div.cols-3 {  width: 75%; grid-template-columns: repeat(3, minmax(222px, 1fr));  }
+#passage-div.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
+#passage-div.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
+
+.chapter-column {
+    grid-auto-rows: max-content;
+    padding: 20px 0;
+    border: 1px solid #ccc;
+    background-color: $chapter-column-color;
+}
+.chapter-column > div {  // i.e: verses
+    padding: 0px 1rem;
+    line-height: 175%;
+}
+.chapter-dropcap {
+    display: inline-block;
+    transform: translate(.15rem, .15rem);
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-right: .3em;
+}
+.versenum {
+    display: inline-block;
+    transform: translate(.1em, -.3em);
+    font-size: .8em;
+    font-weight: 650;
+    margin: 0 .15em 0 .075em;
+}
+
+
+
+// --- WIDTHS ------------------
+
+// samsung fold 5          : 344
+// iphone 14 pro max       : 430
+
+// samsung fold 5 unfolded : 690
