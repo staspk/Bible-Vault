@@ -93,8 +93,8 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
         if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
         
         let chapters = {
-            [chapterStart]: Object.assign({}, ...Object.values(await getChapter(book, chapterStart, translations))),
-            [chapterEnd]: Object.assign({}, ...Object.values(await getChapter(book, chapterEnd, translations)))
+            [chapterStart]: Object.assign({}, ...Object.values(await getChapter(translations, book, chapterStart))),
+            [chapterEnd]: Object.assign({}, ...Object.values(await getChapter(translations, book, chapterEnd)))
         }
         
         response.writeHead(200, { 'Content-Type': 'application/json' });
@@ -124,7 +124,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     }
     
     
-    let chapter = await getChapter(book, chapterStart, translations);
+    let chapter = await getChapter(translations, book, chapterStart);
     
     if (chapter.every(translation => Object.values(translation)[0] !== null)) {
         response.writeHead(200, { 'Content-Type': 'application/json' });
@@ -192,7 +192,7 @@ server.listen(PORT, '0.0.0.0', () => {
 *   "3": "And the Spirit of God moved upon the face of the waters."
 * }
 */
-async function getChapter(book:Book, chapter:number, translations:string[]): Promise<object[]> {
+async function getChapter(translations:string[], book:Book, chapter:number): Promise<object[]> {
     const promises = await translations.map(async translation => {
         const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
         if (!fs.existsSync(chapterFile))
