@@ -4,7 +4,6 @@ import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
 import { handleNotFound, handleBadRequest } from './kozubenko/http.js';
-import { combinePaths, safeSplit } from './kozubenko/utils.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
 import { performance } from "node:perf_hooks";
@@ -30,26 +29,6 @@ let chapters = chapterStart.concat(chapterEnd)
 console.log(chapters)
 
 
-/**
-* @returns Plain object (aka: dict) mapping verse numbers to verse text, or null on error.
-* @example
-* {
-*   "1": "In the beginning God created the heavens and the earth.",
-*   "2": "And the earth was without form, and void; and darkness was upon the face of the deep.",
-*   "3": "And the Spirit of God moved upon the face of the waters."
-* }
-*/
-async function getChapter(book:Book, chapter:number, translations:string[]): Promise<object[]> {
-    const promises = await translations.map(async translation => {
-        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
-        if (!fs.existsSync(chapterFile))
-            return { [translation.toUpperCase()]: null };
-
-        return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) };
-    });
-
-    return await Promise.all(promises);
-}
 
 
 /**
