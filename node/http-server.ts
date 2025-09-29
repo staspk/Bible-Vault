@@ -3,11 +3,13 @@ import * as fs from 'fs';
 import * as Path from 'path'
 
 import { print, printGreen, printRed, printYellow } from './_shared/print.js';
-import { HtmlPage, handleNotFound, handleBadRequest } from './kozubenko/http.js';
+import { HtmlPage, handleOK, handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { Paths, isNullOrWhitespace, safeSplit } from './kozubenko/utils.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
+import { IChapter, type IChapters, IResponses } from './_shared/interfaces.js';
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
+
 
 
 const __dirname = import.meta.dirname
@@ -92,9 +94,9 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call. See: _shared/IChaptersResponse  */
         if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
         
-        let chapters = {
-            [chapterStart]: Object.assign({}, ...Object.values(await getChapter(translations, book, chapterStart))),
-            [chapterEnd]: Object.assign({}, ...Object.values(await getChapter(translations, book, chapterEnd)))
+        let chapters: IChapters = {
+            [chapterStart]: await getChapter(translations, book, chapterStart),
+            [chapterEnd]  : await getChapter(translations, book, chapterEnd)
         }
         
         response.writeHead(200, { 'Content-Type': 'application/json' });
@@ -109,7 +111,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
         const verseStart = parseInt(safeSplit(param4, "-")[0], 10);
         const verseEnd   = parseInt(safeSplit(param4, "-")[1], 10);
         
-        if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses being > 89, 176 if Psalms */
+        if(verseStart && verseStart > 0 && ((verseStart <= 176 && book === BIBLE.PSALMS) || (verseStart <= 89)) ) {  /* temp soft sanity step: excludes verses>89; verses>176 if Psalms */
             if(verseEnd && verseEnd > 1 && ((verseEnd <= 176 && book === BIBLE.PSALMS)   || verseEnd <= 89) ) {
                 if(verseStart < verseEnd) {
                     /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
@@ -120,28 +122,13 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             }
             
             /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
+            let chapter = await getChapter(translations, book, chapterStart);
         }
     }
     
-    
-    let chapter = await getChapter(translations, book, chapterStart);
-    
-    if (chapter.every(translation => Object.values(translation)[0] !== null)) {
-        response.writeHead(200, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({
-            status: Status.Success,
-            data: Object.assign({}, ...chapter)
-        }));
-        return;
-    } else if (chapter.every(translation => Object.values(translation)[0] === null)) {
-        handleNotFound(response); return;
-    } else {
-        response.writeHead(200, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({
-            status: Status.Partial,
-            data: Object.assign({}, ...chapter)
-        }));
-    }
+    /* Standard API Call, ie: "Matthew 10" */
+    let chapter: IChapter = await getChapter(translations, book, chapterStart);
+    handleOK(response, IResponses.wrapAsResponse(chapter));
 }
 
 const server = http.createServer((request, response) => {
@@ -182,17 +169,7 @@ server.listen(PORT, '0.0.0.0', () => {
 
 
 
-
-/**
-* @returns Plain object (aka: dict) mapping verse numbers to verse text, or null on error.
-* @example
-* {
-*   "1": "In the beginning God created the heavens and the earth.",
-*   "2": "And the earth was without form, and void; and darkness was upon the face of the deep.",
-*   "3": "And the Spirit of God moved upon the face of the waters."
-* }
-*/
-async function getChapter(translations:string[], book:Book, chapter:number): Promise<object[]> {
+async function getChapter(translations:string[], book:Book, chapter:number): Promise<IChapter> {
     const promises = await translations.map(async translation => {
         const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
         if (!fs.existsSync(chapterFile))
@@ -200,8 +177,8 @@ async function getChapter(translations:string[], book:Book, chapter:number): Pro
         
         return { [translation.toUpperCase()]: await loadChapterIntoMemory(chapterFile) }
     });
-    
-    return await Promise.all(promises);
+
+    return Object.assign({}, ...await Promise.all(promises));                                    /* shape: IChapter    */
 }
 
 
@@ -224,7 +201,7 @@ async function loadChapterIntoMemory(path:string): Promise<object|null> {
             lines.map((line, i) => [ (i + 1).toString(), line ])
         );
     } catch (error) {
-        printRed(`loadChapterIntoMemory(): ${error}`);
+        printRed(`loadChapterIntoMemory(${path}): ${error}`);
         return null;
     }
 }
