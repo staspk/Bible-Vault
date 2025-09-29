@@ -24,6 +24,17 @@ export class HtmlPage {
     }
 }
 
+
+/**
+* 200 - OK
+*
+* Currently only handles: `'Content-Type': 'application/json'`.
+*/
+export function handleOK(response:http.ServerResponse, data:any): void {
+    response.writeHead(200, { 'Content-Type': 'application/json' });    
+    response.end(JSON.stringify(data));
+}
+
 /**
 * 204 - No Content (bodyless)
 *
