@@ -35,12 +35,12 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
     while (-not $token.IsCancellationRequested) {
         Start-Sleep -Milliseconds 250
         foreach ($path in $paths_to_watch) {
-            if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
+            if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {                <# if file, check last write time against last build time #>
                 $vite_last_built = NpmBuild; break;
             }
             $change_detected = $false;
             if((Get-Item $path).PSIsContainer) {
-                foreach($file in $(Get-ChildItem -Path $path -Recurse -File)) {
+                foreach($file in $(Get-ChildItem -Path $path -Recurse -File)) {               <# Yes: all files are checked recursively, Stan. Even in dirs of dirs. #>
                     if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
                         $vite_last_built = NpmBuild; $change_detected = $true; break;  }
                 }
