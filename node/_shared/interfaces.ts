@@ -2,6 +2,9 @@ import { Status } from "./enums.js";
 import { printGreen, printOrange, printYellow } from "./print.js";
 
 
+export type verseString = string;
+
+
 /**
 * ***EXAMPLE:***
 ```json
@@ -22,7 +25,9 @@ import { printGreen, printOrange, printYellow } from "./print.js";
 ```
 */
 export interface IChapter {
-    [translation: string]: { [verseNumber: string]: string } | null;
+    [translation: string]: {
+        [verseNumber: string]: verseString
+    } | null;
 }
 
 /**
@@ -55,7 +60,7 @@ export interface IChapter {
 export interface IChapters {
     [chapter: string]: {
         [translation: string]: {
-            [verseNumber: string]: string
+            [verseNumber: string]: verseString
         } | null;
     }
 }
@@ -132,6 +137,7 @@ export interface IChaptersResponse {
 }
 
 export class IResponses {
+
     /**  Pick a (0-based) `from`-`to` range of `translation(s)` to keep, cutting out the excluded ones out of `IChapterResponse.data`  
     * param: `to` is exclusive  
     * *No sanity checks, caller beware.*  */
