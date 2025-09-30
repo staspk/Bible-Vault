@@ -2,7 +2,7 @@
 import './PassageView.scss';
 import { Book } from "../models/Bible";
 import { IResponses, type IChapterResponse } from "../../../_shared/interfaces"
-import { printGreen, printYellow } from "../../../_shared/print";
+import { LocalStorage, LocalStorageKeys } from '../localStorage';
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
@@ -18,8 +18,9 @@ enum View {
 export class PassageView {
     static ID = 'passage-view';
     
-    static mirrorOption = true;    /** when true: 6,8 translations are halved between 2 views. */
-    
+    /** when true: even amount of translations are halved between 2 views. */
+    static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.mirrorOption)
+
     static view1: HTMLDivElement;
     static view2: HTMLDivElement;
     static currentView: View = View.None;
@@ -44,7 +45,7 @@ export class PassageView {
             if(total_translations > 5) {
                 view1_translations = 5;
                 view2_translations = total_translations - 5;
-            } else 
+            } else
                 view1_translations = total_translations;
         }
 
