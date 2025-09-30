@@ -40,10 +40,13 @@ header {
 #content-view {
     grid-row: 2;
     display: flex;      /*  40px 1fr 40px;  */
+    flex-direction: row;
 }
 #content-view > :nth-child(1) {  width: 40px; background-color: $page-margins-color;  }
 #content-view > :nth-child(3) {  width: 40px; background-color: $page-margins-color;  }
-
+#content-view > :nth-child(2) {
+    flex: 0 1 auto;     /* shrink to fit content */
+}
 
 
 
