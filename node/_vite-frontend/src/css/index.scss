@@ -7,7 +7,9 @@ $header-border   : 2px solid #952004;
 $standard-border : #dddcda;
 
 $font-family: Segoe UI, Roboto, system-ui, -apple-system, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
-$font-size  : 1rem; 
+$font-size  : 1rem;
+
+$settings-btn-width: 50px;
 
 * {
     box-sizing: border-box;                             // Makes padding/border INCLUDED in the total size of the element, instead of adding to the size of the element
@@ -26,21 +28,37 @@ body {
 
 header {
     grid-row: 1;
+    display: grid;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+
     border: $header-border;
     background-color: $header-color;
 }
+// header > :nth-child(1) {  flex: 1  }
+// header > :nth-child(2) {  width: 100px;  }
 #search-input {
-    display: block;
+    // display: block;
     margin: 33px auto auto auto;
     width: 300px; height: 2rem;
     text-align: center;
     font-size: 1.2rem;
+
+    position: relative;
+    left: $settings-btn-width;
+}
+#settings-btn {
+    // margin-left: auto;
+    width: $settings-btn-width;
+    height: 100px;
+    object-fit: contain;    /* keeps the aspect ratio */
 }
 
 #content-view {
     grid-row: 2;
     display: flex;      /*  40px 1fr 40px;  */
-    flex-direction: row;
 }
 #content-view > :nth-child(1) {  width: 40px; background-color: $page-margins-color;  }
 #content-view > :nth-child(3) {  width: 40px; background-color: $page-margins-color;  }
