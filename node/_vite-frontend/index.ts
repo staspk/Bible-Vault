@@ -1,5 +1,5 @@
-import { isUInt, safeSplit, yankUIntFromEnd } from './src/ts/utils';
-import { isNullOrWhitespace } from '../kozubenko/utils';
+import { isNullOrWhitespace, safeSplit } from '../kozubenko/string.extensions.js';
+import { isUInt, yankUIntFromEnd } from './src/ts/utils';
 import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_shared/interfaces';
 import { BIBLE } from './src/models/Bible';
 import { PassageView } from './src/components/PassageView';
@@ -42,7 +42,7 @@ searchInput.addEventListener('input', (event) => {
         if (!book) return;
         if (chapterStart < 0 || chapterStart > book.chapters) return;
         
-        if(isUInt(chapterEnd)) {    // searchStr looks like: "Matthew 10-11", as IChaptersResponse (does not support verses)
+        if(isUInt(chapterEnd)) {    /* searchStr shape: "Matthew 10-11" [IChaptersResponse (does not support verses)] */
             const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
             
@@ -52,16 +52,17 @@ searchInput.addEventListener('input', (event) => {
             return;
         }
         
+
         if(!isNullOrWhitespace(potentialVerses)) {
             verseStart = safeSplit(potentialVerses, "-")[0];
             verseEnd   = safeSplit(potentialVerses, "-")[1];
             
-            if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server for just the book/chapter, if the verses string is not legit  */
-            
-            QueryString = `/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;
+            if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server, if the verses string is not legit  */
+
+            QueryString = `/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;    /* searchStr shape: "Matthew 10:1"   */
             
             if(isUInt(verseEnd))
-                QueryString += `-${verseEnd}`;
+                QueryString += `-${verseEnd}`;                                                                                              /* searchStr shape: "Matthew 10:1-2" */
             
             const response = await fetch(QueryString);
             if (response.status !== 200) return;
@@ -71,7 +72,7 @@ searchInput.addEventListener('input', (event) => {
             return;
         }
         
-        // searchStr looks like: "Matthew 10"
+        // searchStr shape: "Matthew 10"
         const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
