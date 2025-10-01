@@ -8,7 +8,7 @@ import { Paths } from './kozubenko/utils.js';
 import { HtmlPage, handleOK, handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
-import { IChapter, IChapters } from './_shared/interfaces/IResponses.js';
+import { IChapter, IChapters, IVerse } from './_shared/interfaces/IResponses.js';
 import { type IVerseRange } from './_shared/interfaces/IVerseRange.js'
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
 
@@ -71,6 +71,8 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
 /**  `/api/bible?` => `IChapterResponse` | `IChaptersResponse`  */
 async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     printYellow(`API Request: ${URL.pathname}?${URL.searchParams.toString()}`);
+
+    const start = performance.now();
     
     const param1:string = URL.searchParams.get('translations') ?? '';
     const param2:string = URL.searchParams.get('book')    ?? '';
@@ -98,7 +100,11 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             [chapterEnd]  : await getChapter(translations, book, chapterEnd)
         }
 
+        const end = performance.now();
+        console.log(`Time: ${end - start} ms`);
+
         handleOK(response, IChapters.wrapAsResponse(chapters));
+
         return;
     }
     
@@ -111,6 +117,9 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
                 if(verseStart < verseEnd) {
                     /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
                     let chapter: IChapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseEnd } as IVerseRange);
+
+                    const end = performance.now();
+                    console.log(`Time: ${end - start} ms`);
                     handleOK(response, IChapter.wrapAsResponse(chapter)); return;
                 } else {
                     handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
@@ -118,6 +127,9 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             }
             /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
             let chapter: IChapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseStart } as IVerseRange);
+
+            const end = performance.now();
+            console.log(`Time: ${end - start} ms`);
             handleOK(response, IChapter.wrapAsResponse(chapter)); return;
         }
         handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`);
@@ -125,8 +137,11 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     }
     
     /* Standard API Call, ie: "Matthew 10" */
-    let chapter: IChapter = await getChapter(translations, book, chapterStart);
+    let chapter: IChapter = nonAsyncGetChapter(translations, book, chapterStart);
     handleOK(response, IChapter.wrapAsResponse(chapter));
+
+    const end = performance.now();
+    console.log(`Time: ${end - start} ms`);
 }
 
 const server = http.createServer((request, response) => {
@@ -165,6 +180,41 @@ server.listen(PORT, '0.0.0.0', () => {
 });
 
 
+function nonAsyncGetChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): IChapter {
+    
+    let chapterArray: IChapter[] = []
+
+    for (let translation of translations) {
+        const chapterFile = Path.join(BIBLE_TXT, translation, book.name, `${chapter}.txt`);
+
+        if (fs.existsSync(chapterFile)) {
+            chapterArray.push({
+                [translation.toUpperCase()]: nonAsyncLoadChapterIntoMemory(chapterFile, verseRange)
+            })
+        } else {
+            chapterArray.push({
+                [translation.toUpperCase()]: null
+            })
+        }
+    }
+
+    return Object.assign({}, ...chapterArray)
+}
+
+function nonAsyncLoadChapterIntoMemory(path:string, verseRange:IVerseRange|null=null): IVerse {
+    const data = fs.readFileSync(path, 'utf-8');
+    const lines = data.split(/\r?\n/);
+    const plainObj = Object.fromEntries(
+        lines.map((line, i) => [ (i + 1).toString(), line ])
+    );
+
+    if(verseRange)
+        for (const [key, value] of Object.entries(plainObj))
+            if (parseInt(key) < verseRange.verseStart || parseInt(key) > verseRange.verseEnd)
+                delete plainObj[key];
+    
+    return plainObj;
+}
 
 
 async function getChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): Promise<IChapter> {

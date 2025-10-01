@@ -5,6 +5,10 @@ import { printGreen, printOrange, printYellow } from "../print.js";
 export type verseString = string;
 
 
+export interface IVerse {
+    [verseNumber: string]: verseString
+} 
+
 
 /**
 * **Interface/Class Declaration Merging**:
