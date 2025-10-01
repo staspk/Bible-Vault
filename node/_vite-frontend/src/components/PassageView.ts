@@ -1,7 +1,7 @@
 
 import './PassageView.scss';
 import { Book } from "../models/Bible";
-import { IResponses, type IChapterResponse } from "../../../_shared/interfaces/IResponses"
+import { IChapter } from "../../../_shared/interfaces/IResponses"
 import { LocalStorage, LocalStorageKeys } from '../localStorage';
 
 
@@ -27,7 +27,7 @@ export class PassageView {
     
     /**  Generates and mounts onto: `document.getElementById(PassageView.ID)`  
         Only 1-10 translations per chapter supported  */
-    static Generate(book:Book, chapter:number, data:IChapterResponse) {
+    static Generate(book:Book, chapter:number, data:IChapter) {
         const PLACEHOLDER = document.getElementById(PassageView.ID);
         if(!PLACEHOLDER) {
             console.error('PassageView.Generate(): PLACEHOLDER could not be found via PassageView.ID. Skipping function...');
@@ -35,7 +35,7 @@ export class PassageView {
         }
         
         let total_translations = 0, view1_translations = 0, view2_translations = 0;
-        for (const [i, [key, value]] of Object.entries(data.data).entries())
+        for (const [i, [key, value]] of Object.entries(data).entries())
             total_translations++;
         
         if(PassageView.mirrorOption && (total_translations % 2 === 0)) {
@@ -49,9 +49,9 @@ export class PassageView {
                 view1_translations = total_translations;
         }
 
-        PassageView.view1 = PassageView.generateView(chapter, view1_translations, IResponses.range(0, view1_translations, data));
+        PassageView.view1 = PassageView.generateView(chapter, view1_translations, IChapter.range(0, view1_translations, data));
         if(view2_translations > 0)
-            PassageView.view2 = PassageView.generateView(chapter, view2_translations, IResponses.range(view1_translations, (view1_translations+view2_translations), data));
+            PassageView.view2 = PassageView.generateView(chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data));
         
         PLACEHOLDER.replaceWith(PassageView.view1);
         PassageView.currentView = View.One;
@@ -59,14 +59,14 @@ export class PassageView {
     }
     
     /** A `PassageView` `view` holds 1-5 translations of the same chapter. */
-    static generateView(chapter:number, total_translations:number, data:IChapterResponse): HTMLDivElement {
+    static generateView(chapter:number, total_translations:number, data:IChapter): HTMLDivElement {
         const view = Object.assign(document.createElement('div'), {
             id: PassageView.ID
         });
         
         view.classList.add(COLUMNS_CLASS(total_translations));
         
-        for (const [i, [translation, chapterMap]] of Object.entries(data.data).entries()) {
+        for (const [i, [translation, chapterMap]] of Object.entries(data).entries()) {
             if (chapterMap == null) continue;   /* If a chap is missing, the translation tables don't match when mirrorOption==true. Need to design an empty column */
             
             const chapterColumn = Object.assign(document.createElement('div'), {

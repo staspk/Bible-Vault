@@ -1,11 +1,19 @@
 import { Status } from "../enums.js";
 import { printGreen, printOrange, printYellow } from "../print.js";
 
-
+/** **eg**: "In the beginning God created the heavens and the earth." */
 export type verseString = string;
 
 
+
 /**
+* **Interface/Class Declaration Merging**:
+```ts
+IChapter.wrapAsResponse(chapter:IChapter): IChapterResponse
+IChapter.range(from:number, to:number, response:IChapter): IChapter
+IChapter.from(chapters:IChapters, chapter:number): IChapter
+```
+
 * ***EXAMPLE:***
 ```json
 {
@@ -29,8 +37,62 @@ export interface IChapter {
         [verseNumber: string]: verseString
     } | null;
 }
+export class IChapter {
+    /** Transforms `IChapter` into `IChapterResponse`.  */
+    static wrapAsResponse(chapter:IChapter): IChapterResponse {
+        let amountNull = 0, total = 0;
+        for (const [translation, verses] of Object.entries(chapter))
+            if(verses === null)
+                amountNull++;
+            total++;
+
+        if (amountNull === 0) {
+            return {
+                status: Status.Success,
+                data: chapter
+            }
+        } else if(total === amountNull) {
+            return {
+                status: Status.NotFound,
+                data: chapter
+            }
+        } else {
+            return {
+                status: Status.Partial,
+                data: chapter
+            }
+        }
+    }
+
+    /**  Pick a (0-based) `from`-`to` range of `translation(s)` to keep, cutting out the excluded ones out of `IChapterResponse.data`  
+    * param: `to` is exclusive  
+    * *No sanity checks, caller beware.*  */
+    static range(from:number, to:number, response:IChapter): IChapter {
+        let translations: object[] = [];
+        for (const [i, [key, value]] of Object.entries(response).entries())
+            if(from <= i && i < to)
+                translations.push({[key]:value});
+
+        return Object.assign({}, ...translations);
+    }
+
+    /**  Reduce an `IChapters` to `IChapter` with a chosen `chapter`.  
+    * No sanity checks, caller beware: `{}` returned, if `chapter` not found */
+    static from(chapters:IChapters, chapter:number): IChapter {
+        for (const [i, [key, value]] of Object.entries(chapters).entries())
+            if(parseInt(key) === chapter)
+                return value;
+        return { }
+    }
+}
+
 
 /**
+* **Interface/Class Declaration Merging**:
+```ts
+IChapters.wrapAsResponse(chapters:IChapters): IChaptersResponse
+```
+
 * ***EXAMPLE:***
 ```json
 {
@@ -62,6 +124,15 @@ export interface IChapters {
         [translation: string]: {
             [verseNumber: string]: verseString
         } | null;
+    }
+}
+export class IChapters {
+  /** Transforms `IChapters` into `IChaptersResponse`.  */
+    static wrapAsResponse(chapters:IChapters): IChaptersResponse {
+        return {
+            status: Status.Success,
+            data: chapters
+        }
     }
 }
 
@@ -134,73 +205,4 @@ export interface IChapterResponse {
 export interface IChaptersResponse {
     status: `${Status}`;
     data: IChapters
-}
-
-export class IResponses {
-
-    /**  Pick a (0-based) `from`-`to` range of `translation(s)` to keep, cutting out the excluded ones out of `IChapterResponse.data`  
-    * param: `to` is exclusive  
-    * *No sanity checks, caller beware.*  */
-    static range(from:number, to:number, response:IChapterResponse): IChapterResponse {
-        let translations: object[] = [];
-        for (const [i, [key, value]] of Object.entries(response.data).entries())
-            if(from <= i && i < to)
-                translations.push({[key]:value});
-
-        return {
-            status: response.status,
-            data: Object.assign({}, ...translations)
-        }
-    }
-
-    /**  Transform an `IChaptersResponse` to an `IChapterResponse`.  
-    * No sanity checks, caller beware.  */ 
-    static transform(chapter:number, from:IChaptersResponse): IChapterResponse {
-        let chapterObject;
-        for (const [i, [key, value]] of Object.entries(from.data).entries())
-            if(parseInt(key) === chapter)
-                chapterObject = value;
-
-        if (Object.values(chapterObject).every(value => value !== null)) {
-            return {
-                status: Status.Success,
-                data: chapterObject
-            }
-        } else if (Object.values(chapterObject).every(value => value === null)) {
-            return {
-                status: Status.NotFound,
-                data: chapterObject
-            }
-        } else {
-            return {
-                status: Status.Partial,
-                data: chapterObject
-            }
-        }
-    }
-
-    static wrapAsResponse(chapter:IChapter): IChapterResponse {
-        let amountNull = 0, total = 0;
-        for (const [translation, verses] of Object.entries(chapter))
-            if(verses === null)
-                amountNull++;
-            total++;
-
-        if (amountNull === 0) {
-            return {
-                status: Status.Success,
-                data: chapter
-            }
-        } else if(total === amountNull) {
-            return {
-                status: Status.NotFound,
-                data: chapter
-            }
-        } else {
-            return {
-                status: Status.Partial,
-                data: chapter
-            }
-        }
-    }
 }

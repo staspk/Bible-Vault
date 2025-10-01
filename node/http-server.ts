@@ -8,7 +8,7 @@ import { Paths } from './kozubenko/utils.js';
 import { HtmlPage, handleOK, handleNotFound, handleBadRequest } from './kozubenko/http.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { Status } from './_shared/enums.js';
-import { IChapter, type IChapters, IResponses } from './_shared/interfaces/IResponses.js';
+import { IChapter, IChapters } from './_shared/interfaces/IResponses.js';
 import { type IVerseRange } from './_shared/interfaces/IVerseRange.js'
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
 
@@ -97,12 +97,8 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             [chapterStart]: await getChapter(translations, book, chapterStart),
             [chapterEnd]  : await getChapter(translations, book, chapterEnd)
         }
-        
-        response.writeHead(200, { 'Content-Type': 'application/json' });
-        response.end(JSON.stringify({
-            status: Status.Success,
-            data: chapters
-        }));
+
+        handleOK(response, IChapters.wrapAsResponse(chapters));
         return;
     }
     
@@ -114,15 +110,15 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
             if(verseEnd && verseEnd > 1 && (verseEnd <= 89   || (verseEnd   <= 176 && book === BIBLE.PSALMS)) ) {   /* verseEnd   must be 2-89 || 2-176 (if: Psalms) */
                 if(verseStart < verseEnd) {
                     /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
-                    let chapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseEnd } as IVerseRange);
-                    handleOK(response, IResponses.wrapAsResponse(chapter)); return;
+                    let chapter: IChapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseEnd } as IVerseRange);
+                    handleOK(response, IChapter.wrapAsResponse(chapter)); return;
                 } else {
                     handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
                 }
             }
             /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
-            let chapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseStart } as IVerseRange);
-            handleOK(response, IResponses.wrapAsResponse(chapter)); return;
+            let chapter: IChapter = await getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseStart } as IVerseRange);
+            handleOK(response, IChapter.wrapAsResponse(chapter)); return;
         }
         handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`);
         return;
@@ -130,7 +126,7 @@ async function handleApiRequest(URL:URL, response:http.ServerResponse) {
     
     /* Standard API Call, ie: "Matthew 10" */
     let chapter: IChapter = await getChapter(translations, book, chapterStart);
-    handleOK(response, IResponses.wrapAsResponse(chapter));
+    handleOK(response, IChapter.wrapAsResponse(chapter));
 }
 
 const server = http.createServer((request, response) => {
@@ -214,3 +210,7 @@ async function loadChapterIntoMemory(path:string, verseRange:IVerseRange|null=nu
         return null;
     }
 }
+
+// const chapter: IChapter = await getChapter(['KJV', 'NASB'], BIBLE.GENESIS, 1);
+
+// console.log(IChapter.wrapAsResponse(chapter))

@@ -1,6 +1,6 @@
 import { isNullOrWhitespace, safeSplit } from '../kozubenko/string.extensions.js';
 import { isUInt, yankUIntFromEnd } from './src/ts/utils';
-import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_shared/interfaces/IResponses.js';
+import { IChapter, type IChapterResponse, type IChapters, type IChaptersResponse } from '../_shared/interfaces/IResponses.js';
 import { BIBLE } from './src/models/Bible';
 import { PassageView } from './src/components/PassageView';
 
@@ -46,9 +46,11 @@ searchInput.addEventListener('input', (event) => {
             const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
             
-            PassageView.Generate(book, chapterStart, IResponses.transform(chapterStart, await response.json() as IChaptersResponse));
+            const chapters:IChapters = (await response.json() as IChaptersResponse).data;
+
+            PassageView.Generate(book, chapterStart, IChapter.from(chapters, chapterStart));
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
-            /* SAVE chapterEnd local, so don't have to ping server for next chapter */
+            /* SAVE the rest of the chapters locally, so don't have to ping server for next chapter */
             return;
         }
         
@@ -67,7 +69,7 @@ searchInput.addEventListener('input', (event) => {
             const response = await fetch(QueryString);
             if (response.status !== 200) return;
             
-            PassageView.Generate(book, chapterStart, await response.json() as IChapterResponse)
+            PassageView.Generate(book, chapterStart, (await response.json() as IChapterResponse).data)
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`);
             return;
         }
@@ -76,7 +78,7 @@ searchInput.addEventListener('input', (event) => {
         const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
-        PassageView.Generate(book, chapterStart, await response.json() as IChapterResponse);
+        PassageView.Generate(book, chapterStart, (await response.json() as IChapterResponse).data);
         window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
     }, 750);
 });
