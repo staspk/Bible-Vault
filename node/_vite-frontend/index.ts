@@ -43,7 +43,7 @@ searchInput.addEventListener('input', (event) => {
         if (chapterStart < 0 || chapterStart > book.chapters) return;
         
         if(isUInt(chapterEnd)) {    /* searchStr shape: "Matthew 10-11" [IChaptersResponse (does not support verses)] */
-            const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
+            const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
             
             PassageView.Generate(book, chapterStart, IResponses.transform(chapterStart, await response.json() as IChaptersResponse));
@@ -59,7 +59,7 @@ searchInput.addEventListener('input', (event) => {
             
             if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server, if the verses string is not legit  */
 
-            QueryString = `/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;    /* searchStr shape: "Matthew 10:1"   */
+            QueryString = `/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;    /* searchStr shape: "Matthew 10:1"   */
             
             if(isUInt(verseEnd))
                 QueryString += `-${verseEnd}`;                                                                                              /* searchStr shape: "Matthew 10:1-2" */
@@ -73,7 +73,7 @@ searchInput.addEventListener('input', (event) => {
         }
         
         // searchStr shape: "Matthew 10"
-        const response = await fetch(`/api/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
+        const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
         PassageView.Generate(book, chapterStart, await response.json() as IChapterResponse);
