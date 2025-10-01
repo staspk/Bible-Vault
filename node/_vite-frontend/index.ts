@@ -1,6 +1,6 @@
 import { isNullOrWhitespace, safeSplit } from '../kozubenko/string.extensions.js';
 import { isUInt, yankUIntFromEnd } from './src/ts/utils';
-import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_shared/interfaces';
+import { IResponses, type IChapterResponse, type IChaptersResponse } from '../_shared/interfaces/IResponses.js';
 import { BIBLE } from './src/models/Bible';
 import { PassageView } from './src/components/PassageView';
 

@@ -1,7 +1,7 @@
 
 import './PassageView.scss';
 import { Book } from "../models/Bible";
-import { IResponses, type IChapterResponse } from "../../../_shared/interfaces"
+import { IResponses, type IChapterResponse } from "../../../_shared/interfaces/IResponses"
 import { LocalStorage, LocalStorageKeys } from '../localStorage';
 
 

@@ -1,6 +1,6 @@
 import { PassageView } from "./PassageView.js";
 import { Book } from "../models/Bible.js";
-import type { IChapterResponse } from "../../../_shared/interfaces.js";
+import type { IChapterResponse } from "../../../_shared/interfaces/IResponses.js";
 
 
 /**  Replace `PassageView.Generate` with `TEST__PassageView_Generate` to mutate incoming data to quickly test/observe PassageView with varying amount of columns.  

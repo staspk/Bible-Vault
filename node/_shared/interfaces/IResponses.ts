@@ -1,5 +1,5 @@
-import { Status } from "./enums.js";
-import { printGreen, printOrange, printYellow } from "./print.js";
+import { Status } from "../enums.js";
+import { printGreen, printOrange, printYellow } from "../print.js";
 
 
 export type verseString = string;
