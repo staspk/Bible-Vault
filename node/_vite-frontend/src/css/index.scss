@@ -1,3 +1,6 @@
+@use '../components/ReportBtn/ReportBtn.scss' as ReportBtn;
+@import 'animations.css';
+
 $header-color          : #fefafc;
 $page-margins-color    : #952004;
 $page-background-color : #fafafd;
@@ -9,7 +12,9 @@ $standard-border : #dddcda;
 $font-family: Segoe UI, Roboto, system-ui, -apple-system, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
 $font-size  : 1rem;
 
-$settings-btn-width: 50px;
+$header-height   : 86px;
+
+
 
 * {
     box-sizing: border-box;                             // Makes padding/border INCLUDED in the total size of the element, instead of adding to the size of the element
@@ -18,43 +23,34 @@ $settings-btn-width: 50px;
 
 body {
     display: grid;
-    grid-template-rows: 86px 1fr;   /* header, #content-view */
+    grid-template-rows: $header-height 1fr;     /* header, #content-view */
     height: 100vh;
     
     font-size: $font-size;
     font-family: $font-family;
     background-color: $page-background-color;
 }
+body > :nth-child(1) {  grid-row: 1;  }
+body > :nth-child(2) {  grid-row: 2;  }
 
 header {
-    grid-row: 1;
     display: grid;
-
-    position: relative;
-    display: flex;
-    align-items: center;
-
+    grid-template-columns: 1fr ReportBtn.$width;
     border: $header-border;
     background-color: $header-color;
+
+    &:hover #report-btn {  animation: fadeIn 0.15s linear forwards;  }
 }
-// header > :nth-child(1) {  flex: 1  }
-// header > :nth-child(2) {  width: 100px;  }
 #search-input {
-    // display: block;
     margin: 33px auto auto auto;
     width: 300px; height: 2rem;
     text-align: center;
     font-size: 1.2rem;
-
+    
     position: relative;
-    left: $settings-btn-width;
+    left: calc(ReportBtn.$width / 2);
 }
-#settings-btn {
-    // margin-left: auto;
-    width: $settings-btn-width;
-    height: 100px;
-    object-fit: contain;    /* keeps the aspect ratio */
-}
+
 
 #content-view {
     grid-row: 2;

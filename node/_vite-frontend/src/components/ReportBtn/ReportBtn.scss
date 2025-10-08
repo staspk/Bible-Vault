@@ -1,0 +1,17 @@
+$width: 40px;
+
+#report-btn {
+    background: url('../../../../../adobe/report-sprite.png') no-repeat top left;
+    background-size: cover;
+    width: $width; height: 53px;
+    margin: auto;
+    cursor: pointer;
+
+    position: relative;
+    right: 20px;
+
+    opacity: .2;
+
+    &:hover  {  background-position: -($width) 0px;      }
+    &:active {  background-position: -(2 * $width) 0px;  }
+} 

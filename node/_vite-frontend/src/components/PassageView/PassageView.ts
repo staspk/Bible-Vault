@@ -1,9 +1,9 @@
 
 import './PassageView.scss';
-import { Book } from "../models/Bible";
-import { IChapter } from "../../../_shared/interfaces/IResponses";
-import { LocalStorage } from '../storage/LocalStorage';
-import { LocalStorageKeys } from '../storage/LocalStorageKeys.enum';
+import { Book } from "../../models/Bible";
+import { IChapter } from "../../../../_shared/interfaces/IResponses";
+import { LocalStorage } from '../../storage/LocalStorage';
+import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */

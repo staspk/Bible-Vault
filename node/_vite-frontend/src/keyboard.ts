@@ -1,4 +1,4 @@
-import { PassageView } from "./components/PassageView";
+import { PassageView } from "./components/PassageView/PassageView.js";
 
 
 document.addEventListener("keydown", (event) => {
