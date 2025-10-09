@@ -1,6 +1,6 @@
 /**
- *  A QoL extension of String.split() to allow direct access and easy manipulation, whether or not separator actually exists. Returned arrays always have a min length of 2.  
- *  Note: behavior mimics PowerShell's string.split.
+ *  A QoL extension of `String.split()` to allow direct access and easy manipulation, whether or not separator actually exists. Returned arrays always have a min length of 2.  
+ *  Note: behavior mimics PowerShell's `string.split`.
  * 
  * @example
  * safeSplit("Matthew 10", ":")      // returns ["Matthew 10", null]
