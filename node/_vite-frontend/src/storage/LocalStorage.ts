@@ -38,4 +38,8 @@ export class LocalStorage {
     static setBoolean(key:string, value:boolean) {
         value ? localStorage.setItem(key, "true") : localStorage.setItem(key, "false")
     }
+
+    static toggleBoolean(key:string) {
+        LocalStorage.getBoolean(key) ? localStorage.setItem(key, "false") : localStorage.setItem(key, "true");
+    }
 }
