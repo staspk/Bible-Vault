@@ -1,5 +1,5 @@
-@use '../components/ReportBtn/ReportBtn.scss' as ReportBtn;
-@import 'animations.css';
+@use './src/components/ReportBtn/ReportBtn.scss' as ReportBtn;
+@import './src/css/animations.css';
 
 $header-color          : #fefafc;
 $page-margins-color    : #952004;
