@@ -12,3 +12,7 @@ export class Paths {
             .join('/');
     }
 }
+
+export function isNullOrUndefined(value):boolean {
+    return (value === null || value === undefined) ? true : false;
+}
