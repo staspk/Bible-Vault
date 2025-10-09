@@ -20,7 +20,7 @@ export class PassageView {
     static ID = 'passage-view';
     
     /** when true: even amount of translations are halved between 2 views. */
-    static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.mirrorOption)
+    static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.mirrorOption);
 
     static view1: HTMLDivElement;
     static view2: HTMLDivElement;
