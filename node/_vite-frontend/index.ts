@@ -63,16 +63,16 @@ searchInput.addEventListener('input', (event) => {
             
             if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server, if the verses string is not legit  */
             
-            QueryString = `/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;    /* searchStr shape: "Matthew 10:1"   */
+            QueryString = `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;     /* searchStr shape: "Matthew 10:1"   */
             
             if(isUInt(verseEnd))
-                QueryString += `-${verseEnd}`;                                                                                              /* searchStr shape: "Matthew 10:1-2" */
+                QueryString += `-${verseEnd}`;                                                                                          /* searchStr shape: "Matthew 10:1-2" */
             
-            const response = await fetch(QueryString);
+            const response = await fetch(`/api/bible/${QueryString}`);
             if (response.status !== 200) return;
             
             PassageView.Generate(book, chapterStart, (await response.json() as IChapterResponse).data)
-            window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`);
+            window.history.pushState({}, '', QueryString);
             return;
         }
         
@@ -86,6 +86,14 @@ searchInput.addEventListener('input', (event) => {
 });
 
 if(BOOK && CHAPTER) {   /*  if urlParams, set page state */
-    searchInput.value = `${BOOK} ${CHAPTER}`;
+    let searchStr = `${BOOK} ${CHAPTER}`;
+    if(VERSES) {
+        const verseStart = safeSplit(VERSES, "-")[0];
+        const verseEnd   = safeSplit(VERSES, "-")[1];
+        
+        searchStr += `:${verseStart}`;
+        if(verseEnd) searchStr += `-${verseEnd}`;
+    }
+    searchInput.value = searchStr;
     searchInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
