@@ -8,6 +8,14 @@ import './src/keyboard';
 import './src/components/ReportBtn/ReportBtn.js';
 
 
+class ContentView {
+    static ID = 'content-view';
+
+    static PlaceHolder(): HTMLDivElement {
+        return document.querySelector(`#${ContentView.ID} :nth-child(2)`) as HTMLDivElement;
+    }
+}
+
 
 const urlParams = new URLSearchParams(window.location.search);
 const searchInput = document.getElementById('search-input') as HTMLInputElement;
@@ -17,6 +25,7 @@ const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NASB,RSV,RUSV,NKJV,E
 const BOOK         = urlParams.get('book');
 const CHAPTER      = urlParams.get('chapter');
 const VERSES       = urlParams.get('verses');
+
 
 
 let searchDebounceTimerID;
@@ -50,7 +59,7 @@ searchInput.addEventListener('input', (event) => {
             
             const chapters:IChapters = (await response.json() as IChaptersResponse).data;
             
-            PassageView.Generate(book, chapterStart, IChapter.from(chapters, chapterStart));
+            PassageView.Render(ContentView.PlaceHolder(), chapterStart, IChapter.from(chapters, chapterStart));
             window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             /* SAVE the rest of the chapters locally, so don't have to ping server for next chapter */
             return;
@@ -71,7 +80,7 @@ searchInput.addEventListener('input', (event) => {
             const response = await fetch(`/api/bible/${QueryString}`);
             if (response.status !== 200) return;
             
-            PassageView.Generate(book, chapterStart, (await response.json() as IChapterResponse).data)
+            PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data)
             window.history.pushState({}, '', QueryString);
             return;
         }
@@ -80,7 +89,7 @@ searchInput.addEventListener('input', (event) => {
         const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
-        PassageView.Generate(book, chapterStart, (await response.json() as IChapterResponse).data);
+        PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);
         window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
     }, 750);
 });

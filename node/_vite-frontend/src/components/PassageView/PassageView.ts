@@ -1,9 +1,9 @@
 
 import './PassageView.scss';
-import { Book } from "../../models/Bible";
 import { IChapter } from "../../../../_shared/interfaces/IResponses";
 import { LocalStorage } from '../../storage/LocalStorage';
 import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
+import { isNullOrUndefined } from '../../../../kozubenko/utils';
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
@@ -23,18 +23,19 @@ export class PassageView {
     static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.mirrorOption);
 
     static view1: HTMLDivElement;
-    static view2: HTMLDivElement;
+    static view2?: HTMLDivElement;
     static currentView: View = View.None;
-    
-    /**  Generates and mounts onto: `document.getElementById(PassageView.ID)`  
-        Only 1-10 translations per chapter supported  */
-    static Generate(book:Book, chapter:number, data:IChapter) {
-        const PLACEHOLDER = document.getElementById(PassageView.ID);
-        if(!PLACEHOLDER) {
-            console.error('PassageView.Generate(): PLACEHOLDER could not be found via PassageView.ID. Skipping function...');
+
+    /**  Renders `PassageView`, splitting between 1-2 views, depending on `mirrorOption` and `data`.  
+        Only 1-10 translations per `chapter` supported.  */
+    static Render(ONTO:HTMLElement, chapter:number, data:IChapter) {
+        if(isNullOrUndefined(ONTO)) {
+            console.error('PassageView.Render(): ONTO is null/undefined. Cannot complete Render!');
             return;
         }
-        
+
+        ONTO.id = PassageView.ID;
+
         let total_translations = 0, view1_translations = 0, view2_translations = 0;
         for (const [i, [key, value]] of Object.entries(data).entries())
             total_translations++;
@@ -51,10 +52,12 @@ export class PassageView {
         }
 
         PassageView.view1 = PassageView.generateView(chapter, view1_translations, IChapter.range(0, view1_translations, data));
+        if(PassageView.view2) delete PassageView.view2;
         if(view2_translations > 0)
             PassageView.view2 = PassageView.generateView(chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data));
+
         
-        PLACEHOLDER.replaceWith(PassageView.view1);
+        ONTO.replaceWith(PassageView.view1);
         PassageView.currentView = View.One;
         PassageView.alignVerses();
     }
@@ -95,46 +98,48 @@ export class PassageView {
     /**  Helper function. Should be called after the `view` has been placed into the DOM.  
     * Iterates over Columns/Translations, aligning same verses between translations to start at the same y position.  */
     static alignVerses() {
-        let PASSAGE_DIV = document.getElementById(PassageView.ID) as HTMLDivElement;
-        if(!PASSAGE_DIV) {
-            console.error('PassageView.alignVerses(): PASSAGE_DIV could not be found via PassageView.ID. Skipping function...');
+        let passageView = document.getElementById(PassageView.ID) as HTMLDivElement;
+        if(!passageView) {
+            console.error('PassageView.alignVerses(): PassageView could not be found via PassageView.ID. Skipping function...');
             return;
         }
         
         let row = 1;
-        let nodes = PASSAGE_DIV.querySelectorAll(`.row-${row}`) as NodeListOf<HTMLDivElement>;
+        let nodes = passageView.querySelectorAll(`.row-${row}`) as NodeListOf<HTMLDivElement>;
         while (nodes.length > 0) {
             let minHeight = Math.max(...Array.from(nodes, node => node.clientHeight));
             nodes.forEach((node) => {
                 node.style.minHeight = minHeight + "px";
             });
             row++;
-            nodes = PASSAGE_DIV.querySelectorAll(`.row-${row}`)
+            nodes = passageView.querySelectorAll(`.row-${row}`)
         }
     }
     
     /**  Toggles between `PassageView.view1` and  `PassageView.view2`, depending on: `PassageView.currentView`  */
     static toggleView() {
         if(PassageView.currentView === View.None) {
-            console.error('PassageView.toggleView(): called incorrectly [PassageView.currentView === View.None]. Skipping Function...');
+            console.error('PassageView.toggleView(): cannot be called before PassageView.Render(), ie: PassageView.currentView === View.None. Skipping Function...');
             return;
         }
         
-        const PLACEHOLDER = document.getElementById(PassageView.ID);
-        if(!PLACEHOLDER) {
-            console.error('PassageView.toggleView(): PLACEHOLDER could not find via PassageView.ID. Skipping function...');
+        const passageView = document.getElementById(PassageView.ID);
+        if(!passageView) {
+            console.error('PassageView.toggleView(): PassageView could not be found via PassageView.ID. Skipping function...');
             return;
         }
         
         if(PassageView.currentView === View.One) {
-            PLACEHOLDER.replaceWith(PassageView.view2);
-            PassageView.alignVerses();
-            PassageView.currentView = View.Two;
-            return;
+            if(PassageView.view2) {
+                passageView.replaceWith(PassageView.view2);
+                PassageView.alignVerses();
+                PassageView.currentView = View.Two;
+                return;
+            }
         }
         
         if(PassageView.currentView === View.Two) {
-            PLACEHOLDER.replaceWith(PassageView.view1);
+            passageView.replaceWith(PassageView.view1);
             PassageView.alignVerses();
             PassageView.currentView = View.One;
             return;
