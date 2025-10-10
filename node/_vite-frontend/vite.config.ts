@@ -1,5 +1,5 @@
 // vite.config.js
-import { dirname, resolve } from 'node:path'
+import { resolve } from 'node:path'
 
 export default {
    server: {
@@ -9,6 +9,12 @@ export default {
             changeOrigin: true,
          },
       },
+      fs: {
+         allow: [
+            './',
+            '../../adobe'
+         ]
+      }
    },
    
    build: {
