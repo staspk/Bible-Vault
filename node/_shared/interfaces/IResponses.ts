@@ -1,5 +1,5 @@
-import { Status } from "../enums.js";
-import { printGreen, printOrange, printYellow } from "../print.js";
+import { Status } from "../enums/Status.enum.js";
+
 
 /** **eg**: "In the beginning God created the heavens and the earth." */
 export type verseString = string;

@@ -1,5 +1,6 @@
 import { isNullOrWhitespace, safeSplit } from '../kozubenko/string.extensions.js';
 import { isUInt, yankUIntFromEnd } from './src/ts/utils';
+import { ApiEndpoints } from '../_shared/enums/ApiEndpoints.enum.js';
 import { IChapter, type IChapterResponse, type IChapters, type IChaptersResponse } from '../_shared/interfaces/IResponses.js';
 import { BIBLE } from './src/models/Bible';
 import { PassageView } from './src/components/PassageView/PassageView.js';
@@ -54,7 +55,7 @@ searchInput.addEventListener('input', (event) => {
         if (chapterStart < 0 || chapterStart > book.chapters) return;
         
         if(isUInt(chapterEnd)) {    /* searchStr shape: "Matthew 10-11" [IChaptersResponse (does not support verses)] */
-            const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
+            const response = await fetch(`${ApiEndpoints.Bible}?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`);
             if (response.status !== 200) return;
             
             const chapters:IChapters = (await response.json() as IChaptersResponse).data;
@@ -77,7 +78,7 @@ searchInput.addEventListener('input', (event) => {
             if(isUInt(verseEnd))
                 QueryString += `-${verseEnd}`;                                                                                          /* searchStr shape: "Matthew 10:1-2" */
             
-            const response = await fetch(`/api/bible/${QueryString}`);
+            const response = await fetch(`${ApiEndpoints.Bible}?${QueryString}`);
             if (response.status !== 200) return;
             
             PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data)
@@ -86,7 +87,7 @@ searchInput.addEventListener('input', (event) => {
         }
         
         // searchStr shape: "Matthew 10"
-        const response = await fetch(`/api/bible/?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
+        const response = await fetch(`${ApiEndpoints.Bible}?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
         
         PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);

@@ -1,4 +1,4 @@
-export enum SupportedBibleTranslations {
+export enum BibleTranslations {
     KJV  = 'KJV',
     NKJV = 'NKJV',
     RSV  = 'RSV',
@@ -9,10 +9,4 @@ export enum SupportedBibleTranslations {
     NIV  = 'NIV',
     NRT  = 'NRT',
     RUSV = 'RUSV'
-}
-
-export enum Status {
-    Success = 'success',
-    Partial = 'partial',
-    NotFound = 'not_found'
 }
