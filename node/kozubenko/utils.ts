@@ -1,7 +1,7 @@
 
-export class Paths {
+export class Path {
     /**
-     * A QoL Extension of `path.join`. Handles paths with any combination of forward `/` and backslashes `\`.
+     * A QoL Extension of module's `path.join()`. Handles paths with any combination of forward `/` and backslashes `\`.
      *
      * @returns {string} Returns a path with forward slashes `/`
      */
