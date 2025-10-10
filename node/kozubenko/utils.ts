@@ -16,3 +16,8 @@ export class Path {
 export function isNullOrUndefined(value):boolean {
     return (value === null || value === undefined) ? true : false;
 }
+
+/** Must `await` */
+export function sleep(ms:number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
