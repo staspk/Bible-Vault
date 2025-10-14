@@ -2,6 +2,10 @@
     Starts the http server with: 'npx tsx http-server.ts'.
     Background Thread: On change in $PATHS_TO_WATCH:Array<file|dir>, rebuilds frontend project into dist.
 #>
+param(
+    [string]$browser = $null        # Passed in string will be used as part of Start-Process, to determine which browser to launch at http://127.0.0.1:8080/. ie: "chrome.exe" / "msedge.exe"
+)
+
 
 <# Main Thread #>
 $HTTP_SERVER_PROJECT_ROOT = "$PWD\node"
@@ -56,11 +60,14 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
 <#
     MAIN THREAD
 #>
-$START_PATH = $PWD.Path
+$STARTING_PATH = $PWD.Path
 
 Clear-Host
 try {
     cd $HTTP_SERVER_PROJECT_ROOT
+    if($browser) {
+        Start-Process $browser "--new-window http://127.0.0.1:8080/"
+    }
     npx tsx http-server.ts
     $exitCode = $LASTEXITCODE
 }
@@ -68,5 +75,5 @@ finally {
     $tokenSource.Cancel()
     Start-Sleep -Milliseconds 75
 
-    cd $START_PATH
+    cd $STARTING_PATH
 }
