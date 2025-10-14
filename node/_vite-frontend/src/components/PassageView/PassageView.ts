@@ -1,9 +1,8 @@
 
-import './PassageView.scss';
-import { IChapter } from "../../../../_shared/interfaces/IResponses";
-import { LocalStorage } from '../../storage/LocalStorage';
-import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
-import { isNullOrUndefined } from '../../../../kozubenko/utils';
+import { IChapter } from "../../../../_shared/interfaces/IResponses.js";
+import { LocalStorage } from '../../storage/LocalStorage.js';
+import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum.js';
+import { isNullOrUndefined } from '../../../../kozubenko/utils.js';
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
@@ -28,13 +27,11 @@ export class PassageView {
 
     /**  Renders `PassageView`, splitting between 1-2 views, depending on `mirrorOption` and `data`.  
         Only 1-10 translations per `chapter` supported.  */
-    static Render(ONTO:HTMLElement, chapter:number, data:IChapter) {
-        if(isNullOrUndefined(ONTO)) {
-            console.error('PassageView.Render(): ONTO is null/undefined. Cannot complete Render!');
+    static Render(onto:HTMLElement, chapter:number, data:IChapter) {
+        if(isNullOrUndefined(onto)) {
+            console.error('PassageView.Render(): onto[HtmlElement] is null/undefined. Cannot complete Render...');
             return;
         }
-
-        ONTO.id = PassageView.ID;
 
         let total_translations = 0, view1_translations = 0, view2_translations = 0;
         for (const [i, [key, value]] of Object.entries(data).entries())
@@ -57,7 +54,7 @@ export class PassageView {
             PassageView.view2 = PassageView.generateView(chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data));
 
         
-        ONTO.replaceWith(PassageView.view1);
+        onto.replaceWith(PassageView.view1);
         PassageView.currentView = View.One;
         PassageView.alignVerses();
     }
