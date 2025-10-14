@@ -13,9 +13,7 @@ export function safeSplit(str:string, separator:string|RegExp, limit?:number): s
     return array;
 }
 
-/**
- * Note: also handles `undefined` (returns: `True`)
- */
+/**  Note: `undefined` also returns: `True` */
 export function isNullOrWhitespace(str:string): boolean {
     if(str == null || str.trim() === "")
         return true;
