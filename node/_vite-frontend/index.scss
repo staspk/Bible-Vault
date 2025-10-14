@@ -1,5 +1,7 @@
+@use './src/css/animations.css';
+@use './src/components/Spinner/Spinner.scss';
 @use './src/components/ReportBtn/ReportBtn.scss' as ReportBtn;
-@import './src/css/animations.css';
+
 
 $header-color          : #fefafc;
 $page-margins-color    : #952004;
@@ -13,7 +15,6 @@ $font-family: Segoe UI, Roboto, system-ui, -apple-system, Roboto, Ubuntu, Cantar
 $font-size  : 1rem;
 
 $header-height   : 86px;
-
 
 
 * {
