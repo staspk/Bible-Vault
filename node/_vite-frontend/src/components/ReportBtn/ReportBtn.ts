@@ -1,11 +1,15 @@
-import { Routes } from "../../routes";
+import { Routes } from "../../routes.js";
+import { ContentView } from "../../../index.js";
+import { ReportView } from "../ReportView/ReportView.js";
+
 
 export class ReportBtn {
     static ID = 'report-btn';
 
     /** The callback attached on `DOMContentLoaded` */
     static onclick() {
-        window.location.href = Routes.Report
+        ReportView.Render(ContentView.PlaceHolder())
+        window.history.pushState({}, '', Routes.Report);
     }
 }
 
