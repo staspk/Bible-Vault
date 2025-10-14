@@ -6,10 +6,10 @@ import { BIBLE } from './src/models/Bible';
 import { PassageView } from './src/components/PassageView/PassageView.js';
 
 import './src/keyboard';
-import './src/components/ReportBtn/ReportBtn.js';
+import './src/components/ReportBtn/ReportBtn';
 
 
-class ContentView {
+export class ContentView {
     static ID = 'content-view';
 
     static PlaceHolder(): HTMLDivElement {
@@ -66,7 +66,6 @@ searchInput.addEventListener('input', (event) => {
             return;
         }
         
-        
         if(!isNullOrWhitespace(potentialVerses)) {
             verseStart = safeSplit(potentialVerses, "-")[0];
             verseEnd   = safeSplit(potentialVerses, "-")[1];
@@ -78,18 +77,18 @@ searchInput.addEventListener('input', (event) => {
             if(isUInt(verseEnd))
                 QueryString += `-${verseEnd}`;                                                                                          /* searchStr shape: "Matthew 10:1-2" */
             
-            const response = await fetch(`${ApiEndpoints.Bible}?${QueryString}`);
+            const response = await fetch(`${ApiEndpoints.Bible}${QueryString}`);
             if (response.status !== 200) return;
             
-            PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data)
+            PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);
             window.history.pushState({}, '', QueryString);
             return;
         }
-        
+
         // searchStr shape: "Matthew 10"
         const response = await fetch(`${ApiEndpoints.Bible}?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
         if (response.status !== 200) return;
-        
+
         PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);
         window.history.pushState({}, '', `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`);
     }, 750);
