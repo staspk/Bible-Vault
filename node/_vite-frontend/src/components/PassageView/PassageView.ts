@@ -1,8 +1,8 @@
 
-import { IChapter } from "../../../../_shared/interfaces/IResponses.js";
-import { LocalStorage } from '../../storage/LocalStorage.js';
-import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum.js';
-import { isNullOrUndefined } from '../../../../kozubenko/utils.js';
+import { IChapter } from "../../../../_shared/interfaces/IResponses";
+import { LocalStorage } from '../../storage/LocalStorage';
+import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
+import { isNullOrUndefined } from '../../../../kozubenko/utils';
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
@@ -19,7 +19,7 @@ export class PassageView {
     static ID = 'passage-view';
     
     /** when true: even amount of translations are halved between 2 views. */
-    static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.mirrorOption);
+    static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.MIRROR_OPTION);
 
     static view1: HTMLDivElement;
     static view2?: HTMLDivElement;

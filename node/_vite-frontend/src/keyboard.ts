@@ -1,6 +1,6 @@
-import { PassageView } from "./components/PassageView/PassageView.js";
-import { LocalStorage } from "./storage/LocalStorage.js";
-import { LocalStorageKeys } from "./storage/LocalStorageKeys.enum.js";
+import { PassageView } from "./components/PassageView/PassageView";
+import { LocalStorage } from "./storage/LocalStorage";
+import { LocalStorageKeys } from "./storage/LocalStorageKeys.enum";
 
 
 document.addEventListener("keydown", (event) => {
@@ -13,7 +13,7 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (event.ctrlKey && event.key === 'm') {
-        LocalStorage.toggleBoolean(LocalStorageKeys.mirrorOption);
+        LocalStorage.toggleBoolean(LocalStorageKeys.MIRROR_OPTION);
         window.location.reload();
     }
 });
