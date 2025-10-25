@@ -16,11 +16,12 @@
 
     /* Linting */
     "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,    /* Stop compiler from forcing you to always init properties with null */
+
     "noUnusedParameters": true,
-    // "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "strictNullChecks": true,
     "noImplicitAny": false,  /* Recommended False in Browser-JS for less hastle */
   },
   "include": [

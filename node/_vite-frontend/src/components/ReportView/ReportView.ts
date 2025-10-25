@@ -18,9 +18,6 @@ export class ReportView {
             id: ReportView.ID
         });
 
-
-
-
         return view;
     }
 }

@@ -13,9 +13,7 @@ export class ReportBtn {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const reportBtn = document.getElementById(ReportBtn.ID);
-    if(!reportBtn) {  console.error(`#${ReportBtn.ID} not found! Unable to add `); return;  }
 
-    reportBtn.onclick = ReportBtn.onclick;
-});
+const reportBtn = document.getElementById(ReportBtn.ID);
+reportBtn ? reportBtn.onclick = ReportBtn.onclick
+          : console.error(`#${ReportBtn.ID} not found during side-effect load! Unable to add onclick[EventListener].`);

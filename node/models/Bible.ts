@@ -116,25 +116,8 @@ export class BIBLE {
         return null;
     }
 
-
-    static parseChapter(chapter: string | number): number | null {
-        if (typeof chapter === 'string')
-            chapter = parseInt(chapter, 10);
-
-        if (typeof chapter !== 'number')
-            return null;
-
-
-    }
-    
     static findMaxVerse(book: Book, chapter: number): number {
-        assert_class('book', book, Book);
-        assert_number('chapter', chapter, 1, book.chapters);
-
-        // return;
-        
         const filePath = path.join(BIBLE_NUMERICAL_MAP, String(book.index));
-        // assertPathExists('path', filePath);
         
         const lines = fs.readFileSync(filePath, 'utf-8').split(/\r?\n/);
         for (let i = 0; i < lines.length; i++) {
