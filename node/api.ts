@@ -29,8 +29,8 @@ class Bible {
 
     /**  `/api/bible?` -> `IChapterResponse` | `IChaptersResponse`  */
     static async Handle(URL:URL, response:http.ServerResponse) {
-        printYellow(`API Request: ${URL.pathname}?${URL.searchParams.toString()}`);
-            
+        printYellow(`API-Bible Request: ${URL.pathname}?${URL.searchParams.toString()}`);
+
         const param1:string = URL.searchParams.get('translations') ?? '';
         const param2:string = URL.searchParams.get('book')    ?? '';
         const param3:string = URL.searchParams.get('chapter') ?? '';
@@ -40,7 +40,7 @@ class Bible {
         
         const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
         if(translations.length < 1 || translations.length > 10) {  handleBadRequest(response); return;  }
-        
+
         const book = BIBLE.getBook(param2);
         if(!book) {  handleBadRequest(response); return;  }
         
@@ -136,7 +136,7 @@ class Bible {
 /** /api/report */
 class Report {
     static Handle(URL:URL, response:http.ServerResponse) {
-        printYellow(`API Request: ${URL.pathname}`);
+        printYellow(`API-Report Request: ${URL.pathname}`);
 
         handleOK(response, {});
     }

@@ -1,10 +1,11 @@
+import { BibleApi } from "../services/api";
 import type { ILocalStorageDefaults } from "./ILocalStorageDefaults";
 import { LocalStorageKeys } from "./LocalStorageKeys.enum";
 
 
 export const Defaults: ILocalStorageDefaults = {
     [LocalStorageKeys.MIRROR_OPTION]: true,
-    [LocalStorageKeys.TRANSLATIONS]: ['KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT']
+    [LocalStorageKeys.TRANSLATIONS]: BibleApi.translationsDefault
 }
 
 
@@ -80,5 +81,5 @@ export class LocalStorage {
     
 }
 
-
+localStorage.clear()
 new LocalStorage(Defaults);

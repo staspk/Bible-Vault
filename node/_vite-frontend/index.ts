@@ -1,17 +1,23 @@
-import { isNullOrWhitespace, safeSplit } from '../kozubenko/string.extensions.js';
-import { isUInt, yankUIntFromEnd } from './src/ts/utils.js';
+import { safeSplit } from '../kozubenko/string.extensions';
+import { BibleSearch, Search } from './src/services/Search';
+import { SearchInput } from './src/components/SearchInput/SearchInput';
+import { LocalStorageKeys } from './src/storage/LocalStorageKeys.enum';
+import { LocalStorage } from './src/storage/LocalStorage.js';
+
+import './src/storage/LocalStorage.js'
+import './src/keyboard.js';
+import './src/components/ReportBtn/ReportBtn.js';
+import './src/components/SearchInput/SearchInput.js'
+import { BibleApi } from './src/services/api.js';
 import { ApiEndpoints } from '../_shared/enums/ApiEndpoints.enum.js';
-import { IChapter, type IChapterResponse, type IChapters, type IChaptersResponse } from '../_shared/interfaces/IResponses.js';
-import { BIBLE } from './src/models/Bible.js';
+import { type IChapterResponse } from '../_shared/interfaces/IResponses.js';
 import { PassageView } from './src/components/PassageView/PassageView.js';
 
-import './src/keyboard';
-import './src/components/ReportBtn/ReportBtn';
 
 
 export class ContentView {
     static ID = 'content-view';
-
+    
     static PlaceHolder(): HTMLDivElement {
         return document.querySelector(`#${ContentView.ID} :nth-child(2)`) as HTMLDivElement;
     }
@@ -19,14 +25,13 @@ export class ContentView {
 
 
 const urlParams = new URLSearchParams(window.location.search);
-const searchInput = document.getElementById('search-input') as HTMLInputElement;
+const searchInput = document.getElementById(SearchInput.ID) as HTMLInputElement;
 
 
-const TRANSLATIONS = (urlParams.get('translations') ?? 'KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT').split(',').filter(translation => translation) ;
+const TRANSLATIONS = urlParams.get('translations')?.split(',').filter(el => el) ?? LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS);
 const BOOK         = urlParams.get('book');
 const CHAPTER      = urlParams.get('chapter');
 const VERSES       = urlParams.get('verses');
-
 
 
 let searchDebounceTimerID;
@@ -37,66 +42,22 @@ searchInput.addEventListener('input', (event) => {
     if (!searchStr) return;
     
     searchDebounceTimerID = setTimeout(async () => {
-        const potentialBookChapter = safeSplit(searchStr, ":")[0];
-        const potentialVerses      = safeSplit(searchStr, ":")[1];
-        
-        if(isNullOrWhitespace(potentialBookChapter)) return;
-        
-        let book, chapterStart, chapterEnd, verseStart, verseEnd, QueryString;
-        
-        const [uint, potentialBook] = yankUIntFromEnd(safeSplit(potentialBookChapter, "-")[0]);
-        if (!uint) return;
-        
-        book         = BIBLE.searchBook(potentialBook.trim());
-        chapterStart = uint;
-        chapterEnd   = safeSplit(potentialBookChapter, "-")[1];
-        
-        if (!book) return;
-        if (chapterStart < 0 || chapterStart > book.chapters) return;
-        
-        if(isUInt(chapterEnd)) {    /* searchStr shape: "Matthew 10-11" [IChaptersResponse (does not support verses)] */
-            QueryString = `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}-${chapterEnd}`;
-            
-            const response = await fetch(`${ApiEndpoints.Bible}${QueryString}`);
+        const search = new Search(searchStr);
+
+        if(search.data instanceof BibleSearch) {
+            const queryString = BibleApi.From(search.data, TRANSLATIONS as string[]).queryString();
+
+            const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
             if (response.status !== 200) return;
-            
-            const chapters:IChapters = (await response.json() as IChaptersResponse).data;
-            
-            PassageView.Render(ContentView.PlaceHolder(), chapterStart, IChapter.from(chapters, chapterStart));
-            window.history.pushState({}, '', QueryString);
-            /* SAVE the rest of the chapters locally, so don't have to ping server for next chapter */
-            return;
-        }
-        
-        if(!isNullOrWhitespace(potentialVerses)) {
-            verseStart = safeSplit(potentialVerses, "-")[0];
-            verseEnd   = safeSplit(potentialVerses, "-")[1];
-            
-            if(!isUInt(verseStart)) return;         /* decision: don't bother hitting the server, if the verses string is not legit  */
-            
-            QueryString = `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}&verses=${verseStart}`;     /* searchStr shape: "Matthew 10:1"   */
-            
-            if(isUInt(verseEnd))
-                QueryString += `-${verseEnd}`;                                                                                          /* searchStr shape: "Matthew 10:1-2" */
-            
-            const response = await fetch(`${ApiEndpoints.Bible}${QueryString}`);
-            if (response.status !== 200) return;
-            
-            PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);
-            window.history.pushState({}, '', QueryString);
-            return;
-        }
 
-        // searchStr shape: "Matthew 10"
-        QueryString = `?translations=${TRANSLATIONS.join(',')}&book=${book.name}&chapter=${chapterStart}`;
-
-        const response = await fetch(`${ApiEndpoints.Bible}${QueryString}`);
-        if (response.status !== 200) return;
-
-        PassageView.Render(ContentView.PlaceHolder(), chapterStart, (await response.json() as IChapterResponse).data);
-        window.history.pushState({}, '', QueryString);
-    }, 750);
+            PassageView.Render(ContentView.PlaceHolder(), search.data.chapter, (await response.json() as IChapterResponse).data);
+            window.history.pushState({}, '', queryString);
+            
+            /*  DO ICHAPTERS LATER  */
+        }        
+    });
 });
+
 
 if(BOOK && CHAPTER) {   /*  if urlParams, set page state */
     let searchStr = `${BOOK} ${CHAPTER}`;
@@ -107,6 +68,5 @@ if(BOOK && CHAPTER) {   /*  if urlParams, set page state */
         searchStr += `:${verseStart}`;
         if(verseEnd) searchStr += `-${verseEnd}`;
     }
-    searchInput.value = searchStr;
-    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+    SearchInput.Set(searchStr);
 }

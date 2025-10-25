@@ -113,7 +113,7 @@ export class PassageView {
         }
     }
     
-    /**  Toggles between `PassageView.view1` and  `PassageView.view2`, depending on: `PassageView.currentView`  */
+    /**  Toggles between `PassageView.view1` and `PassageView.view2` depending on: `PassageView.currentView`  */
     static toggleView() {
         if(PassageView.currentView === View.None) {
             console.error('PassageView.toggleView(): cannot be called before PassageView.Render(), ie: PassageView.currentView === View.None. Skipping Function...');
