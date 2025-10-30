@@ -1,6 +1,7 @@
 @use './src/css/animations.css';
 @use './src/components/Spinner/Spinner.scss';
 @use './src/components/PassageView/PassageView.scss';
+@use './src/components/HomeBtn/HomeBtn.scss' as HomeBtn;
 @use './src/components/ReportBtn/ReportBtn.scss' as ReportBtn;
 
 
@@ -38,10 +39,11 @@ body > :nth-child(2) {  grid-row: 2;  }
 
 header {
     display: grid;
-    grid-template-columns: 1fr ReportBtn.$width;
+    grid-template-columns: HomeBtn.$width 1fr ReportBtn.$width;
     border: $header-border;
     background-color: $header-color;
 
+    &:hover #home-btn   {  animation: fadeIn 0.15s linear forwards;  }
     &:hover #report-btn {  animation: fadeIn 0.15s linear forwards;  }
 }
 #search-input {
@@ -50,8 +52,8 @@ header {
     text-align: center;
     font-size: 1.2rem;
     
-    position: relative;
-    left: calc(ReportBtn.$width / 2);
+    // position: relative;
+    // left: calc(ReportBtn.$width / 2);
 }
 
 

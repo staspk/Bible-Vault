@@ -1,0 +1,17 @@
+$width: 40px;
+
+#home-btn {
+    background: url('../../../../../adobe/home/home-sprite.png') no-repeat top left;
+    background-size: cover;
+    width: $width; height: 45.5px;
+    margin: auto;
+    cursor: pointer;
+
+    position: relative;
+    left: 20px;
+
+    opacity: .2;
+
+    &:hover  {  background-position: -($width) 0px;      }
+    &:active {  background-position: -(2 * $width) 0px;  }
+} 

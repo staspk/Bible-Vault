@@ -1,4 +1,4 @@
 export const Routes = {
-    Index : '',
+    Index : '/',
     Report: '/report'
 }

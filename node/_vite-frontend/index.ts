@@ -5,6 +5,7 @@ import { LocalStorage } from './src/storage/LocalStorage.js';
 
 import './src/storage/LocalStorage.js'
 import './src/keyboard.js';
+import './src/components/HomeBtn/HomeBtn.js'
 import './src/components/ReportBtn/ReportBtn.js';
 import './src/components/SearchInput/SearchInput.js'
 
