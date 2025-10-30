@@ -14,6 +14,8 @@ $HTTP_SERVER_PROJECT_ROOT = "$PWD\node"
 $VITE_ROOT  = "$PWD\node\_vite-frontend"
 $PATHS_TO_WATCH = @(
     "$VITE_ROOT\index.html",
+    "$VITE_ROOT\report.html",
+    "$VITE_ROOT\index.scss",
     "$VITE_ROOT\index.ts",
     "$VITE_ROOT\src",
     "$VITE_ROOT\..\_shared"
