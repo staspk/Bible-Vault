@@ -6,7 +6,7 @@ import { ReportView } from "../ReportView/ReportView.js";
 export class ReportBtn {
     static ID = 'report-btn';
 
-    /** The callback attached on `DOMContentLoaded` */
+    /** The onclick method */
     static onclick() {
         ReportView.Render(ContentView.PlaceHolder())
         window.history.pushState({}, '', Routes.Report);
