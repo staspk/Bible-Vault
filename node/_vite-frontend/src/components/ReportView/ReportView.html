@@ -1,0 +1,144 @@
+<div class="bible-grid">
+  <div class="column torah">
+    <div class="books">
+      <div id="Genesis" class="tooltip"><span class="tooltiptext">Genesis</span></div>
+      <div id="Exodus"></div>
+      <div id="Leviticus"></div>
+      <div id="Numbers"></div>
+      <div id="Deuteronomy"></div>
+    </div>
+  </div>
+
+  <div class="column history">
+    <div class="books">
+      <div id="Joshua"></div>
+      <div id="Judges"></div>
+      <div id="Ruth"></div>
+      <div id="1 Samuel"></div>
+      <div id="2 Samuel"></div>
+      <div id="1 Kings"></div>
+      <div id="2 Kings"></div>
+      <div id="1 Chronicles"></div>
+      <div id="2 Chronicles"></div>
+      <div id="Ezra"></div>
+      <div id="Nehemiah"></div>
+      <div id="Esther"></div>
+    </div>
+  </div>
+
+  <div class="column poetry">
+    <div class="books">
+      <div id="Job"></div>
+      <div id="Psalms"></div>
+      <div id="Proverbs"></div>
+      <div id="Ecclesiastes"></div>
+      <div id="Song of Solomon"></div>
+    </div>
+  </div>
+
+  <div class="column prophets-major">
+    <div class="books">
+      <div id="Isaiah"></div>
+      <div id="Jeremiah"></div>
+      <div id="Lamentations"></div>
+      <div id="Ezekiel"></div>
+      <div id="Daniel"></div>
+    </div>
+  </div>
+
+  <div class="column prophets-minor">
+    <div class="books">
+      <div id="Hosea"></div>
+      <div id="Joel"></div>
+      <div id="Amos"></div>
+      <div id="Obadiah"></div>
+      <div id="Jonah"></div>
+      <div id="Micah"></div>
+      <div id="Nahum"></div>
+      <div id="Habakkuk"></div>
+      <div id="Zephaniah"></div>
+      <div id="Haggai"></div>
+      <div id="Zechariah"></div>
+      <div id="Malachi" class="tooltip"><span class="tooltiptext">Malachi</span></div>
+      
+      <script>
+        // Get elements
+        const malachi = document.getElementById('Malachi');
+        const tooltip = document.getElementById('malachi-tooltip');
+
+        // Create Popper instance (north/top placement)
+        const popperInstance = Popper.createPopper(malachi, tooltip, {
+            placement: 'top',
+            modifiers: [
+            {
+                name: 'offset',
+                options: {
+                offset: [0, 8], // 8px distance from element
+                },
+            },
+            ],
+        });
+
+        // Show/hide logic
+        function show() {
+            tooltip.style.display = 'block';
+            popperInstance.update();
+        }
+
+        function hide() {
+            tooltip.style.display = 'none';
+        }
+
+        malachi.addEventListener('mouseenter', show);
+        malachi.addEventListener('mouseleave', hide);
+      </script>
+    </div>
+  </div>
+
+  <div class="column gospels">
+    <div class="books">
+      <div id="Matthew"></div>
+      <div id="Mark"></div>
+      <div id="Luke"></div>
+      <div id="John"></div>
+    </div>
+  </div>
+
+  <div class="column acts">
+    <div class="books">
+      <div id="Acts"></div>
+    </div>
+  </div>
+
+  <div class="column epistles">
+    <div class="books">
+      <div id="Romans"></div>
+      <div id="1 Corinthians"></div>
+      <div id="2 Corinthians"></div>
+      <div id="Galatians"></div>
+      <div id="Ephesians"></div>
+      <div id="Philippians"></div>
+      <div id="Colossians"></div>
+      <div id="1 Thessalonians"></div>
+      <div id="2 Thessalonians"></div>
+      <div id="1 Timothy"></div>
+      <div id="2 Timothy"></div>
+      <div id="Titus"></div>
+      <div id="Philemon"></div>
+      <div id="Hebrews"></div>
+      <div id="James"></div>
+      <div id="1 Peter"></div>
+      <div id="2 Peter"></div>
+      <div id="1 John"></div>
+      <div id="2 John"></div>
+      <div id="3 John"></div>
+      <div id="Jude"></div>
+    </div>
+  </div>
+
+  <div class="column revelation">
+    <div class="books">
+      <div id="Revelation"></div>
+    </div>
+  </div>
+</div>
