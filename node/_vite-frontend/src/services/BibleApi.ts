@@ -1,5 +1,5 @@
-import type { Book } from "../models/Bible";
-import type { BibleSearch } from "../models/BibleSearch";
+import type { Book } from "../models/Bible.js";
+import type { BibleSearch } from "../models/BibleSearch.js";
 
 /** `/api/bible` */
 export class BibleApi {
