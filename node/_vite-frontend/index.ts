@@ -1,4 +1,3 @@
-import { safeSplit } from '../kozubenko/string.extensions';
 import { SearchInput } from './src/components/SearchInput/SearchInput';
 import { LocalStorageKeys } from './src/storage/LocalStorageKeys.enum';
 import { LocalStorage } from './src/storage/LocalStorage.js';
@@ -28,8 +27,8 @@ export const VERSES       = urlParams.get('verses');
 if(BOOK && CHAPTER) {
     let searchStr = `${BOOK} ${CHAPTER}`;
     if(VERSES) {
-        const verseStart = safeSplit(VERSES, "-")[0];
-        const verseEnd   = safeSplit(VERSES, "-")[1];
+        const verseStart = VERSES.split("-")[0];
+        const verseEnd   = VERSES.split("-")[1];
         
         searchStr += `:${verseStart}`;
         if(verseEnd) searchStr += `-${verseEnd}`;

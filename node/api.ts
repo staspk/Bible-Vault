@@ -4,7 +4,7 @@ import * as http from 'http'
 
 import { printRed, printYellow } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
-import { isNullOrWhitespace, safeSplit } from './kozubenko/string.extensions.js';
+import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { IChapter, IChapters } from './_shared/interfaces/IResponses.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
@@ -44,8 +44,8 @@ class Bible {
         const book = BIBLE.getBook(param2);
         if(!book) {  handleBadRequest(response); return;  }
         
-        const chapterStart = parseInt(safeSplit(param3, "-")[0], 10);
-        const chapterEnd   = parseInt(safeSplit(param3, "-")[1], 10);
+        const chapterStart = parseInt(param3.split("-")[0], 10);
+        const chapterEnd   = parseInt(param3.split("-")[1], 10);
         
         if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
         
@@ -62,8 +62,8 @@ class Bible {
         }
         
         if(!isNullOrWhitespace(param4)) {   /*  */
-            const verseStart = parseInt(safeSplit(param4, "-")[0], 10);
-            const verseEnd   = parseInt(safeSplit(param4, "-")[1], 10);
+            const verseStart = parseInt(param4.split("-")[0], 10);
+            const verseEnd   = parseInt(param4.split("-")[1], 10);
             
             if(verseStart && verseStart > 0 && (verseStart <= 89 || (verseStart <= 176 && book === BIBLE.PSALMS)) ) {   /* verseStart must be 1-89 || 1-176 (if: Psalms) */
                 if(verseEnd && verseEnd > 1 && (verseEnd <= 89   || (verseEnd   <= 176 && book === BIBLE.PSALMS)) ) {   /* verseEnd   must be 2-89 || 2-176 (if: Psalms) */

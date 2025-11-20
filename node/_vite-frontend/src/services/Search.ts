@@ -1,4 +1,4 @@
-import { isNullOrWhitespace, isPositiveInteger, safeSplit } from "../../../kozubenko/string.extensions.js";
+import { isNullOrWhitespace, isPositiveInteger } from "../../../kozubenko/string.extensions.js";
 import { yankUIntFromEnd } from "../../../kozubenko/utils.js";
 import { Book } from "../models/Bible.js";
 import { BibleSearch } from "../models/BibleSearch.js";
@@ -24,19 +24,19 @@ export class Search {
     data: BibleSearch;
 
     constructor(search:string) {
-        const potentialBookChapter = safeSplit(search, ":")[0];
-        const potentialVerses      = safeSplit(search, ":")[1];
+        const potentialBookChapter = search.split(":")[0];
+        const potentialVerses      = search.split(":")[1];
 
         if(isNullOrWhitespace(potentialBookChapter)) {  this.type === SearchType.Garbage;  return;  }
 
         let book:Book|null, chapterStart, chapterEnd, verseStart, verseEnd;
 
-        const [uint, potentialBook] = yankUIntFromEnd(safeSplit(potentialBookChapter, "-")[0]);
+        const [uint, potentialBook] = yankUIntFromEnd(potentialBookChapter.split("-")[0]);
         if (!uint) {  this.type === SearchType.Garbage;  return;  }
 
         book         = BibleSearch.match_bible_book_search_term(potentialBook.trim());
         chapterStart = uint;
-        chapterEnd   = safeSplit(potentialBookChapter, "-")[1];
+        chapterEnd   = potentialBookChapter.split("-")[1];
         
         if (!book) {                                            this.type = SearchType.Garbage;  return;  }       // after: legal book (is Book)
         if (chapterStart < 0 || chapterStart > book.chapters) { this.type = SearchType.Garbage;  return;  }       // after: legal chapterStart
@@ -79,19 +79,19 @@ export class Search {
 
     /**  The search string analysis algorithm in simplified form. Note: this is not an exact copy of the constructor form */
     static Analyze(search:string): SearchType {
-        const potentialBookChapter = safeSplit(search, ":")[0];
-        const potentialVerses      = safeSplit(search, ":")[1];
+        const potentialBookChapter = search.split(":")[0];
+        const potentialVerses      = search.split(":")[1];
 
         if(isNullOrWhitespace(potentialBookChapter))          return SearchType.Garbage;
 
         let book, chapterStart, chapterEnd, verseStart, verseEnd;
 
-        const [uint, potentialBook] = yankUIntFromEnd(safeSplit(potentialBookChapter, "-")[0]);
+        const [uint, potentialBook] = yankUIntFromEnd(potentialBookChapter.split("-")[0]);
         if (!uint)                                            return SearchType.Garbage;
 
         book         = BibleSearch.match_bible_book_search_term(potentialBook.trim());
         chapterStart = uint;
-        chapterEnd   = safeSplit(potentialBookChapter, "-")[1];
+        chapterEnd   = potentialBookChapter.split("-")[1];
 
         if (!book)                                            return SearchType.Garbage;
         if (chapterStart < 0 || chapterStart > book.chapters) return SearchType.Garbage;
@@ -99,8 +99,8 @@ export class Search {
         if(isPositiveInteger(chapterEnd))                     return SearchType.IChapters;          //: "Matthew 10-11"
             
         if(!isNullOrWhitespace(potentialVerses)) {
-            verseStart = safeSplit(potentialVerses, "-")[0];
-            verseEnd   = safeSplit(potentialVerses, "-")[1];
+            verseStart = potentialVerses.split("-")[0];
+            verseEnd   = potentialVerses.split("-")[1];
             
             if(!isPositiveInteger(verseStart))                return SearchType.Garbage;
             if(!isPositiveInteger(verseEnd))                  return SearchType.IChapterVerse;      //: "Matthew 10:1"
