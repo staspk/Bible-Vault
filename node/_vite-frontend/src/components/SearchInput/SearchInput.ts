@@ -1,7 +1,7 @@
 import { ContentView, TRANSLATIONS } from "../../../index.js";
 import { PassageView } from "../PassageView/PassageView.js";
 import { ApiEndpoints } from "../../../../_shared/enums/ApiEndpoints.enum.js";
-import { BibleApi } from "../../services/api.js";
+import { BibleApi } from "../../models/BibleApi.js";
 import { BibleSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
 import type { IChapterResponse } from "../../../../_shared/interfaces/IResponses.js";
@@ -40,7 +40,7 @@ export class SearchInput {
                 
                 /*  DO ICHAPTERS LATER  */
             }        
-        }, 100);
+        }, 200);
     }
 }
 

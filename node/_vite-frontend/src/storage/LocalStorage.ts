@@ -1,4 +1,4 @@
-import { BibleApi } from "../services/api";
+import { BibleApi } from "../models/BibleApi";
 import type { ILocalStorageDefaults } from "./ILocalStorageDefaults";
 import { LocalStorageKeys } from "./LocalStorageKeys.enum";
 

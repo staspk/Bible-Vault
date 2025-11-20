@@ -28,8 +28,7 @@ const HOST:string = process.platform === 'linux' ? await GOOGLE_VM_EXTERNAL_IP()
 const PORT:number = process.platform === 'linux' ? HTTP_PORT                     :  DEV_PORT;
 
 
-const DIST      = path.join(__dirname, '_vite-frontend', 'dist');
-
+const DIST  = path.join(__dirname, '_vite-frontend', 'dist');
 const PAGES = [
     new HtmlPage('/'       , path.join(DIST, 'index.html')),
     new HtmlPage('/report/', path.join(DIST, 'report.html'))
