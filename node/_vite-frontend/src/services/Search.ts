@@ -1,5 +1,6 @@
-import { isNullOrWhitespace, isUInt, safeSplit } from "../../../kozubenko/string.extensions.js";
+import { isNullOrWhitespace, isPositiveInteger, safeSplit } from "../../../kozubenko/string.extensions.js";
 import { yankUIntFromEnd } from "../../../kozubenko/utils.js";
+import { Book } from "../models/Bible.js";
 import { BibleSearch } from "../models/BibleSearch.js";
 
 
@@ -28,7 +29,7 @@ export class Search {
 
         if(isNullOrWhitespace(potentialBookChapter)) {  this.type === SearchType.Garbage;  return;  }
 
-        let book, chapterStart, chapterEnd, verseStart, verseEnd;
+        let book:Book|null, chapterStart, chapterEnd, verseStart, verseEnd;
 
         const [uint, potentialBook] = yankUIntFromEnd(safeSplit(potentialBookChapter, "-")[0]);
         if (!uint) {  this.type === SearchType.Garbage;  return;  }
@@ -40,23 +41,29 @@ export class Search {
         if (!book) {                                            this.type = SearchType.Garbage;  return;  }       // after: legal book (is Book)
         if (chapterStart < 0 || chapterStart > book.chapters) { this.type = SearchType.Garbage;  return;  }       // after: legal chapterStart
 
-        if(isUInt(chapterEnd)) {
+        if(isPositiveInteger(chapterEnd)) {
             this.type = SearchType.IChapters;
             this.data = new BibleSearch(book, chapterStart, chapterEnd, undefined, undefined);
             return;     //: "Matthew 10-11"
         }
         
         if(!isNullOrWhitespace(potentialVerses)) {
-            verseStart = safeSplit(potentialVerses, "-")[0];
-            verseEnd   = safeSplit(potentialVerses, "-")[1];
-            
-            if(!isUInt(verseStart)) {  this.type = SearchType.Garbage;  return;  }      // after: legal verseStart
+            verseStart = potentialVerses.split("-")[0]
+            verseEnd   = potentialVerses.split("-")[1]
 
-            if(!isUInt(verseEnd)) {
+            if(!isPositiveInteger(verseStart)) {  this.type = SearchType.Garbage;  return;  }      // after: verseStart in legal form 
+
+            if(!isPositiveInteger(verseEnd)) {
+                if(potentialVerses.endsWith("-")) {
+                    /*  "Matthew 10:1-"  */
+                    this.type = SearchType.IChapterVerse;
+                    this.data = new BibleSearch(book, chapterStart, undefined, verseStart, book.totalVerses(chapterStart));
+                    return;
+                }
                 /*  "Matthew 10:1"  */
                 this.type = SearchType.IChapterVerse;
                 this.data = new BibleSearch(book, chapterStart, undefined, verseStart, undefined);
-                return;     
+                return;  
             }
             /*  "Matthew 10:1-2"  */
             this.type = SearchType.IChapterVerses
@@ -89,14 +96,14 @@ export class Search {
         if (!book)                                            return SearchType.Garbage;
         if (chapterStart < 0 || chapterStart > book.chapters) return SearchType.Garbage;
 
-        if(isUInt(chapterEnd))                                return SearchType.IChapters;          //: "Matthew 10-11"
+        if(isPositiveInteger(chapterEnd))                     return SearchType.IChapters;          //: "Matthew 10-11"
             
         if(!isNullOrWhitespace(potentialVerses)) {
             verseStart = safeSplit(potentialVerses, "-")[0];
             verseEnd   = safeSplit(potentialVerses, "-")[1];
             
-            if(!isUInt(verseStart))                           return SearchType.Garbage;
-            if(!isUInt(verseEnd))                             return SearchType.IChapterVerse;      //: "Matthew 10:1"
+            if(!isPositiveInteger(verseStart))                return SearchType.Garbage;
+            if(!isPositiveInteger(verseEnd))                  return SearchType.IChapterVerse;      //: "Matthew 10:1"
             else                                              return SearchType.IChapterVerses;     //: "Matthew 10:1-2"
         }
                                                               return SearchType.IChapter;           //: "Matthew 10"
