@@ -20,9 +20,9 @@ export function isNullOrWhitespace(str:string): boolean {
     return false;
 }
 
-export function isUInt(value:string): boolean {
-    const _value = parseInt(value);
-    if (Number.isInteger(_value) && _value > 0)
+export function isPositiveInteger(str:string): boolean {
+    const potentialInteger = parseInt(str);
+    if (Number.isInteger(potentialInteger) && potentialInteger > 0)
         return true;
     return false;
 }
