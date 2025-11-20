@@ -33,8 +33,8 @@ class Bible {
 
         const param1:string = URL.searchParams.get('translations') ?? '';
         const param2:string = URL.searchParams.get('book')    ?? '';
-        const param3:string = URL.searchParams.get('chapter') ?? '';
-        const param4:string = URL.searchParams.get('verses')  ?? '';
+        const param3:string = URL.searchParams.get('chapter') ?? '';        // potential forms: {int} || {int}-{int}
+        const param4:string = URL.searchParams.get('verses')  ?? '';        // potential forms: {int} || {int}-{int}
         
         if (!param2 || !param3) {  handleBadRequest(response); return;  }
         
