@@ -40,7 +40,7 @@ export class SearchInput {
                 
                 /*  DO ICHAPTERS LATER  */
             }        
-        }, 100);
+        }, 200);
     }
 }
 
