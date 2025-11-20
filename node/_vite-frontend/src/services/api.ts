@@ -32,7 +32,7 @@ export class BibleApi {
         }
 
         if(this.verse) {
-            QueryString += `&verse=${this.verse}`;
+            QueryString += `&verses=${this.verse}`;
 
             if(this.verseEnd)
                 QueryString += `-${this.verseEnd}`;
