@@ -61,7 +61,7 @@ class Bible {
             return;
         }
         
-        if(!isNullOrWhitespace(param4)) {   /*  */
+        if(!isNullOrWhitespace(param4)) {
             const verseStart = parseInt(param4.split("-")[0], 10);
             const verseEnd   = parseInt(param4.split("-")[1], 10);
             
