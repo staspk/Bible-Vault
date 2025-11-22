@@ -1,72 +1,85 @@
 <#
-    Starts the http server with: 'npx tsx http-server.ts'.
-    Background Thread: On change in $PATHS_TO_WATCH:Array<file|dir>, rebuilds frontend project into dist.
+    Background Thread: watches an Array<file|directory>. onchange -> 'npm run build' in $VITE_ROOT 
+    Main Thread: 'npx tsx http-server.ts'
 #>
 param(
-    [string]$browser = $null        # Passed in string will be used as part of Start-Process, to determine which browser to launch at http://127.0.0.1:8080/. ie: "chrome.exe" / "msedge.exe"
+    [string]$browser = $null        # e.g: "chrome.exe" / "msedge.exe"  [Optional Param] -> Launches browser at: "http://127.0.0.1:8080/"
 )
 
 
-<# Main Thread #>
-$HTTP_SERVER_PROJECT_ROOT = "$PWD\node"
+<# Main Thread Parameters #>
+$HTTP_SERVER_DIRECTORY = "$PWD\node"
+$STARTING_PATH = $PWD.Path    # will cd back into on script exit
 
 <# Background Thread Parameters #>
 $VITE_ROOT  = "$PWD\node\_vite-frontend"
 $PATHS_TO_WATCH = @(
+    "$VITE_ROOT\src",
     "$VITE_ROOT\index.html",
-    "$VITE_ROOT\report.html",
     "$VITE_ROOT\index.scss",
     "$VITE_ROOT\index.ts",
-    "$VITE_ROOT\src",
+    "$VITE_ROOT\report.html",
     "$VITE_ROOT\..\_shared"
 )
 
 
+<#  BACKGROUND THREAD  #>
 $tokenSource = [System.Threading.CancellationTokenSource]::new()
 $token = $tokenSource.Token
-Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost $Host -ScriptBlock  {
-    param($npm_project_dir, $paths_to_watch, $token)
+Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost $Host -ScriptBlock {
+    param(
+        $npm_project_directory,     # what the thread will cd into to run NpmBuild
+        $paths_to_watch,            # Array<file|directory>
+        $token                      # Main Thread uses to signal thread to stop running. Type: [System.Threading.CancellationTokenSource]::new().Token
+    )
 
     $paths_to_watch | ForEach-Object {
         if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
     }
 
     function NpmBuild {
-        cd $npm_project_dir
-        npm run build | Out-Null
+        <# 
+        .SYNOPSIS
+        Returns:
+            Ticks     - 'npm run build' was successful
+            || exit(1) - error running: 'npm run build'
+        #>
+        $err = $( $null = npm run build ) 2>&1
+        if($err) {
+            Write-Host "`nstart-server.ps1: NpmBuild Failed! Shutting down Watch thread...`n" -ForegroundColor Red
+            exit(1)
+        }
         return [datetime]::UtcNow.Ticks;
     }
 
+    cd $npm_project_directory
     $vite_last_built = NpmBuild
     while (-not $token.IsCancellationRequested) {
-        Start-Sleep -Milliseconds 250
+        Start-Sleep -Milliseconds 125
+        
         foreach ($path in $paths_to_watch) {
-            if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {                <# if file, check last write time against last build time #>
-                # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
-                $vite_last_built = NpmBuild; break;
-            }
-            $change_detected = $false;
             if((Get-Item $path).PSIsContainer) {
-                foreach($file in $(Get-ChildItem -Path $path -Recurse -File)) {               <# Yes: all files are checked recursively, Stan. Even in dirs of dirs. #>
+                foreach($file in $(Get-ChildItem $path -Recurse -File)) {              <# Yes: all files are checked recursively, Stan (eye-check: at least dirs of dirs) #>
                     if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
                         # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
-                        $vite_last_built = NpmBuild; $change_detected = $true; break;
-                    }
-                }
-            }
-            if($change_detected) {  break;  }
-        }
-    }
-}
+                        $vite_last_built = NpmBuild;
+                        $escape_hatch_needed = $true;
+                        break;
+            }}}
+            if($escape_hatch_needed) { break; }     <#  Nap-Time  #>
 
-<#
-    MAIN THREAD
-#>
-$STARTING_PATH = $PWD.Path
+            <#  Else: is a file #>
+            if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
+                # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
+                $vite_last_built = NpmBuild
+                break;
+}}}}
 
+
+<#  MAIN THREAD  #>             # try-finally allows work after Ctrl+C 
 Clear-Host
 try {
-    cd $HTTP_SERVER_PROJECT_ROOT
+    cd $HTTP_SERVER_DIRECTORY
     if($browser) {
         Start-Process $browser "--new-window http://127.0.0.1:8080/"
     }
@@ -76,6 +89,5 @@ try {
 finally {
     $tokenSource.Cancel()
     Start-Sleep -Milliseconds 75
-
     cd $STARTING_PATH
 }

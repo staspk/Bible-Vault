@@ -1,15 +1,15 @@
 $chapter-column-color  : #fff;
 
-#passage-view {
-    display: grid;
-    margin: 1rem auto;
-    gap: .75rem;
-}
 #passage-view.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
 #passage-view.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
 #passage-view.cols-3 {  width: 75%; grid-template-columns: repeat(3, minmax(222px, 1fr));  }
 #passage-view.cols-4 {  width: 80%; grid-template-columns: repeat(4, minmax(222px, 1fr));  }
 #passage-view.cols-5 {  width: 90%; grid-template-columns: repeat(5, minmax(222px, 1fr));  }
+#passage-view {
+    display: grid;
+    margin: 1rem auto;
+    gap: .75rem;
+}
 
 .chapter-column {
     grid-auto-rows: max-content;
