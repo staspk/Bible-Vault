@@ -31,6 +31,7 @@ const PORT:number = process.platform === 'linux' ? HTTP_PORT                    
 const DIST  = path.join(__dirname, '_vite-frontend', 'dist');
 const PAGES = [
     new HtmlPage('/'       , path.join(DIST, 'index.html')),
+    new HtmlPage('/report' , path.join(DIST, 'index.html')),
     new HtmlPage('/report/', path.join(DIST, 'report.html'))
 ]
 
