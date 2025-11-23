@@ -35,7 +35,7 @@ export class SearchInput {
                 const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
                 if (response.status !== 200) return;
 
-                PassageView.Render(ContentView.PlaceHolder(), search.data.chapter, (await response.json() as IChapterResponse).data);
+                PassageView.Render(search.data.chapter, (await response.json() as IChapterResponse).data);
                 window.history.pushState({}, '', queryString);
                 
                 /*  DO ICHAPTERS LATER  */

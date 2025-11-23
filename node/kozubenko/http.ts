@@ -4,7 +4,7 @@ import { readFile as fs_readFile } from 'fs';
 
 export class HtmlPage {
     constructor(
-        /** equivalent to Node's `URL.pathname` */
+        /** equivalent to Node's `URL.pathname`, i.e: for index: `"/"` */
         public route: string,
         public path_to_resource: string
     ) {}
@@ -13,7 +13,7 @@ export class HtmlPage {
        fs_readFile(this.path_to_resource, (error, data) => {
             if (error) {
                 response.writeHead(500, { 'Content-Type': 'text/html'});
-                response.end(`Error: ${error}`);
+                response.end(`${error}`);
                 return;
             } else {
                 response.writeHead(200, {'Content-Type': 'text/html'});

@@ -96,6 +96,24 @@ export class BIBLE {
         }
         return BIBLE._Books;
     }
+
+    /** Category explanation pending... */
+    static Categorized(): Book[][] {
+        const SEPARATORS = [5, 12, 5, 5, 12, 5, 14, 8]
+
+        let list:Book[][] = []
+        let category:Book[] = []
+        let offset = 0;
+        BIBLE.Books().forEach(book => {
+            if(category.push(book) == SEPARATORS[offset]) {
+                list.push(category);
+                category = [];
+                offset++;
+            }
+        });
+
+        return list
+    }
     
     /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
     static getBook(book: string | number): Book | null {
