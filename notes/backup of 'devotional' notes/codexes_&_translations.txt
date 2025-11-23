@@ -1,9 +1,128 @@
-Saints Cyril 826–869 and Methodius
+𝔓66 (Papyrus 66)
+ℵ / 01 – Codex Sinaiticus
+B / 03 – Codex Vaticanus
+A / 02 – Codex Alexandrinus
+D / 05 – Codex Bezae (Cantabrigiensis)
+W / 032 – Codex Washingtonianus (Freer Gospels)
+Minuscule 33 (“the Queen of the Cursives”)
 
 
-"Apostles to the Slavs":
+
+ID	          Name / Siglum	                        Date
+P1	          Papyrus 1	                            3rd c.
+P4	          Papyrus 4	                            3rd c.
+P5	          Papyrus 5	                            3rd c.
+P9	          Papyrus 9	                            3rd c.
+P13	          Papyrus 13	                        3rd c.
+P15	          Papyrus 15	                        3rd c.
+P16	          Papyrus 16	                        3rd–4th c.
+P18	          Papyrus 18	                        3rd–4th c.
+P20	          Papyrus 20	                        3rd c.
+P23	          Papyrus 23	                        early 3rd c.
+P30	          Papyrus 30	                        3rd c.
+P32	          Papyrus 32	                        3rd c.
+P39	          Papyrus 39	                        late 3rd c.
+P45	          Papyrus 45 (Chester Beatty I)	        early 3rd c.
+P46	          Papyrus 46 (Chester Beatty II)	    late 2nd–early 3rd c.
+P47	          Papyrus 47 (Chester Beatty III)	    3rd c.
+P52	          Papyrus 52 (Rylands Library Papyrus)	mid 2nd c.
+P64/67	      Papyrus 64+67	                        late 2nd c.
+P66	          Papyrus 66 (Bodmer II)	            c. 200–early 3rd c.
+P69	          Papyrus 69	                        3rd c.
+P72	          Papyrus 72 (Bodmer VII–VIII)	        late 3rd–early 4th c.
+P74	          Papyrus 74	                        7th c.
+P75	          Papyrus 75 (Bodmer XIV–XV)	        late 3rd–early 4th c.
+P77	          Papyrus 77	                        late 2nd–3rd c.
+P90	          Papyrus 90	                        late 2nd c.
+P91	          Papyrus 91	                        3rd c.
+P92	          Papyrus 92	                        3rd c.
+P100	      Papyrus 100	                        3rd–4th c.
+P101	      Papyrus 101	                        3rd c.
+P115	      Papyrus 115	                        3rd–4th c.
+
+
+
+Greek Uncial (Majuscule) Manuscripts
+ID	                Name / Siglum	                                 Date
+02	                Codex Alexandrinus (A)	                         5th c.
+03	                Codex Vaticanus (B)	                             4th c.
+04	                Codex Ephraemi Rescriptus (C)	                 5th c.
+05	                Codex Bezae Cantabrigiensis (D, Gospels/Acts)	 5th c.
+06	                Codex Claromontanus (Dp, Pauline diglot)	     6th c.
+07	                Uncial 07 (Basilensis-type; Gospels)	         8th c.
+08	                Codex Laudianus (E, Acts)	                     6th–7th c.
+09	                Uncial 09	                                     9th c.
+010	                Uncial 010 (Coislinianus-type, Paul)	         6th c.
+011	                Uncial 011	                                     9th c.
+012	                Uncial 012 (Boernerianus-type, Paul)	         9th c.
+013	                Uncial 013	                                     9th c.
+014	                Uncial 014	                                     9th c.
+015	                Uncial 015	                                     6th c.
+016	                Uncial 016	                                     5th c.
+017	                Uncial 017	                                     9th c.
+018	                Uncial 018	                                     6th c.
+019	                Uncial 019 (L-type, Gospels)	                 8th c.
+020	                Uncial 020 (K-type, Gospels)	                 9th c.
+021	                Uncial 021 (N-type, Gospels)	                 9th c.
+022	                Uncial 022	                                     6th c.
+023	                Uncial 023	                                     6th c.
+024	                Uncial 024 (palimpsest)	                         6th c.
+025	                Uncial 025	                                     9th c.
+026	                Uncial 026 (Luke/John)	                         5th c.
+027	                Uncial 027 (Luke)	                             6th c.
+028	                Uncial 028	                                     10th c.
+029	                Uncial 029	                                     5th c.
+030	                Uncial 030	                                     9th c.
+031	                Uncial 031	                                     9th c.
+032	                Codex Washingtonianus (W, Gospels)	             5th c.
+033	                Uncial 033 (precursor to “queen of cursives”)	 9th–10th c.
+034	                Uncial 034 (Y-type)	                             9th c.
+035	                Uncial 035 (Z-type)	                             6th c.
+
+
+Important Greek Minuscule Manuscripts
+ID	                Name / Siglum	Approx. Date
+1	                Minuscule 1 (Codex Basilensis, Gospels)	                12th c.
+6	                Minuscule 6	                                            13th c.
+13	                Minuscule 13 (Family 13, Gospels)	                    13th c.
+33	                Minuscule 33 (“Queen of the cursives”)	                9th c.
+35	                Minuscule 35	                                        11th c.
+69	                Minuscule 69 (Codex Leicestrensis)                      15th c.
+81	                Minuscule 81 (especially important for Acts)	        11th c.
+88	                Minuscule 88	                                        11th–12th c.
+104	                Minuscule 104	                                        11th c.
+118	                Minuscule 118	                                        11th–12th c.
+157	                Minuscule 157 (important mixed text in Gospels)         12th c.
+173	                Minuscule 173	                                        10th–11th c.
+181	                Minuscule 181	                                        10th–12th c.
+209	                Minuscule 209 (Family 1)	                            14th c.
+330	                Minuscule 330	                                        12th c.
+579	                Minuscule 579	                                        13th c.
+614	                Minuscule 614 (Acts + Epistles; Western/Harklean-type)	13th c.
+618	                Minuscule 618	                                        12th–13th c.
+630	                Minuscule 630	                                        12th c.
+700	                Minuscule 700	                                        11th c.
+892	                Minuscule 892	                                        9th c.
+1175	            Minuscule 1175	                                        11th c.
+1241	            Minuscule 1241	                                        12th c.
+1424	            Minuscule 1424 (Family 1424)	                        9th–10th c.
+1505	            Minuscule 1505	                                        11th–12th c.
+1611	            Minuscule 1611	                                        10th–12th c.
+1735	            Minuscule 1735	                                        10th–12th c.
+1739	            Minuscule 1739 (Codex Athous Laurae; Acts+Epistles)	    10th c.
+1881	            Minuscule 1881	                                        14th c.
+2138	            Minuscule 2138 (Harklean-family representative)	        12th–13th c.
+2193	            Minuscule 2193	                                        12th–13th c.
+2318	            Minuscule 2318	                                        12th–13th c.
+2427	            Minuscule 2427 (modern copy of TR-type text)	        19th c.
+2464	            Minuscule 2464	                                        13th–14th c.
+2495	            Minuscule 2495	                                        13th–14th c.
+
+
+"Apostles to the Slavs" => {
 	Saint Cyril	826–869
 	Methodius	815–885
+}
 	
 Glagolitic {
 	oldest known Slavic alphabet
