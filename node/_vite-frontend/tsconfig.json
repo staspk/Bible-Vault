@@ -1,3 +1,10 @@
+/*
+  noImplicitAny=True (ts compiler default)
+     noImplicitAny=false caused significant bug, passing in string instead of a number into a model constructor, causing inability to construct consistent toString.
+     noImplicitAny=True, caused slight annoyance, had to explicitly type `debounceTimerId` as an any
+
+     Conclusion: Opinion "noImplicitAny should be False on Browser-side Invalidated.
+*/
 {
   "compilerOptions": {
     "target": "ES2022",
@@ -22,7 +29,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "noImplicitAny": false,  /* Recommended False in Browser-JS for less hastle */
   },
   "include": [
     "src", "index.ts", "kozubenko.ts", "../_shared", "../kozubenko"
