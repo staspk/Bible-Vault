@@ -14,6 +14,13 @@ export class ReportBtn {
 }
 
 
-const reportBtn = document.getElementById(ReportBtn.ID);
+const reportBtn = document.getElementById(ReportBtn.ID) as HTMLDivElement;
 reportBtn ? reportBtn.onclick = ReportBtn.onclick
           : console.error(`#${ReportBtn.ID} not found during side-effect load! Unable to add onclick[EventListener].`);
+
+reportBtn.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        ReportBtn.onclick();
+    }
+});
