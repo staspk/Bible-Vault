@@ -101,4 +101,11 @@ export class BibleSearch {
         )
         return BIBLE.getBook(i + 1);
     }
+
+    toString():string {
+        let str = `${this.book.name} ${this.chapter}`;
+        this.verse    && (str += `:${this.verse}`);
+        this.verseEnd && (str += `-${this.verseEnd}`);
+        return str;
+    }
 }

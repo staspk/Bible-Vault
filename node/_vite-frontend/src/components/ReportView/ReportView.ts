@@ -5,6 +5,9 @@ import { createPopper } from '@popperjs/core';
 import { printGreen, printRed } from "../../../../kozubenko/print.js";
 
 
+/** `ReportView`: `document.title` */
+const Title = "Data Integrity Report";
+
 export class ReportView {
     static ID = 'report-view';
     static Element: HTMLDivElement;
@@ -24,6 +27,8 @@ export class ReportView {
         if(ReportView.BooksView) {
             ReportView.Element.append(this.BooksView)
         } else this.BooksView = ReportView.renderBooksView()
+
+        document.title = Title;
     }
 
     /** Main View (~5ms)  
