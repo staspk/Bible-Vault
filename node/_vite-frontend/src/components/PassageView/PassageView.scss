@@ -1,4 +1,4 @@
-$chapter-column-color  : #fff;
+$chapter-column-background  : #fff;
 
 #passage-view.cols-1 {  width: 35%; grid-template-columns: 1fr;  }
 #passage-view.cols-2 {  width: 50%; grid-template-columns: repeat(2, minmax(222px, 1fr));  }
@@ -15,7 +15,7 @@ $chapter-column-color  : #fff;
     grid-auto-rows: max-content;
     padding: 20px 0;
     border: 1px solid #ccc;
-    background-color: $chapter-column-color;
+    background-color: $chapter-column-background;
 }
 .chapter-column > div {  // i.e: verses
     padding: 0px 1rem;

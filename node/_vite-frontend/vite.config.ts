@@ -22,7 +22,7 @@ export default {
       rollupOptions: {
          input: {
             main  : resolve(__dirname, 'index.html'),
-            report: resolve(__dirname, 'report.html')
+            // report: resolve(__dirname, 'report.html')
          }
       }
    }

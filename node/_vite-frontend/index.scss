@@ -1,6 +1,7 @@
 @use './src/css/animations.css';
 @use './src/components/Spinner/Spinner.scss';
 @use './src/components/PassageView/PassageView.scss';
+@use './src/components/ReportView/ReportView.scss';
 @use './src/components/HomeBtn/HomeBtn.scss' as HomeBtn;
 @use './src/components/ReportBtn/ReportBtn.scss' as ReportBtn;
 
@@ -8,7 +9,6 @@
 $header-color          : #fefafc;
 $page-margins-color    : #952004;
 $page-background-color : #fafafd;
-$chapter-column-color  : #fff;
 
 $header-border   : 2px solid #952004;
 $standard-border : #dddcda;
@@ -72,87 +72,3 @@ header {
 // iphone 14 pro max       : 430
 
 // samsung fold 5 unfolded : 690
-
-
-
-
-//--- ReportView ------------------
-table {
-    
-}
-
-.red {
-    background-color: red;
-}
-
-
-.bible-grid {
-    display: grid;
-    grid-auto-flow: column;
-    align-items: stretch; // ensures each column fills equal height
-    gap: .1rem;
-    padding: 1rem;
-    background: #0d1117;
-    color: #c9d1d9;
-    font-family: system-ui, sans-serif;
-    
-    .column {
-        display: flex;
-        flex-direction: column;
-        justify-content: center; // centers the .books vertically
-        align-items: center;     // centers horizontally
-        height: 100%;            // fills full grid height
-        
-        .books {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            
-            div {
-                width: 18px;
-                height: 18px;
-                background: #161b22;
-                border-radius: 3px;
-                transition: background 0.15s;
-                
-                &:hover {
-                    background: #238636;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
-}
-
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-/* Tooltip text */
-.tooltiptext {
-    visibility: hidden; /* Hidden by default */
-    width: 130px;
-    background-color: black;
-    color: #ffffff;
-    text-align: center;
-    padding: 5px 0;
-    border-radius: 6px;
-    position: absolute;
-    z-index: 1; /* Ensure tooltip is displayed above content */
-}
-
-/* Show the tooltip text on hover */
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}
-
-
-#tooltip {
-    background-color: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 13px;
-}

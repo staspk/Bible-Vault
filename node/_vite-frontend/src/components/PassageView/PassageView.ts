@@ -3,6 +3,7 @@ import { IChapter } from "../../../../_shared/interfaces/IResponses";
 import { LocalStorage } from '../../storage/LocalStorage';
 import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 import { isNullOrUndefined } from '../../../../kozubenko/utils';
+import { ContentView } from "../../..";
 
 
 /**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
@@ -27,7 +28,7 @@ export class PassageView {
 
     /**  Renders `PassageView`, splitting between 1-2 views, depending on `mirrorOption` and `data`.  
         Only 1-10 translations per `chapter` supported.  */
-    static Render(onto:HTMLElement, chapter:number, data:IChapter) {
+    static Render(chapter:number, data:IChapter, onto:HTMLElement=ContentView.PlaceHolder()) {
         if(isNullOrUndefined(onto)) {
             console.error('PassageView.Render(): onto[HtmlElement] is null/undefined. Cannot complete Render...');
             return;
@@ -62,10 +63,9 @@ export class PassageView {
     /** A `PassageView` `view` holds 1-5 translations of the same chapter. */
     static generateView(chapter:number, total_translations:number, data:IChapter): HTMLDivElement {
         const view = Object.assign(document.createElement('div'), {
-            id: PassageView.ID
+            id: PassageView.ID,
+            className: COLUMNS_CLASS(total_translations)
         });
-        
-        view.classList.add(COLUMNS_CLASS(total_translations));
         
         for (const [i, [translation, chapterMap]] of Object.entries(data).entries()) {
             if (chapterMap == null) continue;   /* If a chap is missing, the translation tables don't match when mirrorOption==true. Need to design an empty column */
@@ -80,9 +80,8 @@ export class PassageView {
                 chapterColumn.append(Object.assign(document.createElement('div'), {
                     id: `${translation}-${chapter}-${verseNumber}`,
                     className: `row-${row}`,
-                    innerHTML: verseNumber === '1'
-                    ? `<span class="chapter-dropcap">${chapter}</span> ${verseText}`
-                    : `<span class="versenum">${verseNumber}</span> ${verseText}`
+                    innerHTML: verseNumber === '1' ? `<span class="chapter-dropcap">${chapter}</span> ${verseText}`
+                                                   : `<span class="versenum">   ${verseNumber}</span> ${verseText}`
                 }))
                 row++;
             }
