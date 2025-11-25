@@ -37,13 +37,13 @@ export class Search {
         book         = BibleSearch.match_bible_book_search_term(potentialBook.trim());
         chapterStart = uint;
         chapterEnd   = potentialBookChapter.split("-")[1];
-        
+
         if (!book) {                                            this.type = SearchType.Garbage;  return;  }       // after: legal book (is Book)
         if (chapterStart < 0 || chapterStart > book.chapters) { this.type = SearchType.Garbage;  return;  }       // after: legal chapterStart
 
         if(isPositiveInteger(chapterEnd)) {
             this.type = SearchType.IChapters;
-            this.data = new BibleSearch(book, chapterStart, chapterEnd, undefined, undefined);
+            this.data = new BibleSearch(book, chapterStart, Number(chapterEnd.trim()), undefined, undefined);
             return;     //: "Matthew 10-11"
         }
         
@@ -57,17 +57,17 @@ export class Search {
                 if(potentialVerses.endsWith("-")) {
                     /*  "Matthew 10:1-"  */
                     this.type = SearchType.IChapterVerses;
-                    this.data = new BibleSearch(book, chapterStart, undefined, verseStart, book.totalVerses(chapterStart));
+                    this.data = new BibleSearch(book, chapterStart, undefined, Number(verseStart.trim()), book.totalVerses(chapterStart));
                     return;
                 }
                 /*  "Matthew 10:1"  */
                 this.type = SearchType.IChapterVerse;
-                this.data = new BibleSearch(book, chapterStart, undefined, verseStart, undefined);
+                this.data = new BibleSearch(book, chapterStart, undefined, Number(verseStart.trim()), undefined);
                 return;  
             }
             /*  "Matthew 10:1-2"  */
             this.type = SearchType.IChapterVerses
-            this.data = new BibleSearch(book, chapterStart, undefined, verseStart, verseEnd);
+            this.data = new BibleSearch(book, chapterStart, undefined, Number(verseStart.trim()), Number(verseEnd.trim()));
             return;        
         }
         /*  "Matthew 10"  */
@@ -104,7 +104,7 @@ export class Search {
             
             if(!isPositiveInteger(verseStart))                return SearchType.Garbage;
             if(!isPositiveInteger(verseEnd)) {
-                if(potentialVerses.endsWith("-"))             return SearchType.IChapterVerses;     //: "Matthew 10:1-" =(transformed)=> 
+                if(potentialVerses.endsWith("-"))             return SearchType.IChapterVerses;     //: "Matthew 10:1-" =(transformed)=> "Matthew 10:1-[last_verse]"
                 else                                          return SearchType.IChapterVerse;      //: "Matthew 10:1"
             }
             else                                              return SearchType.IChapterVerses;     //: "Matthew 10:1-2"
