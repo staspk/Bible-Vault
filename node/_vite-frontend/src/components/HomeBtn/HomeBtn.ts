@@ -23,7 +23,7 @@ homeBtn ? homeBtn.onclick = HomeBtn.onclick
 homeBtn.addEventListener("keydown", e => {
     if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        homeBtn.click();
+        HomeBtn.onclick();
     }
 });
 
