@@ -25,6 +25,6 @@
     "noImplicitAny": false,  /* Recommended False in Browser-JS for less hastle */
   },
   "include": [
-    "src", "index.ts", "../_shared", "../kozubenko"
+    "src", "index.ts", "kozubenko.ts", "../_shared", "../kozubenko"
   ]
 }

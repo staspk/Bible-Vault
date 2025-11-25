@@ -18,7 +18,7 @@ $PATHS_TO_WATCH = @(
     "$VITE_ROOT\index.html",
     "$VITE_ROOT\index.scss",
     "$VITE_ROOT\index.ts",
-    "$VITE_ROOT\report.html",
+    # "$VITE_ROOT\report.html",
     "$VITE_ROOT\..\_shared"
 )
 
@@ -33,24 +33,33 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         $token                      # Main Thread uses to signal thread to stop running. Type: [System.Threading.CancellationTokenSource]::new().Token
     )
 
+    $global:build_failed_message_sent = $false  # Warning that NpmBuild failed, only sent once per run.
     $paths_to_watch | ForEach-Object {
         if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
     }
 
-    function NpmBuild {
+    function NpmBuild($last_built) {
         <# 
-        .SYNOPSIS
         Returns:
-            Ticks     - 'npm run build' was successful
-            || exit(1) - error running: 'npm run build'
+            [LastModified] New Ticks - 'npm run build' was successful
+            || $last_built (Old Ticks) - error running: 'npm run build'
         #>
         $err = $( $null = npm run build ) 2>&1
         if($err) {
-            Write-Host "`nstart-server.ps1: NpmBuild Failed! Shutting down Watch thread...`n" -ForegroundColor Red
-            exit(1)
+            $err = [string]$err
+            if($err.Contains("Build failed")) {
+                if($global:build_failed_message_sent -eq $false) {
+                    Write-Host "`nstart-server.ps1: NpmBuild Failed!`n" -ForegroundColor Red
+                    $global:build_failed_message_sent = $true
+                }
+                Start-Sleep 3
+                return $last_built
+            }
         }
         return [datetime]::UtcNow.Ticks;
     }
+
+    Start-Sleep .2  # Theory: ENOENT error caused by 'npm run build' holding lock
 
     cd $npm_project_directory
     $vite_last_built = NpmBuild
@@ -62,8 +71,8 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
                 foreach($file in $(Get-ChildItem $path -Recurse -File)) {              <# Yes: all files are checked recursively, Stan (eye-check: at least dirs of dirs) #>
                     if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
                         # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
-                        $vite_last_built = NpmBuild;
-                        $escape_hatch_needed = $true;
+                        $vite_last_built = NpmBuild
+                        $escape_hatch_needed = $true
                         break;
             }}}
             if($escape_hatch_needed) { break; }     <#  Nap-Time  #>

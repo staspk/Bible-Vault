@@ -1,3 +1,5 @@
+import { Routes, Router } from './src/routes.js';
+import { ReportView } from './src/components/ReportView/ReportView.js';
 import { SearchInput } from './src/components/SearchInput/SearchInput';
 import { LocalStorageKeys } from './src/storage/LocalStorageKeys.enum';
 import { LocalStorage } from './src/storage/LocalStorage.js';
@@ -24,7 +26,7 @@ export const BOOK         = urlParams.get('book');
 export const CHAPTER      = urlParams.get('chapter');
 export const VERSES       = urlParams.get('verses');
 
-if(BOOK && CHAPTER) {
+if(BOOK && CHAPTER && Router.isAt(Routes.Index)) {
     let searchStr = `${BOOK} ${CHAPTER}`;
     if(VERSES) {
         const verseStart = VERSES.split("-")[0];
@@ -34,4 +36,9 @@ if(BOOK && CHAPTER) {
         if(verseEnd) searchStr += `-${verseEnd}`;
     }
     SearchInput.Set(searchStr);
+}
+
+
+if(Router.isAt(Routes.Report)) {
+    ReportView.Render()
 }
