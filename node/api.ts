@@ -8,7 +8,7 @@ import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { IChapter, IChapters } from './_shared/interfaces/IResponses.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
-import { ApiEndpoints } from './_shared/enums/ApiEndpoints.enum.js';
+import { ApiEndpoints } from './_shared/ApiEndpoints.js';
 
 
 export class Api {

@@ -1,6 +1,6 @@
 import { TRANSLATIONS } from "../../../index.js";
 import { PassageView } from "../PassageView/PassageView.js";
-import { ApiEndpoints } from "../../../../_shared/enums/ApiEndpoints.enum.js";
+import { ApiEndpoints } from "../../../../_shared/ApiEndpoints.js";
 import { BibleApi } from "../../models/BibleApi.js";
 import { BibleSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
