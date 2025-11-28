@@ -116,7 +116,7 @@ export class BIBLE {
     }
     
     /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
-    static getBook(book: string | number): Book | null {
+    static Book(book:string|number): Book | null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === (book)) || null;
         }
@@ -129,5 +129,26 @@ export class BIBLE {
         }
         
         throw new Error('Unreachable code reached in BIBLE.getBook()');
+    }
+
+    /** returns `1189` (Protestant Bible) */
+    static totalChapters(): number {
+        return 1189;
+        // let total = 0;
+        // for (const book of this.Books()) total += book.chapters;
+        // return total;
+    }
+}
+
+/** .250ms */
+export function* BibleChaptersIterator() {
+    const books = BIBLE.Books()
+
+    let i = 1;
+    for (const book of books) {
+        for (let chapter = 1; chapter <= book.chapters; chapter++) {
+            yield { i, book, chapter};
+            i++;
+        }
     }
 }

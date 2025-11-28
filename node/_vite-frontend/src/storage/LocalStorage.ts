@@ -11,15 +11,14 @@ export const Defaults: ILocalStorageDefaults = {
 
 /** Side-effect load instantiates to `LocalStorage.instance` */
 export class LocalStorage {
-
-    static instance:LocalStorage
+    static Instance:LocalStorage
 
     constructor(public defaults:ILocalStorageDefaults = Defaults) {
         if(!LocalStorage.getBoolean("HAVE_LOCAL_STORAGE_DEFAULTS_BEEN_SET?")) {
             LocalStorage.setDefaults(defaults);
             LocalStorage.setBoolean("HAVE_LOCAL_STORAGE_DEFAULTS_BEEN_SET?", true);
         }
-        LocalStorage.instance = this;
+        LocalStorage.Instance = this;
     }
 
     /** Sets `LocalStorage` to `"default"` state, ie:  

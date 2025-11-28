@@ -6,7 +6,7 @@ import { print, printGreen } from './kozubenko/print.js';
 import { Path } from './kozubenko/utils.js';
 import { HtmlPage, handleNotFound } from './kozubenko/http.js';
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
-import { ApiEndpoints } from './_shared/enums/ApiEndpoints.enum.js';
+import { ApiEndpoints } from './_shared/ApiEndpoints.js';
 import { Api } from './api.js';
 
 
@@ -73,7 +73,7 @@ const server = http.createServer((request, response) => {
     if(page)
         page.handle(response);
 
-    else if(Object.values(ApiEndpoints).includes(url.pathname as ApiEndpoints))
+    else if(ApiEndpoints.isEndpoint(url.pathname))
         Api.Handle(url, response);
 
     else

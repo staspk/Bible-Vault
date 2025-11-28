@@ -19,7 +19,8 @@ $PATHS_TO_WATCH = @(
     "$VITE_ROOT\index.scss",
     "$VITE_ROOT\index.ts",
     # "$VITE_ROOT\report.html",
-    "$VITE_ROOT\..\_shared"
+    "$VITE_ROOT\..\_shared",
+    "$VITE_ROOT\kozubenko.ts"
 )
 
 
@@ -33,7 +34,6 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         $token                      # Main Thread uses to signal thread to stop running. Type: [System.Threading.CancellationTokenSource]::new().Token
     )
 
-    $global:build_failed_message_sent = $false  # Warning that NpmBuild failed, only sent once per run.
     $paths_to_watch | ForEach-Object {
         if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
     }
@@ -48,14 +48,17 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         if($err) {
             $err = [string]$err
             if($err.Contains("Build failed")) {
-                if($global:build_failed_message_sent -eq $false) {
-                    Write-Host "`nstart-server.ps1: NpmBuild Failed!`n" -ForegroundColor Red
-                    $global:build_failed_message_sent = $true
-                }
-                Start-Sleep 3
-                return $last_built
-            }
-        }
+                Write-Host "`nWatch Thread: NpmBuild Failed!" -ForegroundColor Red
+                while($true) {
+                    Start-Sleep .3
+                    $err = $( $null = npm run build ) 2>&1
+                    if($err) {
+                        $err = [string]$err
+                        if(-not($err.Contains("Build failed"))) {
+                            Write-Host "Watch Thread: NpmBuild Success!`n" -ForegroundColor Green
+                            return [datetime]::UtcNow.Ticks;
+                        }
+        }}}} 
         return [datetime]::UtcNow.Ticks;
     }
 
@@ -75,14 +78,15 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
                         $escape_hatch_needed = $true
                         break;
             }}}
-            if($escape_hatch_needed) { break; }     <#  Nap-Time  #>
+            if($escape_hatch_needed) {  $escape_hatch_needed=$false; break;  }     <#  Nap-Time  #>
 
             <#  Else: is a file #>
             if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
-                # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
+                Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
                 $vite_last_built = NpmBuild
                 break;
 }}}}
+
 
 
 <#  MAIN THREAD  #>             # try-finally allows work after Ctrl+C 

@@ -1,9 +1,15 @@
 import { Status } from "../enums/Status.enum.js";
 
 
+// -------------------------------------------
+//          ..:: SECTION ::.. 
+//   
+//          ApiEndpoints.Bible
+// -------------------------------------------
+
+
 /** **eg**: "In the beginning God created the heavens and the earth." */
 export type verseString = string;
-
 
 
 /**
@@ -205,4 +211,39 @@ export interface IChapterResponse {
 export interface IChaptersResponse {
     status: `${Status}`;
     data: IChapters
+}
+
+
+
+// -------------------------------------------
+//          ..:: SECTION ::.. 
+//   
+//       ApiEndpoints.Bible_Report
+// -------------------------------------------
+
+export type total_translations = number;
+
+/**
+    Create a 1-based Array-Like Object, useful for jsons
+
+    ***EXAMPLE:***
+    ```json
+    {
+        "1": 10,
+        "2": 10,
+        "3": 8,
+        ...
+        "1188": 10,
+        "1189": 10
+    }
+    ```
+    */
+export interface IReport {
+    [chapter_index: string]: total_translations;
+}
+
+export interface IReportResponse {
+    /** the ideal number of translations, i.e: the upper bound of: `total_translations` (set in request) */
+    translations: number;
+    report:IReport;
 }

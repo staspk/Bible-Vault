@@ -101,7 +101,7 @@ export class BIBLE {
      *  - *string*: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
      *  - *number*: matches `Book.index` (e.g: 1->Genesis, 66->Revelation)
      */
-    static getBook(book: string | number): Book | null {
+    static Book(book:string|number): Book|null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === (book - 1)) || null;
         }
@@ -115,29 +115,42 @@ export class BIBLE {
         
         return null;
     }
+
+    /** returns `1189` (Protestant Bible) */
+    static totalChapters(): number {
+        return 1189;
+        let total = 0;
+        for (const book of this.Books()) total += book.chapters;
+        return total;
+    }
+
+    static _ChaptersMap: Map<number, BiblePtr>;
+    /** `chapter_index`: 1-1189 */
+    static ChaptersMap(chapter_index:number): BiblePtr {
+        if(!this._ChaptersMap) {
+            this._ChaptersMap = new Map<number, BiblePtr>();
+            for (const iter of BibleChapterIterator()) {
+                this._ChaptersMap.set(iter.i, { book: iter.book, chapter: iter.chapter });
+            }
+        }
+        return this._ChaptersMap.get(chapter_index)!;
+    }
 }
 
-/**  To create, use static contructor: `BibleReference.fromStr("Genesis:5:1")` */
-export class BibleReference {
-    private constructor(
-        public book: Book,
-        public chapter: number,
-        public verse?: number
-    ) {}
+export function* BibleChapterIterator() {
+    const books = BIBLE.Books()
 
-
-    /**
-     *  Static Constructor
-     * @param string - e.g: `"Genesis:5"` or `"Gen:5"`
-     */
-    static fromStr(string:string): BibleReference | null  {
-        const strArray = string.split(':');
-
-        if (strArray.length < 2)
-            return null;
-
-        BIBLE.getBook(strArray[0])
-
-        return null;
+    let i = 1;
+    for (const book of books) {
+        for (let chapter = 1; chapter <= book.chapters; chapter++) {
+            yield { i, book, chapter};
+            i++;
+        }
     }
+}
+
+export interface BiblePtr {
+    book:Book,
+    chapter:number,
+    verse?:number,
 }
