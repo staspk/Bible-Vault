@@ -1,5 +1,5 @@
 import { BIBLE, BibleChaptersIterator } from "../../models/Bible.js"
-import { BibleReportApi } from "../../models/BibleReport.js";
+import { BibleReportApi } from "../../models/BibleReportApi.js";
 import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';

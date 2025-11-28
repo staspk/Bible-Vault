@@ -24,7 +24,7 @@ export class BibleApi {
     queryString(): string {
         let QueryString = "?";
 
-        QueryString += `translations=${this.translations.join(',')}`;
+        QueryString += `translations=${this.translations.toString()}`;
         QueryString += `&book=${this.book.name}`;
         QueryString += `&chapter=${this.chapter}`;
 

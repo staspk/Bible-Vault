@@ -2,7 +2,7 @@ export const BibleTranslations = {
     KJV : 'KJV',
     NKJV: 'NKJV',
     RSV : 'RSV',
-    NRS : 'NRSV',
+    NRSV: 'NRSV',
     NASB: 'NASB',
     ESV : 'ESV',
     NET : 'NET',

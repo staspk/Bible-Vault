@@ -8,7 +8,7 @@ export class BibleReportApi {
     static translationsDefault = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as BibleTranslation[];
 
     static async Fetch(translations:BibleTranslation[]=this.translationsDefault): Promise<IReportResponse|false> {
-        const response = await fetch(`${ApiEndpoints.Bible_Report}?${translations.toString()}`);
+        const response = await fetch(`${ApiEndpoints.Bible_Report}?translations=${translations.toString()}`);
         if(response.status !== 200) {
             console.error(`${BibleReportApi.name}: '${ApiEndpoints.Bible_Report}' => ${response.status}`)
             return false;
