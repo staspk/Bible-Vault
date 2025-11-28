@@ -37,7 +37,6 @@ export class ReportView {
             });
         } else { this.Element.append(this.Report); return; }
         this.Report = this.renderSkeleton();
-        
     }
 
     /** First Step (~57.5ms) */
