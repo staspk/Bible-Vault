@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path'
 import * as http from 'http'
 
-import { printRed, printYellow } from './kozubenko/print.js';
+import { printGreen, printRed, printYellow } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
@@ -136,7 +136,10 @@ class Bible {
 
 /** `/api/bible-report` */
 class Bible_Report {
+    /** ~300ms */
     static Handle(URL:URL, response:http.ServerResponse) {
+        const START = performance.now();
+
         const param1:string = URL.searchParams.get('translations') ?? '';
         const translations:string[] = param1 ? param1.split(',').filter(translation => translation)
                                              : Object.values(BibleTranslations);
@@ -151,7 +154,6 @@ class Bible_Report {
             });
         });
 
-        // printYellow(`API-Report Total Time: ${URL.pathname}`);
         handleOK(response, {
             translations: translations.length,
             report: ArrayLike.Object(chapters)

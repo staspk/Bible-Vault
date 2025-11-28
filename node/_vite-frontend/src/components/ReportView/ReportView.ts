@@ -38,6 +38,7 @@ export class ReportView {
             this.Data = data;
         }
         this.completeRender();
+        this.separateTestaments();
     }
 
     /** First Step (~57.5ms) */
@@ -103,5 +104,32 @@ export class ReportView {
             else if(missing < 6) el.classList.add('medium');
             else                 el.classList.add('bad');
         }
+    }
+
+    /** Draws a border between the Old/New Testaments */
+    static separateTestaments() {
+        let elements = this.getChapterElements(889, 930);
+        for (let i = 0; i < elements.length; i++) {
+            if(i==elements.length-1) elements[i].style.borderRight = '3px solid #495162';
+            elements[i].style.borderBottom = '3px solid #495162';
+        }
+
+        elements = this.getChapterElements(930, 971);
+        for (let i = 0; i < elements.length; i++) {
+            if(i==0) elements[i].style.borderLeft = '2px solid #21252b';
+            elements[i].style.borderTop = '2px solid #21252b';
+        }
+
+        (document.getElementById(`ch.888`) as HTMLDivElement).style.borderBottomRightRadius = '.2rem';
+        (document.getElementById(`ch.971`) as HTMLDivElement).style.borderTopLeftRadius = '.1rem';
+    }
+    /** `separateTestaments()` Helper */
+    static getChapterElements(lower_bound:number, upper_bound:number) {
+        let total = upper_bound - lower_bound;
+        let elements:HTMLDivElement[] = [];
+        for (let i = 0; i < total; i++) {
+            elements.push(document.getElementById(`ch.${lower_bound+i}`) as HTMLDivElement)
+        }
+        return elements;
     }
 }
