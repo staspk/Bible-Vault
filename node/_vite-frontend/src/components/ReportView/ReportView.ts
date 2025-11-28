@@ -3,10 +3,11 @@ import { BibleReportApi } from "../../models/BibleReport.js";
 import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
-import type { IReport } from "../../../../_shared/interfaces/IResponses.js";
+import type { IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
+import { sleep } from "../../../../kozubenko/utils.js";
 
 
-const Grade = {
+const Grades = {
     Perfect: '0 missing',
     Good:    '1-2 missing',
     Medium:  '3-5 missing',
@@ -19,8 +20,8 @@ export class ReportView {
     static ID = 'report-view';
     static Element: HTMLDivElement;
     
-    /** Component fetches/constructs once */
-    static Data:IReport;
+    /** Component fetches/constructs only once */
+    static Data:IReportResponse;
     static Report:HTMLDivElement;
 
     public static async Render(onto:HTMLElement=ContentView.PlaceHolder()) {
@@ -48,7 +49,7 @@ export class ReportView {
         let row = Document('div', { className:'row' }); 
         for (const { i, book, chapter } of BibleChaptersIterator()) {
             row.append(Document('div', {
-                id: `${book.abbr}-${chapter}`,
+                id: `ch.${i}`,
                 className: 'chapter'
             }));
             row.append(Document('span', {
@@ -91,11 +92,16 @@ export class ReportView {
         return view;
     }
 
-    static async completeRender() {
-        console.log(this.Data);
-
-        this.Data.forEach((translations, i) => {
-
-        });
+    static completeRender() {
+        const IDEAL_TRANSLATIONS = this.Data.translations;
+        for (const [chapterIndex, total_translations] of Object.entries(this.Data.report)) {
+            const missing = IDEAL_TRANSLATIONS - total_translations;
+            const el = document.getElementById(`ch.${chapterIndex}`) as HTMLDivElement;
+            
+            if(missing < 1)      el.classList.add('perfect');
+            else if(missing < 3) el.classList.add('good');
+            else if(missing < 6) el.classList.add('medium');
+            else                 el.classList.add('bad');
+        }
     }
 }

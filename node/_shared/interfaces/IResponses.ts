@@ -241,3 +241,9 @@ export type total_translations = number;
 export interface IReport {
     [chapter_index: string]: total_translations;
 }
+
+export interface IReportResponse {
+    /** the ideal number of translations, i.e: the upper bound of: `total_translations` (set in request) */
+    translations: number;
+    report:IReport;
+}

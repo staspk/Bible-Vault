@@ -9,7 +9,7 @@ import { ApiEndpoints } from './_shared/ApiEndpoints.js';
 import { BIBLE, Book } from './models/Bible.js';
 import { BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
-import { IChapter, IChapters, IReport } from './_shared/interfaces/IResponses.js';
+import { IChapter, IChapters, IReport, IReportResponse } from './_shared/interfaces/IResponses.js';
 import { ArrayLike } from './kozubenko/object.js';
 
 
@@ -152,6 +152,9 @@ class Bible_Report {
         });
 
         // printYellow(`API-Report Total Time: ${URL.pathname}`);
-        handleOK(response, ArrayLike.Object(chapters) as IReport);
+        handleOK(response, {
+            translations: translations.length,
+            report: ArrayLike.Object(chapters)
+        } as IReportResponse);
     }
 }
