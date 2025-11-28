@@ -126,22 +126,21 @@ export class BIBLE {
 
     static _ChaptersMap: Map<number, BiblePtr>;
     /** `chapter_index`: 1-1189 */
-    static ChaptersMap(chapter_index:number): BiblePtr {
+    static ChaptersMap(chapter_index:number): BiblePtr|undefined {
         if(!this._ChaptersMap) {
             this._ChaptersMap = new Map<number, BiblePtr>();
-            for (const iter of BibleChapterIterator()) {
+            for (const iter of BibleChaptersIterator()) {
                 this._ChaptersMap.set(iter.i, { book: iter.book, chapter: iter.chapter });
             }
         }
-        return this._ChaptersMap.get(chapter_index)!;
+        if(chapter_index < 1 || chapter_index > 1189) return undefined;
+        return this._ChaptersMap.get(chapter_index) as BiblePtr;
     }
 }
 
-export function* BibleChapterIterator() {
-    const books = BIBLE.Books()
-
+export function* BibleChaptersIterator() {
     let i = 1;
-    for (const book of books) {
+    for (const book of BIBLE.Books()) {
         for (let chapter = 1; chapter <= book.chapters; chapter++) {
             yield { i, book, chapter};
             i++;

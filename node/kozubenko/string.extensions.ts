@@ -12,3 +12,7 @@ export function isPositiveInteger(str:string): boolean {
         return true;
     return false;
 }
+
+export function isWhitespace(str:string): boolean {
+    return str.trim().length === 0;
+}

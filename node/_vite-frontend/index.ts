@@ -39,7 +39,6 @@ if(BOOK && CHAPTER && Router.isAt(Routes.Index)) {
     SearchInput.Set(searchStr);
 }
 
-
 if(Router.isAt(Routes.Report)) {
-    ReportView.Render()
+    ReportView.Render(ContentView.PlaceHolder())
 }
