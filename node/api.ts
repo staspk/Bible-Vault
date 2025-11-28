@@ -138,7 +138,6 @@ class Bible {
 class Bible_Report {
     static Handle(URL:URL, response:http.ServerResponse) {
         const param1:string = URL.searchParams.get('translations') ?? '';
-        console.log(`param1: ${param1}`)
         const translations:string[] = param1 ? param1.split(',').filter(translation => translation)
                                              : Object.values(BibleTranslations);
 
