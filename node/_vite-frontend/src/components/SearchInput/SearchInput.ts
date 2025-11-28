@@ -5,7 +5,10 @@ import { BibleApi } from "../../models/BibleApi.js";
 import { BibleSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
 import type { IChapterResponse } from "../../../../_shared/interfaces/IResponses.js";
-import type { Book } from "../../models/Bible.js";
+import { BIBLE, type Book } from "../../models/Bible.js";
+import { Router, Routes } from "../../routes.js";
+import { ReportView } from "../ReportView/ReportView.js";
+import { isWhitespace } from "../../../../kozubenko/string.extensions.js";
 
 
 export class SearchInput {
@@ -25,21 +28,32 @@ export class SearchInput {
         clearTimeout(SearchInput.debounceTimerId);
 
         const searchStr = (event.target as HTMLInputElement).value.trim();
-        if (!searchStr) return;
+        // if (!searchStr) return;
         
         SearchInput.debounceTimerId = setTimeout(async () => {
-            const search = new Search(searchStr);
+            if(Router.isAt(Routes.Index)) {
+                const search = new Search(searchStr);
+                if(search.data instanceof BibleSearch) {
+                    const queryString = BibleApi.From(search.data, TRANSLATIONS).queryString();
 
-            if(search.data instanceof BibleSearch) {
-                const queryString = BibleApi.From(search.data, TRANSLATIONS).queryString();
+                    const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
+                    if (response.status !== 200) return;
 
-                const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
-                if (response.status !== 200) return;
+                    PassageView.Render(search.data.chapter, (await response.json() as IChapterResponse).data);
+                    window.history.pushState({}, '', queryString);
 
-                PassageView.Render(search.data.chapter, (await response.json() as IChapterResponse).data);
-                window.history.pushState({}, '', queryString);
-
-                document.title = search.data.toString();
+                    document.title = search.data.toString();
+                    return;
+                }
+            }
+            if(Router.isAt(Routes.Report)) {
+                console.log('is truly at Routes.Report')
+                if(isWhitespace(searchStr)) {
+                    ReportView.Render();
+                    return;
+                }
+                const book = BIBLE.Book(searchStr);
+                if(book) ReportView.highlightBook(book);
             }
         }, 200);
     }

@@ -9,7 +9,6 @@ export class ReportBtn {
     /** The onclick method */
     static onclick() {
         ReportView.Render(ContentView.PlaceHolder())
-        window.history.pushState({}, '', Routes.Report);
     }
 }
 

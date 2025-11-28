@@ -1,9 +1,11 @@
-import { BIBLE, BibleChaptersIterator } from "../../models/Bible.js"
+import { BIBLE, BibleChaptersIterator, Book } from "../../models/Bible.js"
 import { BibleReportApi } from "../../models/BibleReportApi.js";
 import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
 import type { IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
+import { sleep } from "../../../../kozubenko/utils.js";
+import { Router, Routes } from "../../routes.js";
 
 
 
@@ -17,21 +19,25 @@ export class ReportView {
     static Data:IReportResponse;
     static Report:HTMLDivElement;
 
-    public static async Render(onto:HTMLElement=ContentView.PlaceHolder()) {
+    public static Render(onto:HTMLElement=ContentView.PlaceHolder()) {
         Document.Title("Data Integrity Report");
         if(!Placeholder.ReplaceWith(onto, ReportView))
             return;
 
-        if(this.Report) { this.Element.append(this.Report); return; }
-        else this.renderSkeleton();
+        window.history.pushState({}, '', Routes.Report);
 
         if(!this.Data) {
-            const data = await BibleReportApi.Fetch();
-            if(!data) return;
-            this.Data = data;
-        }
-        this.completeRender();
-        this.separateTestaments();
+            BibleReportApi.Fetch().then(data => {
+                if(!data) return;
+                this.Data = data;
+                if(this.Report) {
+                    this.completeRender();
+                    this.separateTestaments();
+                }
+            });
+        } else { this.Element.append(this.Report); return; }
+        this.Report = this.renderSkeleton();
+        
     }
 
     /** First Step (~57.5ms) */
@@ -86,7 +92,7 @@ export class ReportView {
         return view;
     }
 
-    static completeRender() {
+    static async completeRender() {
         const IDEAL_TRANSLATIONS = this.Data.translations;
         for (const [chapterIndex, total_translations] of Object.entries(this.Data.report)) {
             const missing = IDEAL_TRANSLATIONS - total_translations;
@@ -96,6 +102,9 @@ export class ReportView {
             else if(missing < 3) el.classList.add('good');
             else if(missing < 6) el.classList.add('medium');
             else                 el.classList.add('bad');
+
+            if(Number(chapterIndex) % 10 === 0)
+                await sleep(1);
         }
     }
 
@@ -124,5 +133,20 @@ export class ReportView {
             elements.push(document.getElementById(`ch.${lower_bound+i}`) as HTMLDivElement)
         }
         return elements;
+    }
+
+    static highlightBook(to_highlight:Book|null) {
+        if(Router.isAt(Routes.Report)) {
+            window.history.pushState({}, '', `?${(to_highlight as Book).name}`);
+            const report = this.Report.cloneNode(true) as HTMLDivElement;
+            this.Element.children[0].replaceWith(report);
+            
+            for (const { i, book, chapter } of BibleChaptersIterator()) {
+                if(book !== to_highlight) {
+                    const el = document.getElementById(`ch.${i}`) as HTMLDivElement;
+                    el.style.opacity = '.4'
+                }
+            }
+        }
     }
 }
