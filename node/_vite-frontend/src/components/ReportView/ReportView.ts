@@ -31,6 +31,7 @@ export class ReportView {
     /** Main View (~5ms)  
       includes: contruction, DOM append onto: `ReportView.Element`  */
     static renderSkeleton(): HTMLDivElement {
+        const START = performance.now();
         const view = Object.assign(document.createElement('div'), {
             id: `${ReportView.ID}-books`
         });
@@ -62,18 +63,25 @@ export class ReportView {
                 placement: 'top'
             });
 
-            ['mouseenter'].forEach((event) => {
+            ['mouseenter', 'focus'].forEach((event) => {
                 books[index].addEventListener(event, () => {
                     tooltips[index].style.display = 'block';
                     popperInstance.update();      // We need to tell Popper to update the tooltip position after we show the tooltip, otherwise it will be incorrect
                 })
             });
-            ['mouseleave'].forEach((event) => {
+            ['mouseleave', 'blur'].forEach((event) => {
                 books[index].addEventListener(event, () => {
                     tooltips[index].style.display = 'none'
                 })
             });
         }
+
+        let elapsed = performance.now() - START;
+        if (elapsed > 1000) {
+            elapsed = elapsed / 1000;
+            printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
+        } else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
+
         return view;
     }
 
