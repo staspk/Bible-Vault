@@ -5,28 +5,28 @@ import * as http from 'http'
 import { printRed, printYellow } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
-import { BIBLE, Book } from './models/Bible.js';
-import { IChapter, IChapters } from './_shared/interfaces/IResponses.js';
-import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
+import { BIBLE, Book } from './models/Bible.js';
+import { BibleTranslations } from './_shared/enums/BibleTranslations.enum.js';
+import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
+import { IChapter, IChapters, IReportChapter } from './_shared/interfaces/IResponses.js';
+
+
+const BIBLE_TEXT_DIRECTORY = path.join(import.meta.dirname, '..', 'bible_txt');
 
 
 export class Api {
-
-    /** Assumes caller has checked if `URL.pathname` is an `ApiEndpoints.enum` */
+    /** Assumes caller has checked `URL.pathname` with `ApiEndpoints.isEndpoints()` */
     static Handle(URL:URL, response:http.ServerResponse) {
         if (URL.pathname === ApiEndpoints.Bible)
             Bible.Handle(URL, response);
-        if (URL.pathname === ApiEndpoints.Report)
-            Report.Handle(URL, response);
+        if (URL.pathname === ApiEndpoints.Bible_Report)
+            Bible_Report.Handle(URL, response);
     }
 }
 
 /** `/api/bible` */
 class Bible {
-
-    static BIBLE_TXT = path.join(import.meta.dirname, '..', 'bible_txt');
-
     /**  `/api/bible?` -> `IChapterResponse` | `IChaptersResponse`  */
     static async Handle(URL:URL, response:http.ServerResponse) {
         printYellow(`API-Bible Request: ${URL.pathname}?${URL.searchParams.toString()}`);
@@ -38,11 +38,11 @@ class Bible {
         
         if (!param2 || !param3) {  handleBadRequest(response); return;  }
         
-        const translations: string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
+        const translations:string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
         if(translations.length < 1 || translations.length > 10) {  handleBadRequest(response); return;  }
 
         const book = BIBLE.getBook(param2);
-        if(!book) {  handleBadRequest(response); return;  }
+        if(!book) {  handleBadRequest(response, 'Not a valid Bible Book'); return;  }
         
         const chapterStart = parseInt(param3.split("-")[0], 10);
         const chapterEnd   = parseInt(param3.split("-")[1], 10);
@@ -89,12 +89,12 @@ class Bible {
     }
 
     static async getChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): Promise<IChapter> {
-        const promises = await translations.map(async translation => {
-            const chapterFile = path.join(Bible.BIBLE_TXT, translation, book.name, `${chapter}.txt`);
-            if (!fs.existsSync(chapterFile))
+        const promises = translations.map(async translation => {
+            const file = path.join(BIBLE_TEXT_DIRECTORY, translation, book.name, `${chapter}.txt`);
+            if (!fs.existsSync(file))
                 return { [translation.toUpperCase()]: null };
             
-            return { [translation.toUpperCase()]: await Bible.loadChapterIntoMemory(chapterFile, verseRange) }
+            return { [translation.toUpperCase()]: await Bible.loadChapterIntoMemory(file, verseRange) }
         });
 
         return Object.assign({}, ...await Promise.all(promises));
@@ -133,11 +133,28 @@ class Bible {
     }
 }
 
-/** /api/report */
-class Report {
+/** `/api/bible-report` */
+class Bible_Report {
     static Handle(URL:URL, response:http.ServerResponse) {
         printYellow(`API-Report Request: ${URL.pathname}`);
 
-        handleOK(response, {});
+        const param1:string = URL.searchParams.get('book') ?? '';
+        const param2:string = URL.searchParams.get('translations') ?? '';
+
+        const book = BIBLE.getBook(param1);
+        const translations:string[] = param2 ? param2.split(',').filter(translation => translation) : Object.values(BibleTranslations);
+        
+        if(!book) {  handleBadRequest(response, 'Not a valid Bible Book.'); return;  }
+
+        let chapters = new Array(book.chapters).fill(translations.length);
+        chapters.forEach((chapter, i) => {
+            translations.forEach(translation => {
+                const file = path.join(BIBLE_TEXT_DIRECTORY, translation, book.name, `${chapter}.txt`);
+                if (!fs.existsSync(file))
+                    chapters[i]
+            })
+        })
+
+        handleOK(response, [...chapters] as IReportChapter);
     }
 }

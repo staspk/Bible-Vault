@@ -1,9 +1,15 @@
 import { Status } from "../enums/Status.enum.js";
 
 
+// -------------------------------------------
+//          ..:: SECTION ::.. 
+//   
+//          ApiEndpoints.Bible
+// -------------------------------------------
+
+
 /** **eg**: "In the beginning God created the heavens and the earth." */
 export type verseString = string;
-
 
 
 /**
@@ -205,4 +211,19 @@ export interface IChapterResponse {
 export interface IChaptersResponse {
     status: `${Status}`;
     data: IChapters
+}
+
+
+
+// -------------------------------------------
+//          ..:: SECTION ::.. 
+//   
+//       ApiEndpoints.Bible_Report
+// -------------------------------------------
+
+
+export type total_translations = number;
+
+export interface IReportChapter {
+    [chapter_number: number]: total_translations;
 }
