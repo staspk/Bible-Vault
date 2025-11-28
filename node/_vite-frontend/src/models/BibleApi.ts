@@ -1,9 +1,11 @@
+import type { BibleTranslation } from "../../../_shared/BibleTranslations.js";
+import { TRANSLATIONS } from "../../index.js";
 import type { Book } from "./Bible.js";
 import type { BibleSearch } from "./BibleSearch.js";
 
 /** `/api/bible` */
 export class BibleApi {
-    static translationsDefault = ['KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT'];
+    static translationsDefault = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as BibleTranslation[];
 
     constructor(
         public book: Book,
@@ -11,11 +13,11 @@ export class BibleApi {
         public chapterEnd?: number,
         public verse?: number,
         public verseEnd?: number,
-        public translations: string[] = BibleApi.translationsDefault,
-    ) { }
+        public translations: string[] = TRANSLATIONS
+    ){}
 
     /** *Static Constructor* */
-    static From(search:BibleSearch, translations?:string[]) {
+    static From(search:BibleSearch, translations:string[]=TRANSLATIONS) {
         return new BibleApi(search.book, search.chapter, search.chapterEnd, search.verse, search.verseEnd, translations);
     }
 

@@ -7,12 +7,12 @@ import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
 import { BIBLE, Book } from './models/Bible.js';
-import { BibleTranslations } from './_shared/enums/BibleTranslations.enum.js';
+import { BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
-import { IChapter, IChapters, IReportChapter } from './_shared/interfaces/IResponses.js';
+import { IChapter, IChapters, IReport } from './_shared/interfaces/IResponses.js';
 
 
-const BIBLE_TEXT_DIRECTORY = path.join(import.meta.dirname, '..', 'bible_txt');
+const BIBLE_DIRECTORY = path.join(import.meta.dirname, '..', 'bible_txt');
 
 
 export class Api {
@@ -90,7 +90,7 @@ class Bible {
 
     static async getChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): Promise<IChapter> {
         const promises = translations.map(async translation => {
-            const file = path.join(BIBLE_TEXT_DIRECTORY, translation, book.name, `${chapter}.txt`);
+            const file = path.join(BIBLE_DIRECTORY, translation, book.name, `${chapter}.txt`);
             if (!fs.existsSync(file))
                 return { [translation.toUpperCase()]: null };
             
@@ -136,25 +136,21 @@ class Bible {
 /** `/api/bible-report` */
 class Bible_Report {
     static Handle(URL:URL, response:http.ServerResponse) {
-        printYellow(`API-Report Request: ${URL.pathname}`);
+        const param1:string = URL.searchParams.get('translations') ?? '';
+        const translations:string[] = param1 ? param1.split(',').filter(translation => translation)
+                                             : Object.values(BibleTranslations);
 
-        const param1:string = URL.searchParams.get('book') ?? '';
-        const param2:string = URL.searchParams.get('translations') ?? '';
-
-        const book = BIBLE.Book(param1);
-        const translations:string[] = param2 ? param2.split(',').filter(translation => translation) : Object.values(BibleTranslations);
-        
-        if(!book) {  handleBadRequest(response, 'Not a valid Bible Book.'); return;  }
-
-        let chapters = new Array(book.chapters).fill(translations.length);
+        let chapters:number[] = new Array(BIBLE.totalChapters()).fill(translations.length);
         chapters.forEach((chapter, i) => {
             translations.forEach(translation => {
-                const file = path.join(BIBLE_TEXT_DIRECTORY, translation, book.name, `${chapter}.txt`);
+                const ptr = BIBLE.ChaptersMap(i+1);
+                const file = path.join(BIBLE_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
                 if (!fs.existsSync(file))
-                    chapters[i]
-            })
-        })
+                    chapters[i]--;
+            });
+        });
 
-        handleOK(response, [...chapters] as IReportChapter);
+        // printYellow(`API-Report Total Time: ${URL.pathname}`);
+        handleOK(response, [...chapters] as IReport);
     }
 }

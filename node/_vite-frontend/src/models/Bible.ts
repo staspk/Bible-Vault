@@ -140,7 +140,8 @@ export class BIBLE {
     }
 }
 
-export function* BibleIterator() {
+/** .250ms */
+export function* BibleChaptersIterator() {
     const books = BIBLE.Books()
 
     let i = 1;

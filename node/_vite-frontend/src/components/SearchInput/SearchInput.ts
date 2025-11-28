@@ -31,7 +31,7 @@ export class SearchInput {
             const search = new Search(searchStr);
 
             if(search.data instanceof BibleSearch) {
-                const queryString = BibleApi.From(search.data, TRANSLATIONS as string[]).queryString();
+                const queryString = BibleApi.From(search.data, TRANSLATIONS).queryString();
 
                 const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
                 if (response.status !== 200) return;

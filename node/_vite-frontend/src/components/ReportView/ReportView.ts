@@ -1,45 +1,51 @@
-import { BIBLE, BibleIterator, Book } from "../../models/Bible.js"
+import { BIBLE, BibleChaptersIterator } from "../../models/Bible.js"
+import { BibleReportApi } from "../../models/BibleReport.js";
+import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
-import { printGreen, printRed } from "../../../../kozubenko/print.js";
-import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
+import type { IReport } from "../../../../_shared/interfaces/IResponses.js";
 
 
+const Grade = {
+    Perfect: '0 missing',
+    Good:    '1-2 missing',
+    Medium:  '3-5 missing',
+    Bad:     '6-10 missing'
+} as const;
 
+const CHAPTERS_PER_ROW = 41;
 
 export class ReportView {
     static ID = 'report-view';
     static Element: HTMLDivElement;
     
-    /** Constructed only once, held in memory. */
-    static Report: HTMLDivElement;
-    static steps_complete = 0; static STEPS_TOTAL = 66;
+    /** Component fetches/constructs once */
+    static Data:IReport;
+    static Report:HTMLDivElement;
 
-    public static Render(onto:HTMLElement=ContentView.PlaceHolder()) {
+    public static async Render(onto:HTMLElement=ContentView.PlaceHolder()) {
         Document.Title("Data Integrity Report");
         if(!Placeholder.ReplaceWith(onto, ReportView))
             return;
 
-        if(this.Report) {
-            this.Element.append(this.Report);
-        } else this.Report = this.renderSkeleton();
+        if(this.Report) { this.Element.append(this.Report); return; }
 
-        if(this.steps_complete < this.STEPS_TOTAL)
-            this.renderStep(this.steps_complete++);
+        if(!this.Data) {
+            const data = await BibleReportApi.Fetch();
+            if(!data) return;
+            this.Data = data;
+        }
+        this.completeRender();
     }
 
-    /** Main View (~5ms)  
-      includes: contruction, DOM append onto: `ReportView.Element`  */
+    /** First Step (~57.5ms) */
     static renderSkeleton(): HTMLDivElement {
-        const START = performance.now();
         const view = Object.assign(document.createElement('div'), {
             id: `${ReportView.ID}-books`
         });
-
+        
         let row = Document('div', { className:'row' }); 
-        const MAX_PER_ROW = 41;
-
-        for (const { i, book, chapter } of BibleIterator()) {
+        for (const { i, book, chapter } of BibleChaptersIterator()) {
             row.append(Document('div', {
                 id: `${book.abbr}-${chapter}`,
                 className: 'chapter'
@@ -49,75 +55,42 @@ export class ReportView {
                 innerText: `${book.name} ${chapter}`
             }));
 
-            if(i % MAX_PER_ROW == 0 || i==BIBLE.totalChapters()) {
+            if(i % CHAPTERS_PER_ROW == 0 || i==BIBLE.totalChapters()) {
                 view.append(row);
-                row = Document('div', { className:'row' }); 
+                row = Document('div', { className:'row' });
             }
         }
         ReportView.Element.append(view);
 
-        const books = view.querySelectorAll('.chapter');
+        const chapters = view.querySelectorAll('.chapter');
         const tooltips = view.querySelectorAll('.tooltip') as NodeListOf<HTMLElement>;
-        for (let index = 0; index < books.length; index++) {
-            const popperInstance = createPopper(books[index], tooltips[index], {
+        const poppers: any[] = [];
+        for (let i = 0; i < chapters.length; i++) {
+            poppers[i] = createPopper(chapters[i], tooltips[i], {
                 placement: 'top'
             });
-
-            ['mouseenter', 'focus'].forEach((event) => {
-                books[index].addEventListener(event, () => {
-                    tooltips[index].style.display = 'block';
-                    popperInstance.update();      // We need to tell Popper to update the tooltip position after we show the tooltip, otherwise it will be incorrect
-                })
-            });
-            ['mouseleave', 'blur'].forEach((event) => {
-                books[index].addEventListener(event, () => {
-                    tooltips[index].style.display = 'none'
-                })
-            });
         }
+        ['mouseover', 'mouseout'].forEach(event => {
+            view.addEventListener(event, (e) => {
+                const chapter = (e.target as HTMLElement).closest('.chapter');
+                if (!chapter || !view.contains(chapter)) return;
 
-        let elapsed = performance.now() - START;
-        if (elapsed > 1000) {
-            elapsed = elapsed / 1000;
-            printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
-        } else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
+                const index = Array.prototype.indexOf.call(chapters, chapter);
+                if (index === -1) return;
+
+                const tooltip = tooltips[index];
+
+                if(event === 'mouseover') {
+                    tooltip.style.display = 'block';
+                    poppers[index].update();
+                } else tooltip.style.display = 'none';
+            });
+        });
 
         return view;
     }
 
-    static renderStep(i:number) {
-        let z=0;
-        while(true) {
-            z++;
-        }
-    }
-
-    /** Secondary View */
-    static renderBookView(book:Book): HTMLDivElement {
-        const start = performance.now();
-
-        const view = Object.assign(document.createElement('div'), {
-            id: ReportView.ID,
-        });
-
-        console.log(`renderBook: ${book}`);
-        const elapsed = performance.now() - start;
-        printGreen(`renderBookView: ${elapsed} ms`);
+    static async completeRender() {
+        console.log(this.Data);
     }
 }
-
-
-
-
-// const popperInstance = createPopper(books, tooltips, {
-//     strategy: 'fixed',
-//     placement: 'top',
-//     modifiers: [
-//         {
-//             name: 'offset',
-//             options: {
-//                 offset: [0, 2],
-//             },
-//         },
-//     ],
-// })

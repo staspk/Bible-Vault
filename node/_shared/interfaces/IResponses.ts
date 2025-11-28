@@ -221,9 +221,8 @@ export interface IChaptersResponse {
 //       ApiEndpoints.Bible_Report
 // -------------------------------------------
 
-
 export type total_translations = number;
 
-export interface IReportChapter {
+export interface IReport {
     [chapter_number: number]: total_translations;
 }
