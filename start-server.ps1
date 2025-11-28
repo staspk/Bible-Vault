@@ -19,7 +19,8 @@ $PATHS_TO_WATCH = @(
     "$VITE_ROOT\index.scss",
     "$VITE_ROOT\index.ts",
     # "$VITE_ROOT\report.html",
-    "$VITE_ROOT\..\_shared"
+    "$VITE_ROOT\..\_shared",
+    "$VITE_ROOT\kozubenko.ts"
 )
 
 
@@ -66,7 +67,6 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
             }
                 # return $last_built
             #     return $false
-            # }
         }
         return [datetime]::UtcNow.Ticks;
     }
@@ -87,14 +87,15 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
                         $escape_hatch_needed = $true
                         break;
             }}}
-            if($escape_hatch_needed) { break; }     <#  Nap-Time  #>
+            if($escape_hatch_needed) {  $escape_hatch_needed=$false; break;  }     <#  Nap-Time  #>
 
             <#  Else: is a file #>
             if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
-                # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
+                Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
                 $vite_last_built = NpmBuild
                 break;
 }}}}
+
 
 
 <#  MAIN THREAD  #>             # try-finally allows work after Ctrl+C 
