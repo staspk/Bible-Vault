@@ -82,7 +82,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
 
             <#  Else: is a file #>
             if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
-                Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
+                # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
                 $vite_last_built = NpmBuild
                 break;
 }}}}

@@ -116,7 +116,7 @@ export class BIBLE {
     }
     
     /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
-    static Book(book:string|number): Book | null {
+    static Book(book:string|number): Book|null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === (book)) || null;
         }
@@ -138,17 +138,34 @@ export class BIBLE {
         // for (const book of this.Books()) total += book.chapters;
         // return total;
     }
+
+    static _ChaptersMap: Map<number, BiblePtr>;
+    /** 1-1189 -> { Book; chapter } */
+    static ChaptersMap(chapter_index:number): BiblePtr|undefined {
+        if(!this._ChaptersMap) {
+            this._ChaptersMap = new Map<number, BiblePtr>();
+            for (const iter of BibleChaptersIterator()) {
+                this._ChaptersMap.set(iter.i, { book: iter.book, chapter: iter.chapter });
+            }
+        }
+        if(chapter_index < 1 || chapter_index > 1189) return undefined;
+        return this._ChaptersMap.get(chapter_index) as BiblePtr;
+    }
 }
 
 /** .250ms */
 export function* BibleChaptersIterator() {
-    const books = BIBLE.Books()
-
     let i = 1;
-    for (const book of books) {
+    for (const book of BIBLE.Books()) {
         for (let chapter = 1; chapter <= book.chapters; chapter++) {
+
             yield { i, book, chapter};
             i++;
         }
     }
+}
+
+export interface BiblePtr {
+    book:Book,
+    chapter?:number
 }

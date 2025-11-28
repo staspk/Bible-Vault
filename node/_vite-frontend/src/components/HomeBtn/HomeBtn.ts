@@ -1,4 +1,7 @@
-import { Router, Routes } from "../../routes";
+import { ContentView } from "../../../index.js";
+import { Router, Routes } from "../../routes.js";
+import { Document } from "../../../kozubenko.ts/Document.js"
+import { SearchInput } from "../SearchInput/SearchInput.js";
 
 
 export class HomeBtn {
@@ -10,10 +13,9 @@ export class HomeBtn {
             return;
 
         window.history.pushState({}, '', Routes.Index);
-        window.location.reload();
+        ContentView.PlaceHolder().replaceWith(Document('div', {id: 'content-view-placeholder'}))
+        SearchInput.Set("");
     }
-
-    
 }
 
 const homeBtn = document.getElementById(HomeBtn.ID) as HTMLDivElement;

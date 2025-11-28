@@ -19,7 +19,8 @@ export namespace Document {
 }
 
 export class Placeholder {
-    /** First Step of an IViewComponent `Render()` */
+    /** `IViewComponent` `Render()` Helper (First Step).  
+      Sets `component.Element` to new DIV(id determined by `component.ID`) that replaces `onto` in the DOM. */
     static ReplaceWith(onto:HTMLElement, component:IViewComponent) {
         if(isNullOrUndefined(onto)) {
             console.error(`${component.name}.Render(): onto is null/undefined. Cannot complete Render...`);
