@@ -27,7 +27,7 @@ export class Placeholder {
         }
         const componentDiv = Document('div', {
             id: component.ID
-        }); onto.replaceWith(onto);
+        }); onto.replaceWith(componentDiv);
 
         component.Element = componentDiv;
         return component;

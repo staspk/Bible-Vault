@@ -1,40 +1,37 @@
 import { BIBLE, BibleIterator, Book } from "../../models/Bible.js"
-import { ContentView } from '../../../index.js';
-import { isNullOrUndefined } from "../../../../kozubenko/utils.js";
+import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
 import { printGreen, printRed } from "../../../../kozubenko/print.js";
-import { Document as Document } from "../../../kozubenko.ts/Document.js"
+import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 
 
-/** `ReportView`: `document.title` */
-const Title = "Data Integrity Report";
+
 
 export class ReportView {
     static ID = 'report-view';
     static Element: HTMLDivElement;
-    /** Main View */
-    static BooksView: HTMLDivElement;   // constructed only once
+    
+    /** Constructed only once, held in memory. */
+    static Report: HTMLDivElement;
+    static steps_complete = 0; static STEPS_TOTAL = 66;
 
     public static Render(onto:HTMLElement=ContentView.PlaceHolder()) {
-        if(isNullOrUndefined(onto)) {
-            console.error('ReportView.Render(): onto is null/undefined. Cannot complete Render...');
+        Document.Title("Data Integrity Report");
+        if(!Placeholder.ReplaceWith(onto, ReportView))
             return;
+
+        if(this.Report) {
+            this.Element.append(this.Report);
+        } else this.Report = this.renderSkeleton();
+
+        if(this.steps_complete < this.STEPS_TOTAL) {
+            
         }
-        const reportView = Object.assign(document.createElement('div'), {
-            id: ReportView.ID
-        }); onto.replaceWith(reportView);
-        ReportView.Element = reportView;
-
-        if(ReportView.BooksView) {
-            ReportView.Element.append(this.BooksView)
-        } else this.BooksView = ReportView.renderBooksView()
-
-        document.title = Title;
     }
 
     /** Main View (~5ms)  
       includes: contruction, DOM append onto: `ReportView.Element`  */
-    static renderBooksView(): HTMLDivElement {
+    static renderSkeleton(): HTMLDivElement {
         const view = Object.assign(document.createElement('div'), {
             id: `${ReportView.ID}-books`
         });
@@ -79,6 +76,13 @@ export class ReportView {
             });
         }
         return view;
+    }
+
+    static renderStep(i:number) {
+        let z=0;
+        while(true) {
+            z++;
+        }
     }
 
     /** Secondary View */
