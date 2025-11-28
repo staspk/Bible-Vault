@@ -1,49 +1,54 @@
 $report-view-background  : #282c34;
-
-$success: #8cc762; $success-hover: #a3d87d;
+$loading: #d9ddd6;
 
 $line-number-color: #495162;    // vscode   
 $little-border-color: #31343c;  // vscode
 $scrollbar: #2a2f37;          // vscode
 $base: #21252b;              // vscode
 
+
 #report-view-books {
     display: grid;
-    grid-auto-flow: column;
-    align-items: stretch; // ensures each column fills equal height
-    gap: .1rem;
+    grid-auto-flow: row;
+    align-items: stretch;
     padding: 1rem;
     background: $report-view-background;
     color: #c9d1d9;
     margin: 1rem;
-    
-    .column {
-        display: flex;
-        flex-direction: column;
-        justify-content: center; // centers the .books vertically
-        align-items: center;     // centers horizontally
-        height: 100%;            // fills full grid height
-        
-        .books {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            
-            div {
-                width: 32px;
-                height: 32px;
-                background: $success;
-                border-radius: 3px;
-                transition: background 0.15s;
-                cursor: pointer;
-                
-                &:hover {
-                    background: #a3d87d;
-                }
-            }
-        }
-    }
 }
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.chapter {
+    width: 1.5rem;
+    height: 1.5rem;
+    background: $loading;
+    border-radius: 2px;
+    transition: background 0.15s;
+    cursor: pointer;
+}
+.perfect {
+    background: #8cc762;
+    &:hover { background: #a3d87d; }
+}
+.good {
+    background: #fac9c8;
+    &:hover { background: rgb(253, 204, 203); }
+}
+.medium {
+    background: #FAA3A1;
+    &:hover { background: rgb(245, 156, 154); }
+}
+.bad {
+    background: #ff7875;
+    &:hover { background: #ff8d8b; }
+}
+
+
 .tooltip {
     display: none;
     background-color: #21252b;

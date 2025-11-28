@@ -1,7 +1,15 @@
 import { printRed, printYellow } from "./print.js";
 
-/**
-* Supports both: Browser and Nodejs Environments.
+/** Supports both: Browser and Nodejs Environments.
+
+const START = performance.now();
+- {OPERATION} -
+let elapsed = performance.now() - START;
+if (elapsed > 1000) {
+    elapsed = elapsed / 1000;
+    printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
+} else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
+
 */
 export class Timer {
     static isBrowser: boolean = null;

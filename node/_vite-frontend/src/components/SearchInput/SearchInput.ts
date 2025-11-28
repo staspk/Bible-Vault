@@ -1,6 +1,6 @@
 import { TRANSLATIONS } from "../../../index.js";
 import { PassageView } from "../PassageView/PassageView.js";
-import { ApiEndpoints } from "../../../../_shared/enums/ApiEndpoints.enum.js";
+import { ApiEndpoints } from "../../../../_shared/ApiEndpoints.js";
 import { BibleApi } from "../../models/BibleApi.js";
 import { BibleSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
@@ -31,7 +31,7 @@ export class SearchInput {
             const search = new Search(searchStr);
 
             if(search.data instanceof BibleSearch) {
-                const queryString = BibleApi.From(search.data, TRANSLATIONS as string[]).queryString();
+                const queryString = BibleApi.From(search.data, TRANSLATIONS).queryString();
 
                 const response = await fetch(`${ApiEndpoints.Bible}${queryString}`);
                 if (response.status !== 200) return;

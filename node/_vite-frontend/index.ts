@@ -11,6 +11,7 @@ import './src/components/ReportBtn/ReportBtn.js';
 import './src/components/SearchInput/SearchInput.js'
 
 
+
 export class ContentView {
     static ID = 'content-view';
     
@@ -21,7 +22,7 @@ export class ContentView {
 
 
 const urlParams = new URLSearchParams(window.location.search);
-export const TRANSLATIONS = urlParams.get('translations')?.split(',').filter(el => el) ?? LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS);
+export const TRANSLATIONS = urlParams.get('translations')?.split(',').filter(el => el) ?? LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS) as string[];
 export const BOOK         = urlParams.get('book');
 export const CHAPTER      = urlParams.get('chapter');
 export const VERSES       = urlParams.get('verses');
