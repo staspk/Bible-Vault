@@ -41,7 +41,7 @@ class Bible {
         const translations:string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
         if(translations.length < 1 || translations.length > 10) {  handleBadRequest(response); return;  }
 
-        const book = BIBLE.getBook(param2);
+        const book = BIBLE.Book(param2);
         if(!book) {  handleBadRequest(response, 'Not a valid Bible Book'); return;  }
         
         const chapterStart = parseInt(param3.split("-")[0], 10);
@@ -141,7 +141,7 @@ class Bible_Report {
         const param1:string = URL.searchParams.get('book') ?? '';
         const param2:string = URL.searchParams.get('translations') ?? '';
 
-        const book = BIBLE.getBook(param1);
+        const book = BIBLE.Book(param1);
         const translations:string[] = param2 ? param2.split(',').filter(translation => translation) : Object.values(BibleTranslations);
         
         if(!book) {  handleBadRequest(response, 'Not a valid Bible Book.'); return;  }

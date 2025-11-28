@@ -24,9 +24,8 @@ export class ReportView {
             this.Element.append(this.Report);
         } else this.Report = this.renderSkeleton();
 
-        if(this.steps_complete < this.STEPS_TOTAL) {
-            
-        }
+        if(this.steps_complete < this.STEPS_TOTAL)
+            this.renderStep(this.steps_complete++);
     }
 
     /** Main View (~5ms)  
@@ -63,13 +62,13 @@ export class ReportView {
                 placement: 'top'
             });
 
-            ['mouseenter', 'focus'].forEach((event) => {
+            ['mouseenter'].forEach((event) => {
                 books[index].addEventListener(event, () => {
                     tooltips[index].style.display = 'block';
                     popperInstance.update();      // We need to tell Popper to update the tooltip position after we show the tooltip, otherwise it will be incorrect
                 })
             });
-            ['mouseleave', 'blur'].forEach((event) => {
+            ['mouseleave'].forEach((event) => {
                 books[index].addEventListener(event, () => {
                     tooltips[index].style.display = 'none'
                 })

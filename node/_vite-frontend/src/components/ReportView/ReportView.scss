@@ -29,9 +29,9 @@ $base: #21252b;              // vscode
             width: 1.5rem;
             height: 1.5rem;
             background: $loading;
-            border-radius: 3px;
+            border-radius: 2px;
             transition: background 0.15s;
-            
+
             &:hover {
                 // background: $success;
             }

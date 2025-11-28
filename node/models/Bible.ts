@@ -101,7 +101,7 @@ export class BIBLE {
      *  - *string*: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
      *  - *number*: matches `Book.index` (e.g: 1->Genesis, 66->Revelation)
      */
-    static getBook(book: string | number): Book | null {
+    static Book(book:string|number): Book | null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === (book - 1)) || null;
         }
@@ -155,7 +155,7 @@ export class BibleReference {
         if (strArray.length < 2)
             return null;
 
-        BIBLE.getBook(strArray[0])
+        BIBLE.Book(strArray[0])
 
         return null;
     }

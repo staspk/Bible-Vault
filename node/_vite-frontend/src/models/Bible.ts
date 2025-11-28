@@ -116,7 +116,7 @@ export class BIBLE {
     }
     
     /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
-    static getBook(book: string | number): Book | null {
+    static Book(book:string|number): Book | null {
         if (typeof book === 'number') {
             return BIBLE.Books().find(b => b.index === (book)) || null;
         }

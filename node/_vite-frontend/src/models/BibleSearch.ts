@@ -99,7 +99,7 @@ export class BibleSearch {
         const i = _BIBLE_BOOK_SEARCH_TERMS.findIndex(
             terms => terms.find(term => term.toLowerCase() === str.toLowerCase())
         )
-        return BIBLE.getBook(i + 1);
+        return BIBLE.Book(i + 1);
     }
 
     toString():string {
