@@ -115,6 +115,25 @@ export class BIBLE {
         
         return null;
     }
+
+    /** returns `1189` (Protestant Bible) */
+    static totalChapters(): number {
+        let total = 0;
+        for (const book of this.Books()) total += book.chapters;
+        return total;
+    }
+}
+
+export function* BibleIterator() {
+    const books = BIBLE.Books()
+
+    let i = 1;
+    for (const book of books) {
+        for (let chapter = 1; chapter <= book.chapters; chapter++) {
+            yield { i, book, chapter};
+            i++;
+        }
+    }
 }
 
 /**  To create, use static contructor: `BibleReference.fromStr("Genesis:5:1")` */

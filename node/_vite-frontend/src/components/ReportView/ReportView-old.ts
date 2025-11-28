@@ -1,9 +1,8 @@
-import { BIBLE, BibleIterator, Book } from "../../models/Bible.js"
+import { BIBLE, Book } from "../../models/Bible.js"
 import { ContentView } from '../../../index.js';
 import { isNullOrUndefined } from "../../../../kozubenko/utils.js";
 import { createPopper } from '@popperjs/core';
 import { printGreen, printRed } from "../../../../kozubenko/print.js";
-import { Document as Document } from "../../../kozubenko.ts/Document.js"
 
 
 /** `ReportView`: `document.title` */
@@ -39,27 +38,33 @@ export class ReportView {
             id: `${ReportView.ID}-books`
         });
 
-        let row = Document('div', { className:'row' }); 
-        const MAX_PER_ROW = 41;
+        for(const category of BIBLE.Categorized()) {
+            const column = Object.assign(document.createElement('div'), {
+                className: 'column'
+            });
 
-        for (const { i, book, chapter } of BibleIterator()) {
-            row.append(Document('div', {
-                id: `${book.abbr}-${chapter}`,
-                className: 'chapter'
-            }));
-            row.append(Document('span', {
-                className: 'tooltip',
-                innerText: `${book.name} ${chapter}`
-            }));
+            const books = Object.assign(document.createElement('div'), {
+                className: 'books'
+            });
 
-            if(i % MAX_PER_ROW == 0 || i==BIBLE.totalChapters()) {
-                view.append(row);
-                row = Document('div', { className:'row' }); 
+            for(const book of category) {
+                books.append(Object.assign(document.createElement('div'), {
+                    id: book.name,
+                    className: 'book',
+                    onclick: (e: MouseEvent) => ReportView.renderBookView(book)
+                }));
+
+                books.append(Object.assign(document.createElement('span'), {
+                    className: 'tooltip',
+                    innerText: book.name
+                }));
             }
+            column.append(books)
+            view.append(column)
         }
         ReportView.Element.append(view);
 
-        const books = view.querySelectorAll('.chapter');
+        const books = view.querySelectorAll('.book');
         const tooltips = view.querySelectorAll('.tooltip') as NodeListOf<HTMLElement>;
         for (let index = 0; index < books.length; index++) {
             const popperInstance = createPopper(books[index], tooltips[index], {

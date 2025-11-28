@@ -1,5 +1,8 @@
 $report-view-background  : #282c34;
 
+$loading: #d9ddd6;
+
+
 $success: #8cc762; $success-hover: #a3d87d;
 
 $line-number-color: #495162;    // vscode   
@@ -9,41 +12,63 @@ $base: #21252b;              // vscode
 
 #report-view-books {
     display: grid;
-    grid-auto-flow: column;
+    grid-auto-flow: row;
     align-items: stretch; // ensures each column fills equal height
-    gap: .1rem;
     padding: 1rem;
     background: $report-view-background;
     color: #c9d1d9;
     margin: 1rem;
-    
-    .column {
+
+    .row {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center; // centers the .books vertically
         align-items: center;     // centers horizontally
         height: 100%;            // fills full grid height
-        
-        .books {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
+
+        .chapter {
+            width: 1.5rem;
+            height: 1.5rem;
+            background: $loading;
+            border-radius: 3px;
+            transition: background 0.15s;
             
-            div {
-                width: 32px;
-                height: 32px;
-                background: $success;
-                border-radius: 3px;
-                transition: background 0.15s;
-                cursor: pointer;
-                
-                &:hover {
-                    background: #a3d87d;
-                }
+            &:hover {
+                // background: $success;
             }
         }
     }
 }
+
+    
+    
+//     .column {
+//         display: flex;
+//         flex-direction: column;
+//         justify-content: center; // centers the .books vertically
+//         align-items: center;     // centers horizontally
+//         height: 100%;            // fills full grid height
+        
+//         .books {
+//             display: flex;
+//             flex-direction: column;
+//             gap: 3px;
+            
+//             div {
+//                 width: 32px;
+//                 height: 32px;
+//                 background: $loading;
+//                 border-radius: 3px;
+//                 transition: background 0.15s;
+//                 cursor: pointer;
+                
+//                 &:hover {
+//                     background: $success;
+//                 }
+//             }
+//         }
+//     }
+// }
 .tooltip {
     display: none;
     background-color: #21252b;

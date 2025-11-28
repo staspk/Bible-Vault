@@ -130,4 +130,24 @@ export class BIBLE {
         
         throw new Error('Unreachable code reached in BIBLE.getBook()');
     }
+
+    /** returns `1189` (Protestant Bible) */
+    static totalChapters(): number {
+        return 1189;
+        // let total = 0;
+        // for (const book of this.Books()) total += book.chapters;
+        // return total;
+    }
+}
+
+export function* BibleIterator() {
+    const books = BIBLE.Books()
+
+    let i = 1;
+    for (const book of books) {
+        for (let chapter = 1; chapter <= book.chapters; chapter++) {
+            yield { i, book, chapter};
+            i++;
+        }
+    }
 }
