@@ -48,13 +48,25 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         if($err) {
             $err = [string]$err
             if($err.Contains("Build failed")) {
-                if($global:build_failed_message_sent -eq $false) {
-                    Write-Host "`nstart-server.ps1: NpmBuild Failed!`n" -ForegroundColor Red
-                    $global:build_failed_message_sent = $true
+                # if($global:build_failed_message_sent -eq $false) {
+                Write-Host "`nWatch Thread: NpmBuild Failed!" -ForegroundColor Red
+                    # $global:build_failed_message_sent = $true
+
+                while($true) {
+                    Start-Sleep .3
+                    $err = $( $null = npm run build ) 2>&1
+                    if($err) {
+                        $err = [string]$err
+                        if(-not($err.Contains("Build failed"))) {
+                            Write-Host "Watch Thread: NpmBuild Success!`n" -ForegroundColor Green
+                            return [datetime]::UtcNow.Ticks;
+                        }
+                    }
                 }
-                Start-Sleep 3
-                return $last_built
             }
+                # return $last_built
+            #     return $false
+            # }
         }
         return [datetime]::UtcNow.Ticks;
     }
