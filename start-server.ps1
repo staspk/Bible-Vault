@@ -34,7 +34,6 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         $token                      # Main Thread uses to signal thread to stop running. Type: [System.Threading.CancellationTokenSource]::new().Token
     )
 
-    $global:build_failed_message_sent = $false  # Warning that NpmBuild failed, only sent once per run.
     $paths_to_watch | ForEach-Object {
         if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
     }
@@ -49,10 +48,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         if($err) {
             $err = [string]$err
             if($err.Contains("Build failed")) {
-                # if($global:build_failed_message_sent -eq $false) {
                 Write-Host "`nWatch Thread: NpmBuild Failed!" -ForegroundColor Red
-                    # $global:build_failed_message_sent = $true
-
                 while($true) {
                     Start-Sleep .3
                     $err = $( $null = npm run build ) 2>&1
@@ -62,12 +58,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
                             Write-Host "Watch Thread: NpmBuild Success!`n" -ForegroundColor Green
                             return [datetime]::UtcNow.Ticks;
                         }
-                    }
-                }
-            }
-                # return $last_built
-            #     return $false
-        }
+        }}}} 
         return [datetime]::UtcNow.Ticks;
     }
 

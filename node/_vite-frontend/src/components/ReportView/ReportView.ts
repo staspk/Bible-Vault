@@ -4,15 +4,8 @@ import { Document, Placeholder } from "../../../kozubenko.ts/Document.js"
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
 import type { IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
-import { sleep } from "../../../../kozubenko/utils.js";
 
 
-const Grades = {
-    Perfect: '0 missing',
-    Good:    '1-2 missing',
-    Medium:  '3-5 missing',
-    Bad:     '6-10 missing'
-} as const;
 
 const CHAPTERS_PER_ROW = 41;
 
