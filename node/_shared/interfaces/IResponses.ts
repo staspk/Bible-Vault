@@ -223,6 +223,21 @@ export interface IChaptersResponse {
 
 export type total_translations = number;
 
+/**
+    Create a 1-based Array-Like Object, useful for jsons
+
+    ***EXAMPLE:***
+    ```json
+    {
+        "1": 10,
+        "2": 10,
+        "3": 8,
+        ...
+        "1188": 10,
+        "1189": 10
+    }
+    ```
+    */
 export interface IReport {
-    [chapter_number: number]: total_translations;
+    [chapter_index: string]: total_translations;
 }

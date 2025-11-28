@@ -10,6 +10,7 @@ import { BIBLE, Book } from './models/Bible.js';
 import { BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { IChapter, IChapters, IReport } from './_shared/interfaces/IResponses.js';
+import { ArrayLike } from './kozubenko/object.js';
 
 
 const BIBLE_DIRECTORY = path.join(import.meta.dirname, '..', 'bible_txt');
@@ -151,6 +152,6 @@ class Bible_Report {
         });
 
         // printYellow(`API-Report Total Time: ${URL.pathname}`);
-        handleOK(response, [...chapters] as IReport);
+        handleOK(response, ArrayLike.Object(chapters) as IReport);
     }
 }

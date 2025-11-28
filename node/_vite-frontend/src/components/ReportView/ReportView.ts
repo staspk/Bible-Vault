@@ -29,6 +29,7 @@ export class ReportView {
             return;
 
         if(this.Report) { this.Element.append(this.Report); return; }
+        else this.renderSkeleton();
 
         if(!this.Data) {
             const data = await BibleReportApi.Fetch();
@@ -92,5 +93,9 @@ export class ReportView {
 
     static async completeRender() {
         console.log(this.Data);
+
+        this.Data.forEach((translations, i) => {
+
+        });
     }
 }
