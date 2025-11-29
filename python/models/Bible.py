@@ -1,8 +1,5 @@
 from dataclasses import dataclass
-import os
-
-from definitions import BIBLE_NUMERICAL_MAP
-from kozubenko.utils import assert_class, assert_int, assert_path_exists
+from kozubenko.utils import assert_int
 
 """
 abbreviations for apocrypha:
@@ -41,6 +38,8 @@ class Book:
     chapters: int
     verse_map: dict
 
+    def total_verses(self, chapter):
+        self.verse_map.get(chapter)
 
 class BIBLE: 
     GENESIS              = Book(name="Genesis",             abbr="Gen",      index=1,     chapters=50,   verse_map={1:31,2:25,3:24,4:26,5:32,6:22,7:24,8:22,9:29,10:32,11:32,12:20,13:18,14:24,15:21,16:16,17:27,18:33,19:38,20:18,21:34,22:24,23:20,24:67,25:34,26:35,27:46,28:22,29:35,30:43,31:55,32:32,33:20,34:31,35:29,36:43,37:36,38:30,39:23,40:23,41:57,42:38,43:34,44:34,45:28,46:34,47:31,48:22,49:33,50:26})
@@ -111,14 +110,6 @@ class BIBLE:
     REVELATION           = Book(name="Revelation",          abbr="Rev",      index=66,    chapters=22,   verse_map={1:20,2:29,3:22,4:11,5:14,6:17,7:17,8:13,9:21,10:11,11:19,12:17,13:18,14:20,15:8,16:21,17:18,18:24,19:21,20:15,21:27,22:21})
 
     _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
-
-    def Book(index:int) -> Book:
-        """
-        returns a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
-        """
-        assert_int("index", index, 1, 66)
-        return BIBLE.Books()[index - 1]
-
     def Books() -> list[Book]:
         """
         returns the standard 66 books as a list[Book].
@@ -129,21 +120,14 @@ class BIBLE:
                 if not name.startswith("__") and isinstance(book, Book):
                     BIBLE._Books.append(book)
 
-        return BIBLE._Books        
+        return BIBLE._Books
 
-    def find_max_verse(book:Book, chapter:int) -> int:
-        assert_class("book", book, Book)
-        assert_int("chapter", chapter, 1, book. chapters)
-
-        path = os.path.join(BIBLE_NUMERICAL_MAP, str(book.index))
-        assert_path_exists("path", path)
-        
-        with open(path, 'r', encoding='utf-8') as file:
-            for i, line in enumerate(file, start=1):
-                if(i == chapter):
-                    return int(line.split(':')[2])
-        
-        raise Exception("Bible.py:find_max_verse(): unreachable code path reached. BIBLE_NUMERICAL_MAP is broken!")
+    def Book(index:int) -> Book:
+        """
+        returns a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
+        """
+        assert_int("index", index, 1, 66)
+        return BIBLE.Books()[index - 1] 
 
 
 class Abbreviations:
@@ -179,4 +163,3 @@ class Abbreviations:
     THIRD_JOHN           = ("3John",  "3JN")
     JUDE                 = ("Jude",   "JUD")
     REVELATION           = ("Rev",    "REV")
-

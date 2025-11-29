@@ -3,7 +3,7 @@ import requests
 from stem import Signal
 from stem.control import Controller
 from kozubenko.os import Parent
-from kozubenko.print import print_green, print_yellow, print_red
+from kozubenko.print import Print
 
 
 class Tor:
