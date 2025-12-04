@@ -38,43 +38,40 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         if(-not(Test-Path $_)) {  Write-Host "PATHS_TO_WATCH has a non-real path. path: $_" -ForegroundColor DarkRed  }
     }
 
-    function NpmBuild($last_built) {
+    function NpmBuild($current_file_watched) {
         <# 
         Returns:
-            [LastModified] New Ticks - 'npm run build' was successful
-            || $last_built (Old Ticks) - error running: 'npm run build'
+            [LastModified] New Ticks
         #>
         $err = $( $null = npm run build ) 2>&1
         if($err) {
             $err = [string]$err
             if($err.Contains("Build failed")) {
-                Write-Host "`nWatch Thread: NpmBuild Failed!" -ForegroundColor Red
-                while($true) {
-                    Start-Sleep .3
-                    $err = $( $null = npm run build ) 2>&1
-                    if($err) {
-                        $err = [string]$err
-                        if(-not($err.Contains("Build failed"))) {
-                            Write-Host "Watch Thread: NpmBuild Success!`n" -ForegroundColor Green
-                            return [datetime]::UtcNow.Ticks;
-                        }
-        }}}} 
+                Write-Host "`nWatch Thread: NpmBuild Failed! error in: $current_file_watched" -ForegroundColor Red
+                while($true -and -not $token.IsCancellationRequested) {
+                    Start-Sleep -Milliseconds 150
+                    $build_message = npm run build
+                    $build_message = [string]$build_message
+                    if($build_message.Contains("built in")) {
+                        Write-Host "Watch Thread: NpmBuild Success!" -ForegroundColor Green
+                        return [datetime]::UtcNow.Ticks;
+        }}}}
         return [datetime]::UtcNow.Ticks;
     }
 
-    Start-Sleep .2  # Theory: ENOENT error caused by 'npm run build' holding lock
+    Start-Sleep .2  # Theory: ENOENT error caused by 'npm run build' holding lock? EDIT: Still happening...
 
     cd $npm_project_directory
     $vite_last_built = NpmBuild
     while (-not $token.IsCancellationRequested) {
-        Start-Sleep -Milliseconds 125
+        Start-Sleep -Milliseconds 100
         
         foreach ($path in $paths_to_watch) {
             if((Get-Item $path).PSIsContainer) {
                 foreach($file in $(Get-ChildItem $path -Recurse -File)) {              <# Yes: all files are checked recursively, Stan (eye-check: at least dirs of dirs) #>
                     if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
                         # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
-                        $vite_last_built = NpmBuild
+                        $vite_last_built = NpmBuild $file
                         $escape_hatch_needed = $true
                         break;
             }}}
@@ -83,7 +80,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
             <#  Else: is a file #>
             if($vite_last_built -lt (Get-Item $path).LastWriteTimeUtc.Ticks) {
                 # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
-                $vite_last_built = NpmBuild
+                $vite_last_built = NpmBuild $path
                 break;
 }}}}
 
