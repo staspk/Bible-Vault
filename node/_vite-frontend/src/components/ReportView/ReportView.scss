@@ -37,15 +37,15 @@ $base: #21252b;              // vscode
 }
 .good {
     background: #fac9c8;
-    &:hover { background: rgb(253, 204, 203); }
+    &:hover { background: rgb(252, 223, 222); }
 }
 .medium {
     background: #FAA3A1;
-    &:hover { background: rgb(245, 156, 154); }
+    &:hover { background: rgb(255, 195, 194); }
 }
 .bad {
     background: #ff7875;
-    &:hover { background: #ff8d8b; }
+    &:hover { background: rgb(255, 160, 158); }
 }
 
 
