@@ -1,3 +1,12 @@
+""" 
+Minor Text Corruptions (spacing, transpose errors, etc.)
+files corrupted: 2375
+files tested:    9016
+
+Error Rate: 26%
+
+"""
+
 import os, re
 from definitions import BIBLE_TXT as BIBLE_TXT_DIRECTORY
 from kozubenko.print import Print
