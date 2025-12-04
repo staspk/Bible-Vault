@@ -3,7 +3,7 @@ import requests
 from stem import Signal
 from stem.control import Controller
 from kozubenko.os import Parent
-from kozubenko.print import print_green, print_yellow, print_red
+from kozubenko.print import Print
 
 
 class Tor:
@@ -44,7 +44,7 @@ class Tor:
                 [Tor.TOR_EXE, '-f', Tor.TORRC],
                 creationflags=subprocess.CREATE_NO_WINDOW,                # flag is windows only, fyi
             )
-            print_green(f'Tor started.')      
+            Print.green(f'Tor started.')      
         else:
             raise Exception('os not supported')
         
@@ -75,7 +75,7 @@ class Tor:
     def stop(self):
         if(self._process):
             self._process.terminate()
-            print_green('Tor stopped.')
+            Print.green('Tor stopped.')
 
 
     def request_new_identity(self):
@@ -105,13 +105,13 @@ class Tor:
         )
 
         if "tor.exe" in result.stdout:
-            print_yellow('Tor(): tor.exe process(es) found. Spinning up subprocess.run[taskkill]...', False)
+            Print.yellow('Tor(): tor.exe process(es) found. Spinning up subprocess.run[taskkill]...', False)
             result = subprocess.run(['taskkill', '/F', '/IM', 'tor.exe'], capture_output=True)
             if(result.returncode == 0):
-                print_green('Success!')
+                Print.green('Success!')
             else:
-                print_red(f'Failure!')
-                print_red(f'subprocess.run[taskkill] -> result.returncode: {result.returncode}')
+                Print.red(f'Failure!')
+                Print.red(f'subprocess.run[taskkill] -> result.returncode: {result.returncode}')
 
     def __enter__(self):
         return self
