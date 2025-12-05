@@ -3,7 +3,7 @@ export class TreeNode {
     constructor(
         public char:string,
         public depth = 0,
-        public children:TreeNode[]|null = null
+        public children:TreeNode[] = []
     ){}
 }
 
@@ -13,17 +13,14 @@ export class Tree {
 
         let node = root;
         list.forEach(word => {
-            for (let i = 0; i < word.length; i++) {
-                let char = word[i+1];
+            for (let i = 1; i < word.length; i++) {
+                let char = word[i];
                 if(char) {
-
-                    node = Tree.walk(root, word.slice(0, i+2));
+                    node = Tree.walk(root, word.slice(1, i));
 
                     let child = new TreeNode(char, i);
-                    if(node.children)
-                        node.children.push(child);
-                    else node.children = [child];
-                }  
+                    node.children.push(child);
+                }
             }
             node = root;
         });
