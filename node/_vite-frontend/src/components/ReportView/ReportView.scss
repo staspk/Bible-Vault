@@ -1,19 +1,12 @@
 $report-view-background  : #282c34;
 $loading: #d9ddd6;
 
-$line-number-color: #495162;    // vscode   
-$little-border-color: #31343c;  // vscode
-$scrollbar: #2a2f37;          // vscode
-$base: #21252b;              // vscode
-
-
 #report-view-books {
     display: grid;
     grid-auto-flow: row;
     align-items: stretch;
     padding: 1rem;
     background: $report-view-background;
-    color: #c9d1d9;
     margin: 1rem;
 }
 .row {
@@ -28,7 +21,7 @@ $base: #21252b;              // vscode
     height: 1.5rem;
     background: $loading;
     border-radius: 2px;
-    transition: background 0.15s;
+    transition: background .25s ease;
     cursor: pointer;
 }
 .perfect {
@@ -51,9 +44,9 @@ $base: #21252b;              // vscode
 
 .tooltip {
     display: none;
-    background-color: #21252b;
+    background-color: #21252be0;
     color: white;
     padding: 5px 10px;
     border-radius: 4px;
-    font-size: 1rem;
+    font-size: .9rem;
 }

@@ -224,8 +224,6 @@ export interface IChaptersResponse {
 export type total_translations = number;
 
 /**
-    Create a 1-based Array-Like Object, useful for jsons
-
     ***EXAMPLE:***
     ```json
     {

@@ -10,7 +10,7 @@ export class BibleReportApi {
     static async Fetch(translations:BibleTranslation[]=this.translationsDefault): Promise<IReportResponse|false> {
         const response = await fetch(`${ApiEndpoints.Bible_Report}?translations=${translations.toString()}`);
         if(response.status !== 200) {
-            console.error(`${BibleReportApi.name}: '${ApiEndpoints.Bible_Report}' => ${response.status}`)
+            console.error(`${BibleReportApi.name}: '${ApiEndpoints.Bible_Report}' => ${response.status}`);
             return false;
         }
         return await response.json() as IReportResponse;
