@@ -8,9 +8,9 @@ export class ArrayLike {
     ***EXAMPLE:***
     ```json
     {
-        "1": string|number|null,
-        "2": string|number|null,
-        "3": string|number|null,
+        "1": any|null,
+        "2": any|null,
+        "3": any|null,
     }
     ```
     */
