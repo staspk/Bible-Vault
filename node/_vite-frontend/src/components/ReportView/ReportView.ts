@@ -1,17 +1,21 @@
-import { BIBLE, BibleChaptersIterator, Book } from "../../models/Bible.js"
+import { BibleChaptersIterator, Book } from "../../models/Bible.js"
 import { BibleReportApi } from "../../models/BibleReportApi.js";
 import { Document } from "../../../kozubenko.ts/Document.js";
 import { IViewComponent } from "../../../kozubenko.ts/IComponentView.js";
 import { ContentView } from "../../../index.js";
 import { createPopper } from '@popperjs/core';
-import type { IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
-import { sleep } from "../../../../kozubenko/utils.js";
+import type { IReport, IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
 import { Router, Routes } from "../../routes.js";
-import { printGreen } from "../../../../kozubenko/print.js";
 
 
 
 const CHAPTERS_PER_ROW = 41;
+const CSS_COLOR_GRADE_CLASS = (missing_translations_for_chapter:number) => {
+    if(missing_translations_for_chapter < 1)      return 'perfect';
+    else if(missing_translations_for_chapter < 3) return 'good';
+    else if(missing_translations_for_chapter < 6) return 'medium';
+    else                                          return 'bad';
+}
 
 export class ReportView {
     static ID = 'report-view';
@@ -39,6 +43,7 @@ export class ReportView {
         this.Report = this.renderSkeleton();
     }
 
+    /** injection point from `SearchInput` input event */
     static highlightBook(to_highlight:Book|null) {
         if(Router.isAt(Routes.Report)) {
             // window.history.pushState({}, '', `?${(to_highlight as Book).name}`);
@@ -58,23 +63,16 @@ export class ReportView {
     }
 
     static async completeRender() {
-        const IDEAL_TRANSLATIONS = this.Data.translations;
-        for (const [chapterIndex, total_translations] of Object.entries(this.Data.report)) {
-            const missing = IDEAL_TRANSLATIONS - total_translations;
-            const el = document.getElementById(`ch.${chapterIndex}`) as HTMLDivElement;
-            
-            if(missing < 1)      el.classList.add('perfect');
-            else if(missing < 3) el.classList.add('good');
-            else if(missing < 6) el.classList.add('medium');
-            else                 el.classList.add('bad');
-
-            if(Number(chapterIndex) % 20 === 0)
-                await sleep(1);
+        const IDEAL_TRANSLATIONS:number = this.Data.translations;
+        for (const [chapterIndex, total_translations] of Object.entries(this.Data.report as IReport)) {
+            const missing_translations:number = IDEAL_TRANSLATIONS - total_translations;
+            document.getElementById(`ch.${chapterIndex}`)!.classList.add(
+                CSS_COLOR_GRADE_CLASS(missing_translations)
+            );
         }
     }
     /** (~60ms) */
     static renderSkeleton(): HTMLDivElement {
-        const START = performance.now();
         const view = Object.assign(document.createElement('div'), {
             id: `${ReportView.ID}-books`
         });
@@ -118,7 +116,7 @@ export class ReportView {
                 if (index === -1) return;
 
                 const tooltip = tooltips[index];
-
+                
                 if(event === 'mouseover') {
                     tooltip.style.display = 'block';
                     poppers[index].update();
@@ -128,12 +126,6 @@ export class ReportView {
 
         this.draw_borders_between_books(chapters);
         this.draw_border_between_Testaments();
-
-        let elapsed = performance.now() - START;
-        if (elapsed > 1000) {
-            elapsed = elapsed / 1000;
-            printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
-        } else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
 
         return view;
     }
@@ -158,13 +150,13 @@ export class ReportView {
     static draw_border_between_Testaments() {
         let elements = this.getChapterElements(889, 930);
         for (let i = 0; i < elements.length; i++) {
-            if(i==elements.length-1) elements[i].style.borderRight = '3px solid #495162';
-            elements[i].style.borderBottom = '3px solid #495162';
+            if(i==elements.length-1) elements[i].style.borderRight = '2px solid #495162';
+            elements[i].style.borderBottom = '2.5px solid #495162';
         }
 
         elements = this.getChapterElements(930, 971);
         for (let i = 0; i < elements.length; i++) {
-            if(i==0) elements[i].style.borderLeft = '2px solid #21252b';
+            if(i==0) elements[i].style.borderLeft = '1.7px solid #21252b';
             elements[i].style.borderTop = '2px solid #21252b';
         }
 
