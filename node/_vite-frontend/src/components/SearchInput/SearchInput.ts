@@ -2,7 +2,7 @@ import { TRANSLATIONS } from "../../../index.js";
 import { PassageView } from "../PassageView/PassageView.js";
 import { ApiEndpoints } from "../../../../_shared/ApiEndpoints.js";
 import { BibleApi } from "../../models/BibleApi.js";
-import { BibleSearch } from "../../models/BibleSearch.js";
+import { BibleSearch, BookSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
 import type { IChapterResponse } from "../../../../_shared/interfaces/IResponses.js";
 import { BIBLE, type Book } from "../../models/Bible.js";
@@ -47,7 +47,9 @@ export class SearchInput {
                 }
             }
             if(Router.isAt(Routes.Report)) {
-                const book = BIBLE.Book(searchStr);
+                // const book = BIBLE.Book(searchStr);
+                const book = BookSearch(searchStr);
+                console.log(`book: ${book}. searchStr ${searchStr}`);
                 if(book) ReportView.highlightBook(book);
 
                 if(isNullOrWhitespace(searchStr)) {

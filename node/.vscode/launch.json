@@ -5,6 +5,7 @@
       "type": "node-terminal",
       "request": "launch",
       "command": "npx tsx test.ts",
-      "cwd": "${workspaceFolder}/node"
+      "cwd": "${workspaceFolder}/node",
+      "autoAttachChildProcesses": true
     }]
 }
