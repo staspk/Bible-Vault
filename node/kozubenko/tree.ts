@@ -19,7 +19,8 @@ export class Tree {
                     node = Tree.walk(root, word.slice(1, i));
 
                     let child = new TreeNode(char, i);
-                    node.children.push(child);
+                    if(!node.children.find(node => node.char === char))
+                        node.children.push(child);
                 }
             }
             node = root;
