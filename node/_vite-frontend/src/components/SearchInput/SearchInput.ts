@@ -1,13 +1,10 @@
-import { ContentView, TRANSLATIONS } from "../../../index.js";
-import { PassageView } from "../PassageView/PassageView.js";
-import { ApiEndpoints } from "../../../../_shared/ApiEndpoints.js";
-import { BibleApi } from "../../models/BibleApi.js";
-import { BibleSearch, BookSearch } from "../../models/BibleSearch.js";
 import { Search } from "../../services/Search.js";
-import type { IChapterResponse } from "../../../../_shared/interfaces/IResponses.js";
-import { Router, Routes } from "../../routes.js";
+import { PassageView } from "../PassageView/PassageView.js";
 import { ReportView } from "../ReportView/ReportView.js";
+import { BibleSearch, BookSearch } from "../../models/BibleSearch.js";
 import { isNullOrWhitespace } from "../../../../kozubenko/string.extensions.js";
+import { Router, Routes } from "../../routes.js";
+import { ContentView } from "../../../index.js";
 
 
 /** Requires: side-effect load. */
