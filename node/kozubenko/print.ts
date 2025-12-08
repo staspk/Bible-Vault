@@ -49,60 +49,46 @@ export function print(varName?:string, value?:any): void {
     throw new Error("print() not implemented");
 }
 
-function isBrowserConsole() {
-    return typeof window !== 'undefined' && typeof window.document !== 'undefined';
-}
+export class Print {
+    static isBrowserConsole = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
-/**
-* Can be used in both Browser and NodeJs. Always new line at end when in Browser.
-*/
-export function printGreen(text:string, newLine:boolean=true): void {
-    if (isBrowserConsole()) {
-        console.log(`%c${text}`, 'color: limegreen');
-    } else {
-        process.stdout.write(`${TerminalColors.Green}${text}${TerminalColors.Reset}`);
-        if(newLine)
-            console.log();
+    static green(text:string, newLine:boolean=true) {
+        if(Print.isBrowserConsole)
+            console.log(`%c${text}`, 'color: limegreen');
+        else {
+            process.stdout.write(`${TerminalColors.Green}${text}${TerminalColors.Reset}`);
+            if(newLine)
+                console.log();
+        }
     }
-}
 
-/**
-* Can be used in both Browser and NodeJs. Always new line at end when in Browser.
-*/
-export function printRed(text:string, newLine:boolean=true): void {
-    if (isBrowserConsole()) {
-        console.log(`%c${text}`, 'color: red');
-    } else {
-        process.stdout.write(`${TerminalColors.Red}${text}${TerminalColors.Reset}`);
-        if(newLine)
-            console.log();
+    static red(text:string, newLine:boolean=true) {
+        if(Print.isBrowserConsole)
+            console.log(`%c${text}`, 'color: red');
+        else {
+            process.stdout.write(`${TerminalColors.Red}${text}${TerminalColors.Reset}`);
+            if(newLine)
+                console.log();
+        }
     }
-}
 
-/**
-* Can be used in both Browser and NodeJs. Always new line at end when in Browser.
-*/
-export function printYellow(text:string, newLine:boolean=true): void {
-    if (isBrowserConsole()) {
-        console.log(`%c${text}`, 'color: yellow');
-    } else {
-        process.stdout.write(`${TerminalColors.Yellow}${text}${TerminalColors.Reset}`);
-        if(newLine)
-            console.log();
+    static yellow(text:string, newLine:boolean=true) {
+        if(Print.isBrowserConsole) {
+            console.log(`%c${text}`, 'color: yellow');
+        } else {
+            process.stdout.write(`${TerminalColors.Yellow}${text}${TerminalColors.Reset}`);
+            if(newLine)
+                console.log();
+        }
     }
-}
 
-/**
- * NOT WORKING FOR NODEJS CURRENTLY
- * 
-* Can be used in both Browser and NodeJs. Always new line at end when in Browser.
-*/
-export function printOrange(text:string, newLine:boolean=true): void {
-    if (isBrowserConsole()) {
-        console.log(`%c${text}`, 'color: orange');
-    } else {
-        process.stdout.write(`${TerminalColors.Yellow}${text}${TerminalColors.Reset}`);
-        if(newLine)
-            console.log();
+    static orange(text:string, newLine:boolean=true) {
+        if(Print.isBrowserConsole) {
+            console.log(`%c${text}`, 'color: orange');
+        } else {
+            process.stdout.write(`${TerminalColors.Yellow}${text}${TerminalColors.Reset}`);
+            if(newLine)
+                console.log();
+        }
     }
 }

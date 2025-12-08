@@ -2,12 +2,12 @@ import * as fs from 'fs';
 import * as path from 'path'
 import * as http from 'http'
 
-import { printGreen, printRed, printYellow } from './kozubenko/print.js';
+import { Print } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
-import { BIBLE, Book } from './models/Bible.js';
-import { BibleTranslations } from './_shared/BibleTranslations.js';
+import { BIBLE, BiblePtr, Book } from './models/Bible.js';
+import { BibleTranslation, BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { IChapter, IChapters, IReport, IReportResponse } from './_shared/interfaces/IResponses.js';
 import { ArrayLike } from './kozubenko/object.js';
@@ -19,18 +19,18 @@ const BIBLE_DIRECTORY = path.join(import.meta.dirname, '..', 'bible_txt');
 export class Api {
     /** Assumes caller has checked `URL.pathname` with `ApiEndpoints.isEndpoints()` */
     static Handle(URL:URL, response:http.ServerResponse) {
-        if (URL.pathname === ApiEndpoints.Bible)
+        if (URL.pathname === ApiEndpoints.Passage)
             Bible.Handle(URL, response);
         if (URL.pathname === ApiEndpoints.Bible_Report)
             Bible_Report.Handle(URL, response);
     }
 }
 
-/** `/api/bible` */
+/** `/api/passage` */
 class Bible {
-    /**  `/api/bible?` -> `IChapterResponse` | `IChaptersResponse`  */
+    /**  `/api/passage?` -> `IChapterResponse` | `IChaptersResponse`  */
     static async Handle(URL:URL, response:http.ServerResponse) {
-        printYellow(`API-Bible Request: ${URL.pathname}?${URL.searchParams.toString()}`);
+        Print.yellow(`API-Bible Request: ${URL.pathname}?${URL.searchParams.toString()}`);
 
         const param1:string = URL.searchParams.get('translations') ?? '';
         const param2:string = URL.searchParams.get('book')    ?? '';
@@ -42,6 +42,8 @@ class Bible {
         const translations:string[] = param1 ? param1.split(',').filter(translation => translation) : ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT'];
         if(translations.length < 1 || translations.length > 10) {  handleBadRequest(response); return;  }
 
+        /* NEED TO DO AN ACTUAL CHECK ON TRANSLATIONS SO YOU'RE NOT CYCLING THROUGH THE DISK POINTLESSLY. USE: BibleTranslation[] */
+
         const book = BIBLE.Book(param2);
         if(!book) {  handleBadRequest(response, 'Not a valid Bible Book'); return;  }
         
@@ -50,6 +52,9 @@ class Bible {
         
         if(!chapterStart || chapterStart < 1 || chapterStart > book.chapters) {  handleBadRequest(response, `${book.name}:${chapterStart} is not a real Bible chapter.`); return;  }
         
+
+        /* MULTIPLE CHAPTERS CALL NEEDS TO BE MOVED OUT INTO AN AUTHORIZED CALL */
+        /* --------------------------------------------------------------------------------------------------------------------------- */
         if(chapterEnd && chapterEnd > 1 && chapterEnd < book.chapters + 1) {    /*  multiple chapters call. See: _shared/IChaptersResponse  */
             if(chapterEnd - chapterStart > 1) {  handleBadRequest(response, `API does not support GET requests on >2 chapters`); return;  }
             
@@ -61,24 +66,25 @@ class Bible {
             handleOK(response, IChapters.wrapAsResponse(chapters));
             return;
         }
+        /* --------------------------------------------------------------------------------------------------------------------------- */
         
         if(!isNullOrWhitespace(param4)) {
             const verseStart = parseInt(param4.split("-")[0], 10);
             const verseEnd   = parseInt(param4.split("-")[1], 10);
-            
+
             if(verseStart && verseStart > 0 && (verseStart <= 89 || (verseStart <= 176 && book === BIBLE.PSALMS)) ) {   /* verseStart must be 1-89 || 1-176 (if: Psalms) */
                 if(verseEnd && verseEnd > 1 && (verseEnd <= 89   || (verseEnd   <= 176 && book === BIBLE.PSALMS)) ) {   /* verseEnd   must be 2-89 || 2-176 (if: Psalms) */
                     if(verseStart < verseEnd) {
                         /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
                         let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseEnd } as IVerseRange);
-                        handleOK(response, IChapter.wrapAsResponse(chapter)); return;
+                        handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter)); return;
                     } else {
                         handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
                     }
                 }
                 /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
                 let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseStart } as IVerseRange);
-                handleOK(response, IChapter.wrapAsResponse(chapter)); return;
+                handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter)); return;
             }
             handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`);
             return;
@@ -86,7 +92,7 @@ class Bible {
         
         /* Standard API Call, ie: "Matthew 10" */
         let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart);
-        handleOK(response, IChapter.wrapAsResponse(chapter));
+        handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter));
     }
 
     static async getChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): Promise<IChapter> {
@@ -128,7 +134,7 @@ class Bible {
             return plainObj;
             
         } catch (error) {
-            printRed(`loadChapterIntoMemory(${path}): ${error}`);
+            Print.red(`loadChapterIntoMemory(${path}): ${error}`);
             return null;
         }
     }
@@ -153,7 +159,8 @@ class Bible_Report {
         });
 
         handleOK(response, {
-            translations: translations.length,
+            total_translations: translations.length,
+            translations: translations,
             report: ArrayLike.Object(chapters)
         } as IReportResponse);
     }

@@ -1,4 +1,4 @@
-/**  Supported types `LocalStorage` supports as default values, so far */
+/**  Supported kinds of values that `LocalStorage` supports */
 export interface ILocalStorageDefaults {
     [key:string]: string|boolean|Array<string>
 }

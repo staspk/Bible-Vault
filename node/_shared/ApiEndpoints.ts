@@ -1,6 +1,6 @@
 /** values correspond to `URL.pathname` */
 export const ApiEndpoints = {
-    Bible: '/api/bible',
+    Passage: '/api/passage',
     Bible_Report: '/api/bible-report',
 
     isEndpoint(url_pathname:string): boolean {

@@ -1,5 +1,6 @@
-import { Routes } from "../../routes.js";
-import { ContentView } from "../../../index.js";
+import { Document } from "../../../kozubenko.ts/Document.js";
+import { Api } from "../../api/Api.js";
+import { Routes } from "../../services/Router.js";
 import { ReportView } from "../ReportView/ReportView.js";
 
 
@@ -8,7 +9,9 @@ export class ReportBtn {
 
     /** The onclick method */
     static onclick() {
-        ReportView.Render(ContentView.PlaceHolder())
+        const translations = Array.from(Api.BibleReport.DEFAULT_TRANSLATIONS);
+        Document.Title("Data Integrity Report", translations, `${Routes.Report}?translations=${translations}`);
+        ReportView.Render(translations);
     }
 }
 

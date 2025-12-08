@@ -1,19 +1,19 @@
-import { BibleApi } from "../models/BibleApi";
+import { Api } from "../api/Api";
 import type { ILocalStorageDefaults } from "./ILocalStorageDefaults";
 import { LocalStorageKeys } from "./LocalStorageKeys.enum";
 
 
-export const Defaults: ILocalStorageDefaults = {
+export const DEFAULTS: ILocalStorageDefaults = {
     [LocalStorageKeys.MIRROR_OPTION]: true,
-    [LocalStorageKeys.TRANSLATIONS]: BibleApi.translationsDefault
-}
+    [LocalStorageKeys.TRANSLATIONS]: Api.Passage.translationsDefault
+} as const;
 
 
-/** Side-effect load instantiates to `LocalStorage.instance` */
+/** Side-Effect Load sets `DEFAULTS` */
 export class LocalStorage {
     static Instance:LocalStorage
 
-    constructor(public defaults:ILocalStorageDefaults = Defaults) {
+    constructor(public defaults:ILocalStorageDefaults = DEFAULTS) {
         if(!LocalStorage.getBoolean("HAVE_LOCAL_STORAGE_DEFAULTS_BEEN_SET?")) {
             LocalStorage.setDefaults(defaults);
             LocalStorage.setBoolean("HAVE_LOCAL_STORAGE_DEFAULTS_BEEN_SET?", true);
@@ -24,7 +24,7 @@ export class LocalStorage {
     /** Sets `LocalStorage` to `"default"` state, ie:  
     *   - `localStorage.clear();`
     *   - `LocalStorage.setDefaults(LocalStorage.LocalStorageDefaultValues);` */
-    resetDefaults(defaults:ILocalStorageDefaults = Defaults) {
+    resetDefaults(defaults:ILocalStorageDefaults = DEFAULTS) {
         localStorage.clear();
         LocalStorage.setDefaults(defaults);
     }
@@ -81,4 +81,4 @@ export class LocalStorage {
 }
 
 localStorage.clear()
-new LocalStorage(Defaults);
+new LocalStorage(DEFAULTS);

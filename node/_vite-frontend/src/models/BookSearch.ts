@@ -1,7 +1,30 @@
 import { BIBLE, Book } from "./Bible.js";
 
 
-const _BIBLE_BOOK_SEARCH_TERMS = [
+const BOOKS_MAP: Map<string, string[]> = new Map([
+    ['1', ['1SAMUEL', '1KINGS', '1CHRONICLES', '1CORINTHIANS', '1THESSALONIANS', '1TIMOTHY', '1PETER', '1JOHN']],
+    ['2', ['2SAMUEL', '2KINGS', '2CHRONICLES', '2CORINTHIANS', '2THESSALONIANS', '2TIMOTHY', '2PETER', '2JOHN']],
+    ['3', ['3JOHN']],
+    ['A', ['AMOS', 'ACTS']],
+    ['C', ['COLOSSIANS']],
+    ['D', ['DEUTERONOMY', 'DANIEL']],
+    ['E', ['EXODUS', 'EZRA', 'ESTHER', 'ECCLESIASTES', 'EZEKIEL', 'EPHESIANS']],
+    ['G', ['GENESIS', 'GALATIANS']],
+    ['H', ['HOSEA', 'HABAKKUK', 'HAGGAI', 'HEBREWS']],
+    ['I', ['ISAIAH']],
+    ['J', ['JOSHUA', 'JUDGES', 'JOB', 'JEREMIAH', 'JOEL', 'JONAH', 'JOHN', 'JAMES', 'JUDE']],
+    ['L', ['LEVITICUS', 'LAMENTATIONS', 'LUKE']],
+    ['M', ['MICAH', 'MALACHI', 'MATTHEW', 'MARK']],
+    ['N', ['NUMBERS', 'NEHEMIAH', 'NAHUM']],
+    ['O', ['OBADIAH']],
+    ['P', ['PSALMS', 'PROVERBS', 'PHILIPPIANS', 'PHILEMON']],
+    ['R', ['RUTH', 'ROMANS', 'REVELATION']],
+    ['S', ['SONG OF SOLOMON']],
+    ['T', ['TITUS']],
+    ['Z', ['ZEPHANIAH', 'ZECHARIAH']]
+]);
+
+const BIBLE_BOOK_SEARCH_TERMS = [
     ['Genesis', 'Gen', 'Бытие'],
     ['Exodus', 'Exod', 'Исход'],
     ['Leviticus', 'Lev', 'Левит'],
@@ -84,28 +107,36 @@ const _BIBLE_BOOK_SEARCH_TERMS = [
     ['Prayer of Manasseh', 'Manasseh']
 ];
 
-/**  Note: do not init, unless you have a legit `SearchType` */
-export class BibleSearch {
-    constructor(
-        public book: Book,
-        public chapter: number,
-        public chapterEnd?: number,
-        public verse?: number,
-        public verseEnd?: number
-    ) { }
+export function BookSearch(search:string): Book|null {
+    search = search.trim().toUpperCase();
 
-    /** Compares `_BIBLE_BOOK_SEARCH_TERMS` to given `str`. Returns corresponding `BIBLE.Book`, if found */
-    static match_bible_book_search_term(str:string): Book | null {
-        const i = _BIBLE_BOOK_SEARCH_TERMS.findIndex(
-            terms => terms.find(term => term.toLowerCase() === str.toLowerCase())
-        )
-        return BIBLE.Book(i + 1);
-    }
+    if(!BOOKS_MAP.has(search[0]))
+        return null;
 
-    toString():string {
-        let str = `${this.book.name} ${this.chapter}`;
-        this.verse    && (str += `:${this.verse}`);
-        this.verseEnd && (str += `-${this.verseEnd}`);
-        return str;
+    let possible_valid_searches = BOOKS_MAP.get(search[0]) as string[];
+
+    if(search.length === 1 && possible_valid_searches?.length === 1)
+        return BIBLE.Book(possible_valid_searches[0]);
+
+    
+    let possible_searches:Array<string|null> = Array.from(possible_valid_searches);
+    let still_valid:number = possible_searches.length;
+    for (let i = 1; i < search.length; i++) {
+
+        for (let j = 0; j < possible_searches.length; j++) {
+
+            const possible_word = possible_searches[j];
+            if(possible_word === null)
+                continue;
+
+            if(search[i] !== possible_word[i]) {
+                possible_searches[j] = null;
+                still_valid--;
+
+                if(still_valid === 1)
+                    return BIBLE.Book(possible_searches.find(possibility => possibility) as string);
+            }
+        }
     }
+    return null;
 }

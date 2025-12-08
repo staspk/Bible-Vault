@@ -1,83 +1,71 @@
-
+import { Api } from "../../api/Api.js";
 import { IChapter } from "../../../../_shared/interfaces/IResponses";
+import { type Passage } from "../../models/BookSearch.js";
+import { Document } from "../../../kozubenko.ts/Document.js";
 import { LocalStorage } from '../../storage/LocalStorage';
 import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
-import { isNullOrUndefined } from '../../../../kozubenko/utils';
+import { SearchInput } from "../SearchInput/SearchInput";
 import { ContentView } from "../../..";
 
 
-/**  A pre-defined CSS class is picked, determining `width` and `grid-template-columns` *[`PassageView.scss`]*  */
-const COLUMNS_CLASS = (total_translations:number) => `cols-${total_translations}`;
+/**  Determines `width` and `grid-template-columns` */
+const CSS_COLUMNS_CLASS = (total_translations:number) => `cols-${total_translations}`;
 
 enum View {
     None = 'none',
     One  = 'view1',
     Two  = 'view2'
 }
-
 /**  `#passage-view`: consists of 1-2 `views` [grid of 1-5 columns/translations of a Bible chapter].  */
 export class PassageView {
     static ID = 'passage-view';
     
-    /** when true: even amount of translations are halved between 2 views. */
+    /** true: translations are split equally between 2 views. */
     static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.MIRROR_OPTION);
 
     static view1: HTMLDivElement;
     static view2?: HTMLDivElement;
     static currentView: View = View.None;
 
-    /**  Renders `PassageView`, splitting between 1-2 views, depending on `mirrorOption` and `data`.  
-        Only 1-10 translations per `chapter` supported.  */
-    static Render(chapter:number, data:IChapter, onto:HTMLElement=ContentView.PlaceHolder()) {
-        if(isNullOrUndefined(onto)) {
-            console.error('PassageView.Render(): onto[HtmlElement] is null/undefined. Cannot complete Render...');
-            return;
-        }
+    /**  Renders `PassageView`, 1-10 translations per chapter, 5 max per view, depending on: `mirrorOption` */
+    static async Render(search:Passage, onto:HTMLElement=ContentView.PlaceHolder()) {
+        const queryString = Api.Passage.From(search).queryString();
+        SearchInput.Placeholder(search.toString());
 
-        let total_translations = 0, view1_translations = 0, view2_translations = 0;
-        for (const [i, [key, value]] of Object.entries(data).entries())
-            total_translations++;
-        
-        if(PassageView.mirrorOption && (total_translations % 2 === 0)) {
-            view1_translations = total_translations / 2;
-            view2_translations = total_translations / 2;
-        } else {
-            if(total_translations > 5) {
-                view1_translations = 5;
-                view2_translations = total_translations - 5;
-            } else
-                view1_translations = total_translations;
-        }
+        Api.Passage.Fetch(queryString).then(data => {
+            if(!data) return;
 
-        PassageView.view1 = PassageView.generateView(chapter, view1_translations, IChapter.range(0, view1_translations, data));
-        if(PassageView.view2) delete PassageView.view2;
-        if(view2_translations > 0)
-            PassageView.view2 = PassageView.generateView(chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data));
+            let [view1_translations = 0, view2_translations] = translations_per_view(data.translations.length);
 
-        
-        onto.replaceWith(PassageView.view1);
-        PassageView.currentView = View.One;
-        PassageView.alignVerses();
+            this.view1 = this.generateView(search.chapter, view1_translations, IChapter.range(0, view1_translations, data.data));
+            if(this.view2) delete this.view2;
+            if(view2_translations > 0)
+                this.view2 = this.generateView(search.chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data.data));
+
+            onto.replaceWith(this.view1)
+            this.currentView = View.One;
+            this.alignVerses();
+        });
     }
     
     /** A `PassageView` `view` holds 1-5 translations of the same chapter. */
     static generateView(chapter:number, total_translations:number, data:IChapter): HTMLDivElement {
-        const view = Object.assign(document.createElement('div'), {
+        const view = Document('div', {
             id: PassageView.ID,
-            className: COLUMNS_CLASS(total_translations)
+            className: CSS_COLUMNS_CLASS(total_translations)
         });
         
         for (const [i, [translation, chapterMap]] of Object.entries(data).entries()) {
-            if (chapterMap == null) continue;   /* If a chap is missing, the translation tables don't match when mirrorOption==true. Need to design an empty column */
+            if (chapterMap == null) continue;
             
-            const chapterColumn = Object.assign(document.createElement('div'), {
+            const chapterColumn = Document('div', {
                 className: 'chapter-column',
                 id: translation
             });
             
             let row = 1;
             for (const [verseNumber, verseText] of Object.entries(chapterMap)) {
-                chapterColumn.append(Object.assign(document.createElement('div'), {
+                chapterColumn.append(Document('div', {
                     id: `${translation}-${chapter}-${verseNumber}`,
                     className: `row-${row}`,
                     innerHTML: verseNumber === '1' ? `<span class="chapter-dropcap">${chapter}</span> ${verseText}`
@@ -141,4 +129,20 @@ export class PassageView {
             return;
         }
     }
+}
+
+function translations_per_view(total_translations:number, mirrorOption=true): [number, number] {
+    let view1_translations = 0, view2_translations = 0;
+    if(mirrorOption && (total_translations % 2 === 0)) {
+        view1_translations = total_translations / 2;
+        view2_translations = total_translations / 2;
+    } else {
+        if(total_translations > 5) {
+            view1_translations = 5;
+            view2_translations = total_translations - 5;
+        } else
+            view1_translations = total_translations;
+    }
+
+    return [view1_translations, view2_translations]
 }

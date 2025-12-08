@@ -97,7 +97,32 @@ export class BIBLE {
         return BIBLE._Books;
     }
 
-    /** Category explanation pending... */
+    /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
+    static Book(book:string|number): Book|null {
+        if (typeof book === 'number') {
+            return BIBLE.Books().find(b => b.index === (book)) || null;
+        }
+        
+        if (typeof book === 'string') {
+            const lookup = book.trim().toLowerCase();
+            return BIBLE.Books().find(
+                b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
+            ) || null;
+        }
+
+        return null;
+    }
+
+    /** A grouping originally planned for a ReportView. Not currently used, but left for posterity.  
+        - Torah
+        - History
+        - Poetry/Wisdom
+        - Major Prophets
+        - Minor
+        - Gospels/Acts
+        - Paul
+        - Jesus' Inner Circle
+    */
     static Categorized(): Book[][] {
         const SEPARATORS = [5, 12, 5, 5, 12, 5, 14, 8]
 
@@ -112,31 +137,12 @@ export class BIBLE {
             }
         });
 
-        return list
-    }
-    
-    /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
-    static Book(book:string|number): Book|null {
-        if (typeof book === 'number') {
-            return BIBLE.Books().find(b => b.index === (book)) || null;
-        }
-        
-        if (typeof book === 'string') {
-            const lookup = book.trim().toLowerCase();
-            return BIBLE.Books().find(
-                b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
-            ) || null;
-        }
-        
-        throw new Error('Unreachable code reached in BIBLE.getBook()');
+        return list;
     }
 
     /** returns `1189` (Protestant Bible) */
     static totalChapters(): number {
         return 1189;
-        // let total = 0;
-        // for (const book of this.Books()) total += book.chapters;
-        // return total;
     }
 
     static _ChaptersMap: Map<number, BiblePtr>;
@@ -158,7 +164,6 @@ export function* BibleChaptersIterator() {
     let i = 1;
     for (const book of BIBLE.Books()) {
         for (let chapter = 1; chapter <= book.chapters; chapter++) {
-
             yield { i, book, chapter};
             i++;
         }

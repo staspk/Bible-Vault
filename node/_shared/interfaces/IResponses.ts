@@ -1,3 +1,4 @@
+import { BibleTranslation } from "../BibleTranslations.js";
 import { Status } from "../enums/Status.enum.js";
 
 
@@ -45,9 +46,9 @@ export interface IChapter {
 }
 export class IChapter {
     /** Transforms `IChapter` into `IChapterResponse`.  */
-    static wrapAsResponse(chapter:IChapter): IChapterResponse {
+    static wrapAsResponse(translations:BibleTranslation[], data:IChapter): IChapterResponse {
         let amountNull = 0, total = 0;
-        for (const [translation, verses] of Object.entries(chapter))
+        for (const [translation, verses] of Object.entries(data))
             if(verses === null)
                 amountNull++;
             total++;
@@ -55,17 +56,20 @@ export class IChapter {
         if (amountNull === 0) {
             return {
                 status: Status.Success,
-                data: chapter
+                translations: translations,
+                data: data
             }
         } else if(total === amountNull) {
             return {
                 status: Status.NotFound,
-                data: chapter
+                translations: translations,
+                data: data
             }
         } else {
             return {
                 status: Status.Partial,
-                data: chapter
+                translations: translations,
+                data: data
             }
         }
     }
@@ -175,7 +179,8 @@ export class IChapters {
 */
 export interface IChapterResponse {
     status: `${Status}`;
-    data: IChapter
+    translations: BibleTranslation[];
+    data: IChapter;
 }
 
 /**
@@ -210,7 +215,7 @@ export interface IChapterResponse {
 */
 export interface IChaptersResponse {
     status: `${Status}`;
-    data: IChapters
+    data: IChapters;
 }
 
 
@@ -224,8 +229,6 @@ export interface IChaptersResponse {
 export type total_translations = number;
 
 /**
-    Create a 1-based Array-Like Object, useful for jsons
-
     ***EXAMPLE:***
     ```json
     {
@@ -243,7 +246,8 @@ export interface IReport {
 }
 
 export interface IReportResponse {
-    /** the ideal number of translations, i.e: the upper bound of: `total_translations` (set in request) */
-    translations: number;
-    report:IReport;
+    /** expected translations per chapter, set in GET request */
+    total_translations: number;
+    translations: BibleTranslation[];
+    report: IReport;
 }

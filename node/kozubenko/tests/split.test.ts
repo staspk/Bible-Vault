@@ -7,8 +7,8 @@
 
     RESULT: safeSplit() is completely unnecessary
 */
+import { Print } from "../print.js"
 import { safeSplit } from "../string.extensions.js"
-import { printYellow } from "../print.js"
 
 const a1 = safeSplit("13", "-")
 const a2 = safeSplit("13-14", "-")
@@ -32,18 +32,18 @@ const input2_right = input2.split("-")[1];
 const input3_left  = input3.split("-")[0];
 const input3_right = input3.split("-")[1];
 
-printYellow(input1)
+Print.yellow(input1)
 console.log(b1)
 console.log(`${input1_left},${input1_right}`)
 
 console.log('\n')
 
-printYellow(input2)
+Print.yellow(input2)
 console.log(b2)
 console.log(`${input2_left},${input2_right}`)
 
 console.log('\n')
 
-printYellow(input3)
+Print.yellow(input3)
 console.log(b3)
 console.log(`${input3_left},${input3_right}`)

@@ -2,7 +2,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path'
 
-import { print, printGreen } from './kozubenko/print.js';
+import { print, Print } from './kozubenko/print.js';
 import { Path } from './kozubenko/utils.js';
 import { HtmlPage, handleNotFound } from './kozubenko/http.js';
 import { GOOGLE_VM_EXTERNAL_IP } from './kozubenko/google.js';
@@ -82,21 +82,21 @@ const server = http.createServer((request, response) => {
 
 
 server.listen(PORT, '0.0.0.0', () => {
-    printGreen('Endpoints: ');
+    Print.green('Endpoints: ');
     if (PORT === DEV_PORT) {
-        printGreen(`  http://${HOST}:${PORT}/`)
-        printGreen(`  http://${HOST}:${PORT}/report`)
-        printGreen(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
-        printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
-        // printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
-        // printGreen(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
+        Print.green(`  http://${HOST}:${PORT}/`)
+        Print.green(`  http://${HOST}:${PORT}/report`)
+        Print.green(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
+        Print.green(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
+        // Print.Green(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
+        // Print.Green(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,NKJV,ESV`)
     }
     else if (PORT === HTTP_PORT) {
-        printGreen(`  http://${HOST}/`)
-        printGreen(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
+        Print.green(`  http://${HOST}/`)
+        Print.green(`  http://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
     }
     else if (PORT === HTTPS_PORT) {
-        printGreen(`  https://${HOST}/`)
-        printGreen(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
+        Print.green(`  https://${HOST}/`)
+        Print.green(`  https://${HOST}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
     }
 });

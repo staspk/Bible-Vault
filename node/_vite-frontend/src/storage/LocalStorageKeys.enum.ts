@@ -1,7 +1,7 @@
 export enum LocalStorageKeys {
-    /** `PassageView.mirrorOption` */
+    /** see:  `components/PassageView.ts` */
     MIRROR_OPTION = "MIRROR_OPTION:LOCAL_STORAGE_KEY",
 
-    /**  `ApiEndpoints.Bible` string[] with default value. Also see: `index.ts` */
+    /** see: `models/BibleApi.ts` */
     TRANSLATIONS = "TRANSLATIONS:LOCAL_STORAGE_KEY"
 }

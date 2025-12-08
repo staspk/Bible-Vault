@@ -1,4 +1,4 @@
-import { printRed, printYellow } from "./print.js";
+import { Print } from "./print.js";
 
 /** Supports both: Browser and Nodejs Environments.
 
@@ -7,8 +7,8 @@ const START = performance.now();
 let elapsed = performance.now() - START;
 if (elapsed > 1000) {
     elapsed = elapsed / 1000;
-    printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
-} else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
+    Print.green(`Timer total: ${elapsed.toFixed(3)}s`)
+} else Print.green(`Timer total: ${elapsed.toFixed(3)}ms`)
 
 */
 export class Timer {
@@ -26,7 +26,7 @@ export class Timer {
     /**  Use to time certain operations. Uses `Timer._startTime` on first call, `Timer._elapsed` on every successive call to determine operation time.  */
     static elapsed(operationName) {
         if (Timer._startTime == null) {
-            printRed(`Timer.elapsed() called before Timer.start()`);
+            Print.red(`Timer.elapsed() called before Timer.start()`);
             return;
         }
 
@@ -40,9 +40,9 @@ export class Timer {
         
         if (elapsed > 1000) {
             elapsed = elapsed / 1000;
-            printYellow(`Operation [${operationName}] timed at: ${elapsed.toFixed(3)}s`)
+            Print.yellow(`Operation [${operationName}] timed at: ${elapsed.toFixed(3)}s`)
         } else
-            printYellow(`Operation [${operationName}] timed at: ${elapsed.toFixed(3)}ms`)
+            Print.yellow(`Operation [${operationName}] timed at: ${elapsed.toFixed(3)}ms`)
     }
     
     static stop() {
@@ -52,9 +52,9 @@ export class Timer {
         let elapsed = performance.now() - Timer._startTime;
         if (elapsed > 1000) {
             elapsed = elapsed / 1000;
-            printYellow(`Timer total: ${elapsed.toFixed(3)}s`)
+            Print.yellow(`Timer total: ${elapsed.toFixed(3)}s`)
         } else
-            printYellow(`Timer total: ${elapsed.toFixed(3)}ms`)
+            Print.yellow(`Timer total: ${elapsed.toFixed(3)}ms`)
         
         Timer._startTime = null;
         Timer._elapsed = []

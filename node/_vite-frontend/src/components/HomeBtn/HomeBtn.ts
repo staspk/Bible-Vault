@@ -1,20 +1,21 @@
 import { ContentView } from "../../../index.js";
-import { Router, Routes } from "../../routes.js";
-import { Document } from "../../../kozubenko.ts/Document.js"
+import { Router, Routes } from "../../services/Router.js";
 import { SearchInput } from "../SearchInput/SearchInput.js";
 
 
+/** Requires: side-effect load. */
 export class HomeBtn {
     static ID = 'home-btn';
 
     /** The onclick method */
     static onclick() {
-        if(Router.isAt(Routes.Index) && !window.location.search)
+        if(Router.isHome())
             return;
 
         window.history.pushState({}, '', Routes.Index);
-        ContentView.PlaceHolder().replaceWith(Document('div', {id: 'content-view-placeholder'}))
+        ContentView.Reset()
         SearchInput.Set("");
+        SearchInput.Placeholder('John 1:8-12');
     }
 }
 
