@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [{
+      "name": "Debug: npx tsx test.ts",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npx tsx test.ts",
+      "cwd": "${workspaceFolder}/node",
+      "autoAttachChildProcesses": true
+    }]
+}

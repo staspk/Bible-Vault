@@ -1,17 +1,22 @@
-import { BIBLE, BibleChaptersIterator, Book } from "../../models/Bible.js"
-import { BibleReportApi } from "../../models/BibleReportApi.js";
 import { Document } from "../../../kozubenko.ts/Document.js";
-import { IViewComponent } from "../../../kozubenko.ts/IComponentView.js";
-import { ContentView } from "../../../index.js";
-import { createPopper } from '@popperjs/core';
-import type { IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
-import { sleep } from "../../../../kozubenko/utils.js";
 import { Router, Routes } from "../../routes.js";
-import { printGreen } from "../../../../kozubenko/print.js";
+import { IViewComponent } from "../../../kozubenko.ts/IComponentView.js";
+import { createPopper } from '@popperjs/core';
+import { BibleChaptersIterator, Book } from "../../models/Bible.js"
+import { BibleReportApi } from "../../models/BibleReportApi.js";
+import type { IReport, IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
+import { ContentView } from "../../../index.js";
+import { SearchInput } from "../SearchInput/SearchInput.js";
 
 
 
 const CHAPTERS_PER_ROW = 41;
+const CSS_COLOR_GRADE_CLASS = (missing_translations_for_chapter:number) => {
+    if(missing_translations_for_chapter < 1)      return 'perfect';
+    else if(missing_translations_for_chapter < 3) return 'good';
+    else if(missing_translations_for_chapter < 6) return 'medium';
+    else                                          return 'bad';
+}
 
 export class ReportView {
     static ID = 'report-view';
@@ -21,60 +26,55 @@ export class ReportView {
     static Data:IReportResponse;
     static Report:HTMLDivElement;
 
+    static highlightedBook = false;
+
     public static Render(onto:HTMLElement=ContentView.PlaceHolder()) {
-        window.history.pushState({}, '', Routes.Report);
-        Document.Title("Data Integrity Report");
+        Document.Title("Data Integrity Report", Routes.Report);
         if(!IViewComponent.ReplaceWith(onto, ReportView))
             return;
 
-        if(!this.Data) {
-            BibleReportApi.Fetch().then(data => {
-                if(!data) return;
-                this.Data = data;
-                if(this.Report) {
-                    this.completeRender();
-                }
-            });
-        } else { this.Element.append(this.Report); return; }
-        this.Report = this.renderSkeleton();
+        if(this.Data) {
+            this.Element.append(this.Report);
+            return;
+        }
+        this.renderSkeleton().then(skeleton => { this.Report = skeleton; });
+        BibleReportApi.Fetch().then(data => {
+            if(!data) return;
+            this.Data = data;
+            if(this.Report) {   /* renderSkeleton() => ~60ms. Building report on server => ~240ms. completeRender() should always be succesful */
+                this.completeRender();
+                SearchInput.Placeholder('highlight Book: Isaiah')
+            }
+        });
     }
-
-    static highlightBook(to_highlight:Book|null) {
+    
+    /** injection point from `SearchInput` component. */
+    static Highlight(Book:Book) {
         if(Router.isAt(Routes.Report)) {
-            // window.history.pushState({}, '', `?${(to_highlight as Book).name}`);
             const report = this.Report.cloneNode(true) as HTMLDivElement;
             this.Element.children[0].replaceWith(report);
-            
+
             for (const { i, book, chapter } of BibleChaptersIterator()) {
-                if(book !== to_highlight) {
-                    const el = document.getElementById(`ch.${i}`) as HTMLDivElement;
-                    el.style.opacity = '.4'
+                if(book !== Book) {
+                    const div = document.getElementById(`ch.${i}`) as HTMLDivElement;
+                    div.style.opacity = '.4'
                 }
             }
+            this.highlightedBook = true;
         }
     }
-    static unhighlight() {
-        this.Element.children[0].replaceWith(this.Report);
-    }
-
-    static async completeRender() {
-        const IDEAL_TRANSLATIONS = this.Data.translations;
-        for (const [chapterIndex, total_translations] of Object.entries(this.Data.report)) {
-            const missing = IDEAL_TRANSLATIONS - total_translations;
-            const el = document.getElementById(`ch.${chapterIndex}`) as HTMLDivElement;
-            
-            if(missing < 1)      el.classList.add('perfect');
-            else if(missing < 3) el.classList.add('good');
-            else if(missing < 6) el.classList.add('medium');
-            else                 el.classList.add('bad');
-
-            if(Number(chapterIndex) % 20 === 0)
-                await sleep(1);
+    static Unhighlight() {
+        if(this.highlightedBook) {
+            this.Element.children[0].replaceWith(this.Report);
+            this.highlightedBook = false;
         }
     }
+
+    static chapters:NodeListOf<HTMLDivElement>;
+    static tooltips:NodeListOf<HTMLElement>;
+    static poppers:any[];
     /** (~60ms) */
-    static renderSkeleton(): HTMLDivElement {
-        const START = performance.now();
+    static async renderSkeleton(): Promise<HTMLDivElement> {
         const view = Object.assign(document.createElement('div'), {
             id: `${ReportView.ID}-books`
         });
@@ -101,41 +101,30 @@ export class ReportView {
         }
         ReportView.Element.append(view);
 
-        const chapters = view.querySelectorAll('.chapter') as NodeListOf<HTMLDivElement>;
-        const tooltips = view.querySelectorAll('.tooltip') as NodeListOf<HTMLElement>;
-        const poppers: any[] = [];
-        for (let i = 0; i < chapters.length; i++) {
-            poppers[i] = createPopper(chapters[i], tooltips[i], {
+        this.chapters = view.querySelectorAll('.chapter') as NodeListOf<HTMLDivElement>;
+        this.tooltips = view.querySelectorAll('.tooltip') as NodeListOf<HTMLElement>;
+        this.poppers = [];
+        for (let i = 0; i < this.chapters.length; i++) {
+            this.poppers[i] = createPopper(this.chapters[i], this.tooltips[i], {
                 placement: 'top'
             });
         }
-        ['mouseover', 'mouseout'].forEach(event => {
-            view.addEventListener(event, (e) => {
-                const chapter = (e.target as HTMLElement).closest('.chapter');
-                if (!chapter || !view.contains(chapter)) return;
+        view.addEventListener('mouseover', (e) => this.onMouseOverEvents(e));
+        view.addEventListener('mouseout',  (e) => this.onMouseOverEvents(e));
 
-                const index = Array.prototype.indexOf.call(chapters, chapter);
-                if (index === -1) return;
-
-                const tooltip = tooltips[index];
-
-                if(event === 'mouseover') {
-                    tooltip.style.display = 'block';
-                    poppers[index].update();
-                } else tooltip.style.display = 'none';
-            });
-        });
-
-        this.draw_borders_between_books(chapters);
+        this.draw_borders_between_books(this.chapters);
         this.draw_border_between_Testaments();
 
-        let elapsed = performance.now() - START;
-        if (elapsed > 1000) {
-            elapsed = elapsed / 1000;
-            printGreen(`Timer total: ${elapsed.toFixed(3)}s`)
-        } else printGreen(`Timer total: ${elapsed.toFixed(3)}ms`)
-
         return view;
+    }
+    static async completeRender() {
+        const IDEAL_TRANSLATIONS_FOR_CHAPTER:number = this.Data.translations;
+        for (const [chapter, translations_available] of Object.entries(this.Data.report as IReport)) {
+            const missing_translations:number = IDEAL_TRANSLATIONS_FOR_CHAPTER - translations_available;
+            document.getElementById(`ch.${chapter}`)!.classList.add(
+                CSS_COLOR_GRADE_CLASS(missing_translations)
+            );
+        }
     }
 
     static draw_borders_between_books(chapters:NodeListOf<HTMLDivElement>) {
@@ -158,18 +147,33 @@ export class ReportView {
     static draw_border_between_Testaments() {
         let elements = this.getChapterElements(889, 930);
         for (let i = 0; i < elements.length; i++) {
-            if(i==elements.length-1) elements[i].style.borderRight = '3px solid #495162';
-            elements[i].style.borderBottom = '3px solid #495162';
+            if(i==elements.length-1) elements[i].style.borderRight = '2px solid #495162';
+            elements[i].style.borderBottom = '2.5px solid #495162';
         }
 
         elements = this.getChapterElements(930, 971);
         for (let i = 0; i < elements.length; i++) {
-            if(i==0) elements[i].style.borderLeft = '2px solid #21252b';
+            if(i==0) elements[i].style.borderLeft = '1.7px solid #21252b';
             elements[i].style.borderTop = '2px solid #21252b';
         }
 
         (document.getElementById(`ch.888`) as HTMLDivElement).style.borderBottomRightRadius = '.2rem';
         (document.getElementById(`ch.971`) as HTMLDivElement).style.borderTopLeftRadius = '.1rem';
+    }
+
+    static onMouseOverEvents(event:MouseEvent) {
+        const chapter = (event.target as HTMLElement).closest('.chapter');
+        if (!chapter || !this.Report.contains(chapter)) return;
+
+        const index = Array.prototype.indexOf.call(this.chapters, chapter);
+        if (index === -1) return;
+
+        const tooltip = this.tooltips[index];
+        
+        if(event.type === 'mouseover') {
+            tooltip.style.display = 'block';
+            this.poppers[index].update();
+        } else tooltip.style.display = 'none';
     }
 
 

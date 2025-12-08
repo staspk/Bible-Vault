@@ -4,6 +4,7 @@ import { Document } from "../../../kozubenko.ts/Document.js"
 import { SearchInput } from "../SearchInput/SearchInput.js";
 
 
+/** Requires: side-effect load. */
 export class HomeBtn {
     static ID = 'home-btn';
 
@@ -15,6 +16,7 @@ export class HomeBtn {
         window.history.pushState({}, '', Routes.Index);
         ContentView.PlaceHolder().replaceWith(Document('div', {id: 'content-view-placeholder'}))
         SearchInput.Set("");
+        SearchInput.Placeholder('John 1:8-12');
     }
 }
 

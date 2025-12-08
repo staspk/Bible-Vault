@@ -1,5 +1,4 @@
 import { PassageView } from "./components/PassageView/PassageView";
-import { SearchInput } from "./components/SearchInput/SearchInput";
 import { LocalStorage } from "./storage/LocalStorage";
 import { LocalStorageKeys } from "./storage/LocalStorageKeys.enum";
 
