@@ -15,13 +15,12 @@ export class SearchInput {
     static ID = 'search-input';
     static Element: HTMLInputElement;
 
-    static debounceTimer:any;
-
     static Set(text:string) {
         this.Element.value = text;
         this.Element.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
+    static debounceTimer:any;
     static input(event:Event) {
         clearTimeout(SearchInput.debounceTimer);
 
