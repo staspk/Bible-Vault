@@ -32,8 +32,8 @@ export class BibleApi {
             console.error(`${this.name}: '${this.ENDPOINT}' => ${response.status}`);
             return false;
         }
+        
         return (await response.json() as IChapterResponse).data;
-
     }
 
     queryString(): string {
