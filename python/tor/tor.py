@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, requests
 from kozubenko.os import File, Parent
 from kozubenko.print import Print
 
@@ -21,7 +21,7 @@ class TORRC:
 
 class Tor():
     """
-    `Tor.Start()`  
+    `Tor.Start()`
     `Tor.Stop()`
     """
     _TORRC   = File(Parent(__file__), 'torrc')
@@ -46,7 +46,7 @@ class Tor():
                 [Tor._TOR_EXE, '-f', Tor._TORRC],
                 creationflags=subprocess.CREATE_NO_WINDOW,                # flag is windows only, fyi
             )
-            # Print.green(f'Tor started.') 
+            # Print.green(f'Tor started.')
         else:
             raise Exception('only windows currently supported')
 
