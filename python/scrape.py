@@ -151,7 +151,7 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
     assert_list("target_translations", target_translations, min_len=1, max_len=5)
     assert_int("startChapter", startChapter, min_val=1, max_val=book.chapters)
 
-    TOR = Tor()
+    Tor.Start()
     profile = webdriver.FirefoxProfile()
     profile.set_preference("network.proxy.type",             1)
     profile.set_preference("network.proxy.socks",            "127.0.0.1")
@@ -210,7 +210,7 @@ def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1
                 Print.yellow(f"Issue: {problem}")
 
     driver.quit()
-    TOR.stop()
+    Tor.Stop()
 
     if problem_chapters:
         report = File(REPORTS_DIRECTORY, "problem_chapters", file=f"scrape_bible_book({Time.local_time_as_legal_filename()})")
