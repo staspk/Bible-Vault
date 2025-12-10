@@ -127,11 +127,16 @@ class BIBLE:
 
     def Book(index:int) -> Book:
         """
-        returns a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
+        **Returns:** a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
         """
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1] 
 
+    def random_chapter() -> tuple[Book, int]:
+        import random
+        book:Book = BIBLE.Book(random.randint(1, 66))
+        chapter = random.randint(1, book.chapters)
+        return (book, chapter)
 
 class Abbreviations:
     """

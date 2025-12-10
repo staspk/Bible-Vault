@@ -2,6 +2,7 @@ from dataclasses import dataclass, fields
 from datetime import datetime
 
 import time, traceback
+from typing import Any, Self
 
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
@@ -20,22 +21,20 @@ from tor.tor import Tor
 from models.Bible import BIBLE, Book
 
 
+
 @dataclass
 class ProblemChapter:
     translation:str
     book:Book
     chapter:int
-    dt:datetime
-
-    def __post_init__(self):
-        assert_str("translation", self.translation)
-        assert_class("book", self.book, Book)
-        assert_int("chapter", self.chapter, min_val=1)
+    reason:str=""
+    dt=datetime.now().strftime("%d/%m/%Y %H:%M")
 
     def __str__(self) -> str:
         return (
-            f"Problem Chapter Found At: {str(self.dt)}\n"
-            f"{self.book.name}:{self.chapter} [{self.translation}]"
+            f"Problem Chapter: {self.book.name} {self.chapter} [{self.translation}]\n"
+            f"Found At: {str(self.dt)}\n"
+            f"Reason: {self.reason}"
         )
 
 @dataclass
@@ -80,7 +79,7 @@ class BibleGatewayOptions:
             assert_class(field.name, value, BibleGatewayOption)
     
     @classmethod
-    def DriverInstructionsToFindMe(cls, driver:RemoteWebDriver) -> BibleGatewayOptions:
+    def DriverInstructionsToFindMe(cls, driver:RemoteWebDriver) -> Self:
         cls.settings_icon = WebDriverWait(driver, 10).until(                                # operation time avg: ~15ms
             EC.element_to_be_clickable((By.CSS_SELECTOR, "span.settings"))
         )
@@ -143,92 +142,164 @@ def report_exception(exception:Exception=None, report:str=None):
     
     Print.red(f"report_exception(): see report at: {FILE}")
 
-def scrape_bible_book(book:Book, target_translations:list[str], startChapter = 1) -> list[ProblemChapter]:
+
+def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
     """
-    - `target_translations` -> len(1-5)
+    Assumption/expectation as we iterate through BibleGateway `spans` holding verse-line/verse,  
+    is that these spans will iterate the verse_number in it's class, i.e:
+       
+    **If** current_verse -> Hosea 9:3  
+    `cls` can only ever be:  
+    `text Hos-9-3` OR `text Hos-9-4`
+
+    **If** we encounter anything else, continuing will yield a corrupted text/chapter
+
+    **Returns:** `expected_cls`, iterated `expected_cls`, OR `False`
     """
-    assert_class("book", book, Book)
-    assert_list("target_translations", target_translations, min_len=1, max_len=5)
-    assert_int("startChapter", startChapter, min_val=1, max_val=book.chapters)
+    if expected_cls != actual_cls:
+        rest, verse = expected_cls.rsplit('-', 1)
+        verse = int(verse)
+        verse += 1
+        new_cls = f'{rest}-{verse}'
+        if new_cls != actual_cls:
+            return False    # 'expected_cls is neither actual_cls, nor actual_cls+1'
+        return new_cls
+    else:
+        return expected_cls
 
-    Tor.Start()
-    profile = webdriver.FirefoxProfile()
-    profile.set_preference("network.proxy.type",             1)
-    profile.set_preference("network.proxy.socks",            "127.0.0.1")
-    profile.set_preference("network.proxy.socks_port",       TOR._socks_port)
-    profile.set_preference("network.proxy.socks_remote_dns", True)
-    profile.set_preference("browser.cache.disk.enable",      False)
-    profile.set_preference("browser.cache.memory.enable",    False)
+class ScrapeContextManager(type):
+    def __enter__(cls):
+        Tor.Start()
+        Scrape.setup_driver()
+        return cls
 
-    options = Options()
-    options.profile = profile
-    options.add_argument("--headless")
+    def __exit__(cls, exc_type, exc_val, exc_tb):
+        Scrape.driver.quit()
+        Tor.Stop()
 
-    driver = webdriver.Firefox(options=options)
+class Scrape(metaclass=ScrapeContextManager):
+    """
+    **EXAMPLE:**
+    ```python
+    with Scrape:
+        Scrape.Book(translations, book, chapter, chapter)
+    ```
+    """
+    driver:Any=None
 
-    problem_chapters:list[ProblemChapter] = []
-    for chapter in range(startChapter, book.chapters+1):
-        URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={";".join(target_translations)}"
+    @staticmethod
+    def setup_driver():
+        profile = webdriver.FirefoxProfile()
+        profile.set_preference("network.proxy.type",             1)
+        profile.set_preference("network.proxy.socks",            "127.0.0.1")
+        profile.set_preference("network.proxy.socks_port",       Tor.socks_port)
+        profile.set_preference("network.proxy.socks_remote_dns", True)
+        profile.set_preference("browser.cache.disk.enable",      False)
+        profile.set_preference("browser.cache.memory.enable",    False)
 
-        driver.get(URL)
+        options = Options()
+        options.profile = profile
+        options.add_argument("--headless")
 
-        try:
-            page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
-            page_options.set_states(False, False, True, False, True)
-        except:
-            page_options = BibleGatewayOptions.DriverInstructionsToFindMe(driver)
-            time.sleep(.1)
-            page_options.set_states(False, False, True, False, True)
+        driver = webdriver.Firefox(options=options)
+        Scrape.driver = driver
 
-        total_verses = book.total_verses(chapter)
-        for translation in target_translations:
-            OUT_TXT = File(BIBLE_TXT, translation, book.name, f'{chapter}.txt')
+    @staticmethod
+    def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None) -> list[ProblemChapter]:
+        """
+        - `target_translations` -> len(1-5)
+        """
+        assert_class("book", book, Book)
+        assert_list("target_translations", target_translations, min_len=1, max_len=5)
+        assert_int("startChapter", startChapter, min_val=1, max_val=book.chapters)
+        if lastChapter is None:
+            lastChapter = book.chapters
+        assert_int("lastChapter", lastChapter, min_val=1, max_val=book.chapters)
 
-            css_selector = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
-            element = driver.find_element(By.CSS_SELECTOR, css_selector)
+        problem_chapters:list[ProblemChapter] = []
+        for chapter in range(startChapter, book.chapters+1):
+            URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={";".join(target_translations)}"
 
-            chapter_text = element.text.replace('\n', '')
+            Scrape.driver.get(URL)
 
-            split_text = chapter_text.split(' ', 1)
-            drop_cap = try_parse_int(split_text[0])
-            if drop_cap != chapter:
-                Print.red(f"Skipping {book.name} at: {translation} - Expected drop_cap: {chapter}. Actual Text: {split_text[0]}.")
-                return
             try:
-                final_chapter_text = ""
-                for verse in range(2, total_verses+1):
-                    chapter_text = split_text[1]
-                    split_text = [part.strip() for part in chapter_text.split(f"{verse}", 1)]
-                    final_chapter_text += f"{split_text[0]}\n"
-                final_chapter_text += split_text[1]
-
-                with open(OUT_TXT, 'w', encoding='UTF-8') as file:
-                    file.write(final_chapter_text)
+                page_options = BibleGatewayOptions.DriverInstructionsToFindMe(Scrape.driver)
+                page_options.set_states(False, False, True, False, True)
             except:
-                problem = ProblemChapter(translation, book, chapter, datetime.now())
-                problem_chapters.append(problem)
-                Print.yellow(f"Issue: {problem}")
+                page_options = BibleGatewayOptions.DriverInstructionsToFindMe(Scrape.driver)
+                time.sleep(.2)
+                page_options.set_states(False, False, True, False, True)
 
-    driver.quit()
-    Tor.Stop()
+            for translation in target_translations:
+                OUT_TXT = File(BIBLE_TXT_NEW, translation, book.name, f'{chapter}.txt')
 
-    if problem_chapters:
-        report = File(REPORTS_DIRECTORY, "problem_chapters", file=f"scrape_bible_book({Time.local_time_as_legal_filename()})")
-        redirect_print_to_file(report, 'w', lambda: Print.list(problem_chapters))
+                css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
+                element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
 
-    return problem_chapters
+                selector = f"span[class*='text {book.abbr}-{chapter}-']"
+                spans = element.find_elements(By.CSS_SELECTOR, selector)         
 
-def scrape_bible_txt(target_translations:list[str], index_book_start = 1, index_book_end = 66):
-    """
-    * target_translations: supported length: 1-5
-    * index_book_start   : (*optional*) - when past partial scrapes have been done (1-66)
-    * index_book_end     : (*optional*) - when past partial scrapes have been done (index_book_start-65)
-    """
-    
-    assert_int("index_book_start", index_book_start, min_val=1,                max_val=66)
-    assert_int("index_book_end",   index_book_end,   min_val=index_book_start, max_val=66)
-    
-    for book in BIBLE.Books()[index_book_start-1:index_book_end]:
-        scrape_bible_book(book, target_translations)
-        Print.green(f"{target_translations}:{book.name} Done.")
+                verse = 1; total_verses = book.total_verses(chapter)
+                expected_cls = f"text {book.abbr}-{chapter}-{verse}"
+                chapter_text = ""
+                for span in spans:
+                    expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"), book, chapter)
+                    if(expected_cls == False):
+                        problem = ProblemChapter(translation, book, chapter, 'still_on_expected_path() throw')
+                        problem_chapters.append(problem); Print.yellow(str(problem))
+                        break
 
+                    chapter_text += f"{span.text}\n"
+
+                if verse == total_verses:
+                    with open(OUT_TXT, 'w', encoding='UTF-8') as file:
+                        file.write(chapter_text)
+                else:
+                    problem = ProblemChapter(translation, book, chapter, f'verse != total_verses at end of span iteration. verse: {verse}. total_verses: {total_verses}.')
+                    problem_chapters.append(problem); Print.yellow(str(problem))
+
+                # chapter_text = element.text.replace('\n', '')
+
+                # split_text = chapter_text.split(' ', 1)
+                # drop_cap = try_parse_int(split_text[0])
+                # if drop_cap != chapter:
+                #     Print.red(f"Skipping {book.name} at: {translation} - Expected drop_cap: {chapter}. Actual Text: {split_text[0]}.")
+                #     return
+                # try:
+                #     final_chapter_text = ""
+                #     for verse in range(2, total_verses+1):
+                #         chapter_text = split_text[1]
+                #         split_text = [part.strip() for part in chapter_text.split(f"{verse}", 1)]
+                #         final_chapter_text += f"{split_text[0]}\n"
+                #     final_chapter_text += split_text[1]
+
+                    # with open(OUT_TXT, 'w', encoding='UTF-8') as file:
+                    #     file.write(final_chapter_text)
+                # except:
+                #     problem = ProblemChapter()
+                #     problem_chapters.append(problem)
+                #     Print.yellow(f"Issue: {problem}")
+
+        if problem_chapters:
+            report = File(REPORTS_DIRECTORY, "problem_chapters", file=f"scrape_bible_book({Time.local_time_as_legal_filename()})")
+            redirect_print_to_file(report, 'w', lambda: Print.list(problem_chapters))
+
+        return problem_chapters
+
+    @staticmethod
+    def Bible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
+        """
+        * target_translations: supported length: 1-5
+        * index_book_start   : (*optional*) - when past partial scrapes have been done (1-66)
+        * index_book_end     : (*optional*) - when past partial scrapes have been done (index_book_start-65)
+        """
+
+        if Scrape.driver is None:
+            Scrape.setup_driver()
+        
+        assert_int("index_book_start", index_book_start, min_val=1,                max_val=66)
+        assert_int("index_book_end",   index_book_end,   min_val=index_book_start, max_val=66)
+        
+        for book in BIBLE.Books()[index_book_start-1:index_book_end]:
+            Scrape.Book(book, target_translations)
+            Print.green(f"{target_translations}:{book.name} Done.")
