@@ -8,7 +8,7 @@ from kozubenko.print import print_green, print_red
 from models.Bible import BIBLE
 
 
-BIBLE_TXT_ORIGINAL = Directory(BIBLE_TXT)
+BIBLE_TXT_ORIGINAL = Directory(BIBLE_TXT_NEW)
 BIBLE_TXT_NEW      = Directory(PROJECT_ROOT_DIRECTORY, "bible_txt_new")
 
 TODO = ["ESV", "KJV", "NASB", "NET", "NIV", "NKJV", "NRSV", "NRT", "RSV", "RUSV"]

@@ -8,19 +8,29 @@ from scrape import ProblemChapter, Scrape, still_on_expected_path
 
 
 def TEST_scrape_bible_book():
-    translations = ['NASB', 'RSV']
+    # translations = ['KJV', 'NASB', 'RSV', 'NRSV', 'ESV']
+    translations = ['ESV']
     book, chapter = BIBLE.random_chapter()
-    print(f'{book} {chapter}')
 
     with Scrape:
-        Scrape.Book(translations, BIBLE.HOSEA, 9, 9)
-        Scrape.Book(translations, BIBLE.PSALMS, 12, 12)
-        Scrape.Book(translations, book, chapter, chapter)
-        book, chapter = BIBLE.random_chapter()
-        Scrape.Book(translations, book, chapter, chapter)
-        book, chapter = BIBLE.random_chapter()
-        Scrape.Book(translations, book, chapter, chapter)
+        Scrape.EnglishBook(translations, BIBLE.GENESIS, 49, 49)
+        # Scrape.EnglishBook(translations, BIBLE.HOSEA, 9, 9)
+        # Scrape.EnglishBook(translations, BIBLE.PSALMS, 12, 12)
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
+        # book, chapter = BIBLE.random_chapter()
+        # Scrape.EnglishBook(translations, book, chapter, chapter)
 
 
-Print.green(DEFINITIONS_PY)
-# TEST_scrape_bible_book()
+TEST_scrape_bible_book()

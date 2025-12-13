@@ -1,5 +1,5 @@
 import os
-from .kozubenko.os import Parent
+from kozubenko.os import Parent
 
 
 DEFINITIONS_PY                =  os.path.abspath(__file__)

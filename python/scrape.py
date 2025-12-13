@@ -15,6 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from definitions import *
 from kozubenko.os import File
 from kozubenko.print import *
+from kozubenko.string import String
 from kozubenko.time import Time
 from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list, assert_str, try_parse_int
 from tor.tor import Tor
@@ -166,6 +167,8 @@ def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
         return new_cls
     else:
         return expected_cls
+    
+
 
 class ScrapeContextManager(type):
     def __enter__(cls):
@@ -205,7 +208,7 @@ class Scrape(metaclass=ScrapeContextManager):
         Scrape.driver = driver
 
     @staticmethod
-    def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None) -> list[ProblemChapter]:
+    def EnglishBook(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None) -> list[ProblemChapter]:
         """
         - `target_translations` -> len(1-5)
         """
@@ -217,7 +220,7 @@ class Scrape(metaclass=ScrapeContextManager):
         assert_int("lastChapter", lastChapter, min_val=1, max_val=book.chapters)
 
         problem_chapters:list[ProblemChapter] = []
-        for chapter in range(startChapter, book.chapters+1):
+        for chapter in range(startChapter, lastChapter+1):
             URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={";".join(target_translations)}"
 
             Scrape.driver.get(URL)
@@ -237,26 +240,28 @@ class Scrape(metaclass=ScrapeContextManager):
                 element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
 
                 selector = f"span[class*='text {book.abbr}-{chapter}-']"
-                spans = element.find_elements(By.CSS_SELECTOR, selector)         
+                spans = element.find_elements(By.CSS_SELECTOR, selector)
 
-                verse = 1; total_verses = book.total_verses(chapter)
-                expected_cls = f"text {book.abbr}-{chapter}-{verse}"
+                expected_cls = f"text {book.abbr}-{chapter}-1"
                 chapter_text = ""
                 for span in spans:
-                    expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"), book, chapter)
-                    if(expected_cls == False):
+                    expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
+                    if expected_cls == False:
                         problem = ProblemChapter(translation, book, chapter, 'still_on_expected_path() throw')
-                        problem_chapters.append(problem); Print.yellow(str(problem))
+                        problem_chapters.append(problem); Print.yellow(f'{str(problem)}\n')
                         break
+
+                    if String.isEmptyOrWhitespace(span.text):
+                        continue
 
                     chapter_text += f"{span.text}\n"
 
-                if verse == total_verses:
-                    with open(OUT_TXT, 'w', encoding='UTF-8') as file:
-                        file.write(chapter_text)
-                else:
-                    problem = ProblemChapter(translation, book, chapter, f'verse != total_verses at end of span iteration. verse: {verse}. total_verses: {total_verses}.')
-                    problem_chapters.append(problem); Print.yellow(str(problem))
+                
+
+                OUT_TXT.save(chapter_text, encoding='UTF-8')
+                # else:
+                #     problem = ProblemChapter(translation, book, chapter, f'verse != total_verses at end of span iteration. verse: {verse}. total_verses: {total_verses}.')
+                #     problem_chapters.append(problem); Print.yellow(str(problem))
 
                 # chapter_text = element.text.replace('\n', '')
 
@@ -280,26 +285,22 @@ class Scrape(metaclass=ScrapeContextManager):
                 #     problem_chapters.append(problem)
                 #     Print.yellow(f"Issue: {problem}")
 
-        if problem_chapters:
-            report = File(REPORTS_DIRECTORY, "problem_chapters", file=f"scrape_bible_book({Time.local_time_as_legal_filename()})")
-            redirect_print_to_file(report, 'w', lambda: Print.list(problem_chapters))
+        # if problem_chapters:
+        #     report = File(REPORTS_DIRECTORY, "problem_chapters", f"scrape_bible_book({Time.local_time_as_legal_filename()})")
+        #     redirect_print_to_file(report, 'w', lambda: Print.list(problem_chapters))
 
         return problem_chapters
 
     @staticmethod
-    def Bible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
+    def EnglishBible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
         """
         * target_translations: supported length: 1-5
         * index_book_start   : (*optional*) - when past partial scrapes have been done (1-66)
         * index_book_end     : (*optional*) - when past partial scrapes have been done (index_book_start-65)
         """
-
-        if Scrape.driver is None:
-            Scrape.setup_driver()
-        
         assert_int("index_book_start", index_book_start, min_val=1,                max_val=66)
         assert_int("index_book_end",   index_book_end,   min_val=index_book_start, max_val=66)
         
         for book in BIBLE.Books()[index_book_start-1:index_book_end]:
-            Scrape.Book(book, target_translations)
+            Scrape.EnglishBook(book, target_translations)
             Print.green(f"{target_translations}:{book.name} Done.")

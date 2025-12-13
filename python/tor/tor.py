@@ -46,7 +46,7 @@ class Tor():
                 [Tor._TOR_EXE, '-f', Tor._TORRC],
                 creationflags=subprocess.CREATE_NO_WINDOW,                # flag is windows only, fyi
             )
-            Print.green(f'Tor started.') 
+            # Print.green(f'Tor started.')
         else:
             raise Exception('only windows currently supported')
 
@@ -54,7 +54,7 @@ class Tor():
         if(Tor.process):
             Tor.process.terminate()
             os.remove(Tor._TORRC)
-            Print.green('Tor stopped.')
+            # Print.green('Tor stopped.')
 
     def kill_windows_tor_processes():
         """ Ran at beginning to make sure no lingering tor processes alive from possible past runs """
