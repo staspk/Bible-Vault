@@ -1,7 +1,6 @@
+import time
 from dataclasses import dataclass, fields
 from datetime import datetime
-
-import time, traceback
 from typing import Any, Self
 
 from selenium import webdriver
@@ -79,7 +78,6 @@ class BibleGatewayOptions:
             value = getattr(self, field.name)
             assert_class(field.name, value, BibleGatewayOption)
     
-    @staticmethod
     def AttemptToSetPageState(
         driver:RemoteWebDriver,
         cross_references:bool=None, footnotes:bool=None, verse_numbers:bool=None, headings:bool=None, red_letter:bool=None
@@ -167,7 +165,7 @@ def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
         verse += 1
         new_cls = f'{rest}-{verse}'
         if new_cls != actual_cls:
-            return False    # 'expected_cls is neither actual_cls, nor actual_cls+1'
+            return False   # 'expected_cls is neither actual_cls, nor actual_cls+1'
         return new_cls
     else:
         return expected_cls
@@ -185,7 +183,6 @@ class ScrapeContextManager(type):
 class Scrape(metaclass=ScrapeContextManager):
     driver:Any=None
 
-    @staticmethod
     def setup_driver():
         profile = webdriver.FirefoxProfile()
         profile.set_preference("network.proxy.type",             1)
@@ -202,7 +199,6 @@ class Scrape(metaclass=ScrapeContextManager):
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
 
-    @staticmethod
     def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None):
         """
         - `target_translations` -> len(1-5)
@@ -245,7 +241,7 @@ class Scrape(metaclass=ScrapeContextManager):
                 for span in spans:
                     expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
                     if expected_cls == False:
-                        problem = ProblemChapter(translation, book, chapter, 'still_on_expected_path() throw')
+                        problem = ProblemChapter(translation, book, chapter, 'not still_on_expected_path()')
                         problem_chapters.append(problem); Print.yellow(f'{str(problem)}\n')
                         break
 
@@ -255,9 +251,7 @@ class Scrape(metaclass=ScrapeContextManager):
                     chapter_text += f"{span.text}\n"
 
                 OUT_TXT.save(chapter_text, encoding='UTF-8')
-            
 
-    @staticmethod
     def Bible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
         """
         - `target_translations` - supported length: 1-5
@@ -269,7 +263,6 @@ class Scrape(metaclass=ScrapeContextManager):
             Scrape.Book(book, target_translations)
             Print.green(f"{target_translations}:{book.name} Done.")
 
-    @staticmethod
     def Bible_Random_Order(target_translations:list[str]):
         """ `bible_map:dict<book.index, set[chapters_index]>` - chapter existence implies chapter was done. """
         bible_map: dict[int, set[int]] = { }
@@ -289,7 +282,6 @@ class Scrape(metaclass=ScrapeContextManager):
                     Tor.RotateIP()
                     Scrape.driver = None
                     Scrape.setup_driver()
-                Print.green(f'{book} {chapter}')
 
 class Helpers:
     def pick_new_chapter(bible_map:dict[int, set[int]]) -> tuple[Book, int]:
