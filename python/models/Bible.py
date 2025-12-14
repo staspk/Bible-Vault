@@ -24,6 +24,12 @@ abbreviations for apocrypha:
 """
 
 @dataclass
+class ChapterPtr:
+    book:Book
+    chapter:int
+    index:int
+
+@dataclass
 class Book:
     """
     * `name:str`      -> *"Genesis"*
@@ -115,7 +121,7 @@ class BIBLE:
     _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
     def Books() -> list[Book]:
         """
-        returns the standard 66 books as a list[Book].
+        **Returns:** the standard 66 books as a `list[Book]`
         """
         if BIBLE._Books is None:
             BIBLE._Books = []
@@ -127,10 +133,31 @@ class BIBLE:
 
     def Book(index:int) -> Book:
         """
-        returns a Book by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
+        **Returns:** a `Book` by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
         """
         assert_int("index", index, 1, 66)
-        return BIBLE.Books()[index - 1] 
+        return BIBLE.Books()[index - 1]
+
+
+    _chapters_map: dict[int, ChapterPtr] = None
+    def ChaptersMap(chapter_index: int) -> ChapterPtr | None:
+        """ `chapter_index` -> 1-1189 """
+        if BIBLE._chapters_map is None:
+            BIBLE._chapters_map = {}
+            for iter in Iterate_Bible_Chapters():
+                BIBLE._chapters_map[iter['i']] = ChapterPtr(
+                    iter['book'],
+                    iter['chapter'],
+                    iter['i']
+                )
+        return BIBLE._chapters_map.get(chapter_index, None)
+
+def Iterate_Bible_Chapters():
+    i = 1
+    for book in BIBLE.Books():
+        for chapter in range(1, book.chapters + 1):
+            yield { 'i': i, 'book': book, 'chapter': chapter }
+            i += 1
 
 
 class Abbreviations:

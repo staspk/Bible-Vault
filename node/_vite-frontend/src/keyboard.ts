@@ -4,16 +4,18 @@ import { LocalStorageKeys } from "./storage/LocalStorageKeys.enum";
 
 
 document.addEventListener("keydown", (event) => {
-    if(event.key === "ArrowLeft") {
-        PassageView.toggleView();
-    }
-
-    if(event.key === "ArrowRight") {
-        PassageView.toggleView();
-    }
-
-    if (event.ctrlKey && event.key === 'm') {
+    if(event.ctrlKey && event.key === 'm') {
         LocalStorage.toggleBoolean(LocalStorageKeys.MIRROR_OPTION);
         window.location.reload();
+    }
+
+    if(event.key === "ArrowLeft")  PassageView.toggleView();
+    if(event.key === "ArrowRight") PassageView.toggleView();
+
+    if(event.ctrlKey && event.key === 'ArrowLeft') {
+        
+    }
+    if(event.ctrlKey && event.key === 'ArrowRight') {
+        
     }
 });

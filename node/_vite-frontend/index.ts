@@ -1,5 +1,4 @@
-import './src/storage/LocalStorage.js'
-import './src/services/Router.js'
+import './src/storage/LocalStorage.js';
 import './src/keyboard.js';
 import './src/services/Router.js';
 import './src/components/HomeBtn/HomeBtn.js';

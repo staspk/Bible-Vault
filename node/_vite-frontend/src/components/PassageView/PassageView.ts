@@ -1,11 +1,11 @@
 import { Api } from "../../api/Api.js";
 import { IChapter } from "../../../../_shared/interfaces/IResponses";
-import { type Passage } from "../../models/BookSearch.js";
 import { Document } from "../../../kozubenko.ts/Document.js";
 import { LocalStorage } from '../../storage/LocalStorage';
 import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 import { SearchInput } from "../SearchInput/SearchInput";
 import { ContentView } from "../../..";
+import type { Passage } from "../../models/Passage.js";
 
 
 /**  Determines `width` and `grid-template-columns` */

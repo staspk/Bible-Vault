@@ -1,12 +1,11 @@
-# python
 .env
 .venv
 generated_data
 __pycache__
+*.pyc
 
-# node
 node_modules/
+node/test.ts
 
 python/bible_txt
 
-node/test.ts

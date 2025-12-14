@@ -41,25 +41,19 @@ export class PassageApi {
     }
 
     queryString(): string {
-        let QueryString = "?";
+        let queryString = "?";
 
-        QueryString += `translations=${this.translations.toString()}`;
-        QueryString += `&book=${this.book.name}`;
-        QueryString += `&chapter=${this.chapter}`;
-
-        if(this.chapterEnd) {
-            QueryString += `-${this.chapterEnd}`;
-            return QueryString;
-        }
+        queryString += `translations=${this.translations.toString()}`;
+        queryString += `&book=${this.book.name}`;
+        queryString += `&chapter=${this.chapter}`;
 
         if(this.verse) {
-            QueryString += `&verses=${this.verse}`;
-
+            queryString += `&verses=${this.verse}`;
             if(this.verseEnd)
-                QueryString += `-${this.verseEnd}`;
+                queryString += `-${this.verseEnd}`;
         }
 
-        return QueryString;
+        return queryString;
     }
 }
 

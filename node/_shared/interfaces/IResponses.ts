@@ -249,5 +249,8 @@ export interface IReportResponse {
     /** expected translations per chapter, set in GET request */
     total_translations: number;
     translations: BibleTranslation[];
+    chapters_with_zero_translations: number;
+    /** `actual_total_files` / `(total_translations*BIBLE.totalChapters())` */
+    ratio: string;
     report: IReport;
 }

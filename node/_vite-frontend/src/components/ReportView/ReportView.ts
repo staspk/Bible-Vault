@@ -40,7 +40,7 @@ export class ReportView {
         Api.BibleReport.Fetch(translations).then(data => {
             if(!data) return;
             this.Data = data;
-            if(this.Report) {   /* renderSkeleton() => ~60ms. Building report on server => ~240ms. completeRender() should always be succesful */
+            if(this.Report) {   /* renderSkeleton() => ~60ms. Just building report on server => ~240ms. completeRender() should always be successful */
                 this.completeRender();
             }
         });
