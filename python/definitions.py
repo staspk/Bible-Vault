@@ -1,10 +1,11 @@
 import os
+from kozubenko.os import Parent
 
 
-DEFINITIONS_PY                =  os.path.abspath(__file__)                              # absolute path:  ...\Bible-Vault\python\definitions.py
+DEFINITIONS_PY                =  os.path.abspath(__file__)
 
-PYTHON_ROOT_DIRECTORY         =  os.path.dirname(DEFINITIONS_PY)                        # absolute path:  ...\Bible-Vault\python
-PROJECT_ROOT_DIRECTORY        =  os.path.dirname(PYTHON_ROOT_DIRECTORY)                 # absolute path:  ...\Bible-Vault
+PYTHON_ROOT_DIRECTORY         =  Parent(DEFINITIONS_PY)
+PROJECT_ROOT_DIRECTORY        =  Parent(PYTHON_ROOT_DIRECTORY)
 
 REPORTS_DIRECTORY             =  os.path.join(PYTHON_ROOT_DIRECTORY, 'reports')
 
@@ -17,6 +18,7 @@ TEMPORARY_HTML                =  os.path.join(PYTHON_ROOT_DIRECTORY, 'temporary.
 
 BIBLE_HTML                    =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_html')
 BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt')
+BIBLE_TXT_NEW                 =  os.path.join(PYTHON_ROOT_DIRECTORY, 'bible_txt')
 
 BIBLE_NUMERICAL_MAP           =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_numerical_map')
 

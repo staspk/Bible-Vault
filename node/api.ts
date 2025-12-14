@@ -142,17 +142,21 @@ class Bible {
 
 /** `/api/bible-report` */
 class Bible_Report {
+
+    // static TO_REPORT_DIRECRORY = BIBLE_DIRECTORY;
+    static TO_REPORT_DIRECTORY = path.join(import.meta.dirname, '..', 'python', 'bible_txt');
+
     /** ~300ms */
     static Handle(URL:URL, response:http.ServerResponse) {
         const param1:string = URL.searchParams.get('translations') ?? '';
-        const translations:string[] = param1 ? param1.split(',').filter(translation => translation)
+        let translations:string[] = param1 ? param1.split(',').filter(translation => translation)
                                              : Object.values(BibleTranslations);
 
         let chapters:number[] = new Array(BIBLE.totalChapters()).fill(translations.length);
         chapters.forEach((chapter, i) => {
             translations.forEach(translation => {
-                const ptr = BIBLE.ChaptersMap(i+1);
-                const file = path.join(BIBLE_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
+                const ptr = BIBLE.ChaptersMap(i+1) as BiblePtr;
+                const file = path.join(Bible_Report.TO_REPORT_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
                 if (!fs.existsSync(file))
                     chapters[i]--;
             });

@@ -31,8 +31,9 @@ export class URLQueryParams {
                 i--;
             }
         }
-        if(translations.length > 0)
+        if(translations.length > 0) {
             return translations as BibleTranslation[];
+        }
 
         return null;
         // LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS) as string[]

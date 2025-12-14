@@ -67,7 +67,7 @@ function handleResourceRequest(pathname:string, response:http.ServerResponse): v
 const server = http.createServer((request, response) => {
     if (!request.url) return;
     
-    const url = new URL(request.url, `http://localhost:${PORT}`);             /* CHECK THIS LINE NEXT TIME YOU SPIN UP A GOOGLE VM: why does localhost work? */
+    const url = new URL(request.url, `http://localhost:${PORT}`);         /* CHECK THIS LINE NEXT TIME YOU SPIN UP A GOOGLE VM: why does localhost work? */
     const page = PAGES.find(page => page.route === url.pathname);
 
     if(page)
@@ -85,7 +85,7 @@ server.listen(PORT, '0.0.0.0', () => {
     Print.green('Endpoints: ');
     if (PORT === DEV_PORT) {
         Print.green(`  http://${HOST}:${PORT}/`)
-        Print.green(`  http://${HOST}:${PORT}/report`)
+        Print.green(`  http://${HOST}:${PORT}/report?translations=KJV,NASB,RSV,NKJV,ESV`)
         Print.green(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
         Print.green(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
         // Print.Green(`  http://${HOST}:${PORT}/?book=Genesis&chapter=3&translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT`)
