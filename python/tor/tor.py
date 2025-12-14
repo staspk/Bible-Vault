@@ -1,4 +1,4 @@
-import os, subprocess, requests
+import os, socket as Socket, subprocess
 from kozubenko.os import File, Parent
 from kozubenko.print import Print
 
@@ -22,6 +22,7 @@ class TORRC:
 class Tor():
     """
     `Tor.Start()`
+    `Tor.RotateIP()`
     `Tor.Stop()`
     """
     _TORRC   = File(Parent(__file__), 'torrc')
@@ -29,6 +30,7 @@ class Tor():
 
     process:subprocess.Popen = None
 
+    HOST = "127.0.0.1"
     socks_port = TORRC.SocksPort
     control_port = TORRC.ControlPort
 
@@ -38,6 +40,21 @@ class Tor():
         
         TORRC.Generate_Config_File(self._TORRC)
 
+    def RotateIP():
+        with open(control_auth_cookie.path(), "rb") as file:
+            cookie = file.read().hex()
+        
+        with Socket.create_connection((Tor.HOST, Tor.control_port), timeout=5) as socket:
+            def send(cmd:str):
+                socket.sendall((cmd + "\r\n").encode("ascii"))
+                return socket.recv(1024).decode()
+
+            resp = send(f'AUTHENTICATE {cookie}')
+            if not resp.startswith("250"): raise Exception(f"AUTH failed: {resp.strip()}")
+
+            resp = send("SIGNAL NEWNYM")
+            if not resp.startswith("250"): raise Exception(f"NEWNYM failed: {resp.strip()}")
+            
     def Start():
         Tor()
         if os.name == 'nt':
@@ -72,3 +89,11 @@ class Tor():
             else:
                 Print.red(f'Failure!')
                 Print.red(f'subprocess.run[taskkill] -> result.returncode: {result.returncode}')
+
+class control_auth_cookie:
+    WINDOWS_PATH = fr'{os.getenv("APPDATA")}\tor\control_auth_cookie'
+    LINUX_PATH = '/var/lib/tor/control_auth_cookie'
+
+    def path():
+        if os.name == 'nt': return control_auth_cookie.WINDOWS_PATH
+        else:               return control_auth_cookie.LINUX_PATH
