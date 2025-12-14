@@ -148,28 +148,6 @@ class BibleGatewayOptions:
             f"red_letter: {self.red_letter.state}"
         )
 
-
-def report_exception(exception:Exception=None, report:str=None):
-    """
-    Needs a re-write. Do not use until you do so!
-    """
-    FILE = File(REPORTS_DIRECTORY, 'exceptions', file=Time.local_time_as_legal_filename())
-
-    if exception is not None and isinstance(exception, Exception):
-        exception_type = type(exception).__name__
-        exception_message = str(exception)
-        exception_trace = traceback.format_exc()
-
-        report = f"Exception Type: {exception_type}\n"
-        report += f"Message: {exception_message}\n"
-        report += f"Traceback:\n{exception_trace}"
-
-    with open(FILE, 'w', encoding='UTF-8') as file:
-        file.write(report)
-    
-    Print.red(f"report_exception(): see report at: {FILE}")
-
-
 def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
     """
     Assumption/expectation as we iterate through BibleGateway `spans` holding verse-line/verse,  
@@ -193,8 +171,6 @@ def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
         return new_cls
     else:
         return expected_cls
-    
-
 
 class ScrapeContextManager(type):
     def __enter__(cls):
