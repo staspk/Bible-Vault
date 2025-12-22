@@ -1,6 +1,6 @@
 import { isNullOrWhitespace, isPositiveInteger } from "../../../kozubenko/string.extensions.js";
 import { yankUIntFromEnd } from "../../../kozubenko/utils.js";
-import { Book } from "../models/Bible.js";
+import { Book } from "../../../_shared/Bible.js";
 import { BookSearch } from "../models/BookSearch.js";
 import { Passage } from "../models/Passage.js";
 

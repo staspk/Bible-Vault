@@ -2,7 +2,7 @@ import { Document } from "../../../kozubenko.ts/Document.js";
 import { Router, Routes } from "../../services/Router.js";
 import { IViewComponent } from "../../../kozubenko.ts/IComponentView.js";
 import { createPopper } from '@popperjs/core';
-import { BibleChaptersIterator, Book } from "../../models/Bible.js"
+import { BibleChaptersIterator, Book } from "../../../../_shared/Bible.js"
 import type { IReport, IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
 import { ContentView } from "../../../index.js";
 import { SearchInput } from "../SearchInput/SearchInput.js";

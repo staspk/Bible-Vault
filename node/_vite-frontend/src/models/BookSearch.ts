@@ -1,4 +1,4 @@
-import { BIBLE, Book } from "./Bible.js";
+import { BIBLE, Book } from "../../../_shared/Bible.js";
 
 
 const BOOKS_MAP: Map<string, string[]> = new Map([
