@@ -6,7 +6,7 @@ import { Print } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
-import { BIBLE, Book, BiblePtr } from './_shared/Bible.js';
+import { BIBLE, Book, ChapterPtr } from './_shared/Bible.js';
 import { BibleTranslation, BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { IChapter, IChapters, IReport, IReportResponse } from './_shared/interfaces/IResponses.js';
@@ -155,7 +155,7 @@ class Bible_Report {
         let chapters:number[] = new Array(BIBLE.totalChapters()).fill(translations.length);
         chapters.forEach((chapter, i) => {
             translations.forEach(translation => {
-                const ptr = BIBLE.ChaptersMap(i+1) as BiblePtr;
+                const ptr = BIBLE.ChaptersMap(i+1) as ChapterPtr;
                 const file = path.join(Bible_Report.TO_REPORT_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
                 if (!fs.existsSync(file))
                     chapters[i]--;

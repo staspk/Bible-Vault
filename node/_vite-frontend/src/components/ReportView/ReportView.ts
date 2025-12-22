@@ -2,7 +2,7 @@ import { Document } from "../../../kozubenko.ts/Document.js";
 import { Router, Routes } from "../../services/Router.js";
 import { IViewComponent } from "../../../kozubenko.ts/IComponentView.js";
 import { createPopper } from '@popperjs/core';
-import { BibleChaptersIterator, Book } from "../../../../_shared/Bible.js"
+import { IterateBibleChapters, Book } from "../../../../_shared/Bible.js"
 import type { IReport, IReportResponse } from "../../../../_shared/interfaces/IResponses.js";
 import { ContentView } from "../../../index.js";
 import { SearchInput } from "../SearchInput/SearchInput.js";
@@ -52,7 +52,7 @@ export class ReportView {
             const report = this.Report.cloneNode(true) as HTMLDivElement;
             this.Element.children[0].replaceWith(report);
 
-            for (const { i, book, chapter } of BibleChaptersIterator()) {
+            for (const { i, book, chapter } of IterateBibleChapters()) {
                 if(book !== Book) {
                     const div = document.getElementById(`ch.${i}`) as HTMLDivElement;
                     div.style.opacity = '.4'
@@ -78,7 +78,7 @@ export class ReportView {
         });
         
         let row = Document('div', { className:'row' }); 
-        for (const { i, book, chapter } of BibleChaptersIterator()) {
+        for (const { i, book, chapter } of IterateBibleChapters()) {
             const chapterDiv = Document('div', {
                 id: `ch.${i}`,
                 className: 'chapter'

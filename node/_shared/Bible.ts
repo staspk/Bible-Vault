@@ -113,54 +113,46 @@ export class BIBLE {
         return null;
     }
 
-    /** A grouping originally planned for a ReportView. Not currently used, but left for posterity.  
-        - Torah
-        - History
-        - Poetry/Wisdom
-        - Major Prophets
-        - Minor
-        - Gospels/Acts
-        - Paul
-        - Jesus' Inner Circle
-    */
-    static Categorized(): Book[][] {
-        const SEPARATORS = [5, 12, 5, 5, 12, 5, 14, 8]
-
-        let list:Book[][] = []
-        let category:Book[] = []
-        let offset = 0;
-        BIBLE.Books().forEach(book => {
-            if(category.push(book) == SEPARATORS[offset]) {
-                list.push(category);
-                category = [];
-                offset++;
+    static _ChaptersMap: Map<number, ChapterPtr>;
+    /** 1-1189 -> { Book; chapter } */
+    static ChaptersMap(chapter_index:number): ChapterPtr|undefined {
+        if(!this._ChaptersMap) {
+            this._ChaptersMap = new Map<number, ChapterPtr>();
+            for (const iter of IterateBibleChapters()) {
+                this._ChaptersMap.set(iter.i, new ChapterPtr(iter.i, iter.book, iter.chapter));
             }
-        });
-
-        return list;
+        }
+        if(chapter_index < 1 || chapter_index > BIBLE.totalChapters()) return undefined;
+        return this._ChaptersMap.get(chapter_index) as ChapterPtr;
     }
 
     /** returns `1189` (Protestant Bible) */
     static totalChapters(): number {
         return 1189;
     }
+}
 
-    static _ChaptersMap: Map<number, BiblePtr>;
-    /** 1-1189 -> { Book; chapter } */
-    static ChaptersMap(chapter_index:number): BiblePtr|undefined {
-        if(!this._ChaptersMap) {
-            this._ChaptersMap = new Map<number, BiblePtr>();
-            for (const iter of BibleChaptersIterator()) {
-                this._ChaptersMap.set(iter.i, { book: iter.book, chapter: iter.chapter });
-            }
-        }
-        if(chapter_index < 1 || chapter_index > 1189) return undefined;
-        return this._ChaptersMap.get(chapter_index) as BiblePtr;
+/** Based on the English 1189-chapter Protestant Bible */
+export class ChapterPtr {
+    constructor(
+        public index:number,
+        public book:Book,
+        public chapter:number
+    ){}
+
+    increment() {
+        if(this.index < BIBLE.totalChapters()-1) return BIBLE.ChaptersMap(this.index + 1) as ChapterPtr;
+        return this;
+    }
+
+    decrement() {
+        if(this.index > 2) return BIBLE.ChaptersMap(this.index - 1) as ChapterPtr;
+        return this;
     }
 }
 
 /** .250ms */
-export function* BibleChaptersIterator() {
+export function* IterateBibleChapters() {
     let i = 1;
     for (const book of BIBLE.Books()) {
         for (let chapter = 1; chapter <= book.chapters; chapter++) {
@@ -168,9 +160,4 @@ export function* BibleChaptersIterator() {
             i++;
         }
     }
-}
-
-export interface BiblePtr {
-    book:Book,
-    chapter?:number
 }
