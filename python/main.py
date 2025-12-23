@@ -18,5 +18,5 @@ eng_translations  = ['KJV', 'NKJV', 'NASB', 'ESV', 'RSV', 'NRSV', 'NIV', 'NET']
 rus_translations  = ['RUSV', 'NRT']
 
 
-translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'ESV']
+translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'NRSV']
 Scrape.Bible_Random_Order(translations)

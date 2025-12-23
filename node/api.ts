@@ -6,7 +6,7 @@ import { Print } from './kozubenko/print.js';
 import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
-import { BIBLE, BiblePtr, Book } from './models/Bible.js';
+import { BIBLE, Book, ChapterPtr } from './_shared/Bible.js';
 import { BibleTranslation, BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { IChapter, IChapters, IReport, IReportResponse } from './_shared/interfaces/IResponses.js';
@@ -150,7 +150,7 @@ class Bible_Report {
     static Handle(URL:URL, response:http.ServerResponse) {
         const param1:string = URL.searchParams.get('translations') ?? '';
         let translations:string[] = param1 ? param1.split(',').filter(translation => translation)
-                                             : Object.values(BibleTranslations);
+                                           : Object.values(BibleTranslations);
 
         let chapters:number[] = new Array(BIBLE.totalChapters()).fill(translations.length);
         let total_files = 0;
@@ -158,7 +158,7 @@ class Bible_Report {
         chapters.forEach((chapter, i) => {
             let at_least_one_translation = false;
             translations.forEach(translation => {
-                const ptr = BIBLE.ChaptersMap(i+1) as BiblePtr;
+                const ptr = BIBLE.ChaptersMap(i+1) as ChapterPtr;
                 const file = path.join(Bible_Report.TO_REPORT_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
                 if(fs.existsSync(file)) {
                     at_least_one_translation = true;

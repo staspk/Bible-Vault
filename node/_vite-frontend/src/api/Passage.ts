@@ -1,7 +1,7 @@
 import { ApiEndpoints } from "../../../_shared/ApiEndpoints.js";
 import type { BibleTranslation } from "../../../_shared/BibleTranslations.js";
 import type { IChapterResponse } from "../../../_shared/interfaces/IResponses.js";
-import type { Book } from "../models/Bible.js";
+import type { Book } from "../../../_shared/Bible.js";
 import { Passage } from "../models/Passage.js";
 import { URLQueryParams } from "../services/URLQueryParams.js";
 import { LocalStorage } from "../storage/LocalStorage.js";
@@ -36,7 +36,6 @@ export class PassageApi {
             console.error(`${this.name}: '${this.ENDPOINT}' => ${response.status}`);
             return false;
         }
-        
         return (await response.json() as IChapterResponse);
     }
 

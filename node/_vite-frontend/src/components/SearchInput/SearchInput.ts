@@ -16,9 +16,9 @@ export class SearchInput {
     static Element: HTMLInputElement;
 
     static Reset() { this.Element.value = ""; }
-    static Set(text:string) {
+    static Set(text:string, dispatchInputEvent=true) {
         this.Element.value = text;
-        this.Element.dispatchEvent(new Event('input', { bubbles: true }));
+        if(dispatchInputEvent) this.Element.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     static debounceTimer:any;
@@ -32,8 +32,8 @@ export class SearchInput {
             if(Router.isAt(Routes.Index)) {
                 const search = new Search(searchStr);
                 if(search.data instanceof Passage) {
-                    const queryString = Api.Passage.From(search.data).queryString();
-                    Document.Title(search.data.toString(), search.data, queryString);
+                    const passage = search.data;
+                    Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
                     PassageView.Render(search.data, ContentView.PlaceHolder());
                 }
                 return;

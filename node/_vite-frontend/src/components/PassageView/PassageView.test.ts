@@ -1,5 +1,5 @@
 import { PassageView } from "./PassageView.js";
-import { Book } from "../../models/Bible.js";
+import { Book } from "../../../../_shared/Bible.js";
 import type { IChapter, IChapterResponse } from "../../../../_shared/interfaces/IResponses.js";
 
 

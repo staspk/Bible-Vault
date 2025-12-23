@@ -1,6 +1,10 @@
-import { Book } from "./Bible";
+import { Book } from "../../../_shared/Bible";
 
 
+/** Form Examples:
+    - `"John 1"`
+    - `"John 1:1"`
+    - `"John 1:1-2"` */
 export class Passage {
     constructor(
         public book: Book,

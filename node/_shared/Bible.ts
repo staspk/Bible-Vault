@@ -1,3 +1,5 @@
+import { enforced_as_number_in_constructor } from "../kozubenko/typescript.js";
+
 /** Bible Book */
 export class Book {
     constructor(
@@ -84,9 +86,9 @@ export class BIBLE {
     static THIRD_JOHN           = new Book('3 John',              '3John',    64,   1,   new Map([[1,14]]));
     static JUDE                 = new Book('Jude',                'Jude',     65,   1,   new Map([[1,25]]));
     static REVELATION           = new Book('Revelation',          'Rev',      66,  22,   new Map([[1,20],[2,29],[3,22],[4,11],[5,14],[6,17],[7,17],[8,13],[9,21],[10,11],[11,19],[12,17],[13,18],[14,20],[15,8],[16,21],[17,18],[18,24],[19,21],[20,15],[21,27],[22,21]]));
-
+    
     private static _Books: Book[];
-
+    
     public static Books(): Book[] {
         if (!BIBLE._Books) {
             BIBLE._Books = Object.values(BIBLE).filter(
@@ -96,49 +98,80 @@ export class BIBLE {
         return BIBLE._Books;
     }
 
-    /**
-     *  Returns a `BIBLE.Book` or `null`, if no match is found:
-     *  - *string*: matches `Book.name` (e.g: 'Genesis') or `Book.abbr` (e.g: 'Gen')
-     *  - *number*: matches `Book.index` (e.g: 1->Genesis, 66->Revelation)
-     */
+    /** Retrieve `BIBLE.Book` by name(`'Genesis'`), abbr(`'Gen'`), or index(`1`) */
     static Book(book:string|number): Book|null {
         if (typeof book === 'number') {
-            return BIBLE.Books().find(b => b.index === (book - 1)) || null;
+            return BIBLE.Books().find(b => b.index === (book)) || null;
         }
-
+        
         if (typeof book === 'string') {
             const lookup = book.trim().toLowerCase();
             return BIBLE.Books().find(
                 b => b.name.toLowerCase() === lookup || b.abbr.toLowerCase() === lookup
             ) || null;
         }
-        
+
         return null;
+    }
+
+    static _ChaptersMap: Map<number, ChapterPtr>;
+    /** 1-1189 -> { Book; chapter } */
+    static ChaptersMap(chapter_index:number): ChapterPtr|undefined {
+        if(!this._ChaptersMap) {
+            this._ChaptersMap = new Map<number, ChapterPtr>();
+            for (const iter of IterateBibleChapters()) {
+                this._ChaptersMap.set(iter.i, new ChapterPtr(iter.book, iter.chapter, iter.i));
+            }
+        }
+        if(chapter_index < 1 || chapter_index > BIBLE.totalChapters()) return undefined;
+        return this._ChaptersMap.get(chapter_index) as ChapterPtr;
     }
 
     /** returns `1189` (Protestant Bible) */
     static totalChapters(): number {
         return 1189;
-        let total = 0;
-        for (const book of this.Books()) total += book.chapters;
-        return total;
-    }
-
-    static _ChaptersMap: Map<number, BiblePtr>;
-    /** `chapter_index`: 1-1189 */
-    static ChaptersMap(chapter_index:number): BiblePtr|undefined {
-        if(!this._ChaptersMap) {
-            this._ChaptersMap = new Map<number, BiblePtr>();
-            for (const iter of BibleChaptersIterator()) {
-                this._ChaptersMap.set(iter.i, { book: iter.book, chapter: iter.chapter });
-            }
-        }
-        if(chapter_index < 1 || chapter_index > 1189) return undefined;
-        return this._ChaptersMap.get(chapter_index) as BiblePtr;
     }
 }
 
-export function* BibleChaptersIterator() {
+/** Based on the English 1189-chapter Protestant Bible */
+export class ChapterPtr {
+    constructor(
+        public book:Book,
+        public chapter:number,
+        public index?:number,
+    ){
+        if(this.index === undefined) {
+            for (const iter of IterateBibleChapters()) {
+                if(book === iter.book && chapter === iter.chapter) {
+                    this.index = iter.i;
+                    return;
+                }
+            }
+            if(this.index === undefined) throw new Error("Invalid book/chapter");
+        }
+    }
+
+    increment(): ChapterPtr {
+        this.index = enforced_as_number_in_constructor(this.index);
+        if(this.index < BIBLE.totalChapters()) return BIBLE.ChaptersMap(this.index + 1) as ChapterPtr;
+        else                                   return BIBLE.ChaptersMap(1) as ChapterPtr;
+                                             
+    }
+
+    decrement(): ChapterPtr {
+        this.index = enforced_as_number_in_constructor(this.index);
+        if(this.index === 1) return BIBLE.ChaptersMap(BIBLE.totalChapters()) as ChapterPtr;
+        else                 return BIBLE.ChaptersMap(this.index - 1) as ChapterPtr;
+    }
+}
+
+/** .250ms  
+.:: **Example Use** ::.
+```ts
+for (const iter of IterateBibleChapters()) {
+```
+*/
+export function* IterateBibleChapters() {
     let i = 1;
     for (const book of BIBLE.Books()) {
         for (let chapter = 1; chapter <= book.chapters; chapter++) {
@@ -146,10 +179,4 @@ export function* BibleChaptersIterator() {
             i++;
         }
     }
-}
-
-export interface BiblePtr {
-    book:Book,
-    chapter:number,
-    verse?:number,
 }

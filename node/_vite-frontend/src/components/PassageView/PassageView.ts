@@ -6,6 +6,7 @@ import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 import { SearchInput } from "../SearchInput/SearchInput";
 import { ContentView } from "../../..";
 import type { Passage } from "../../models/Passage.js";
+import type { ChapterPtr } from "../../../../_shared/Bible.js";
 
 
 /**  Determines `width` and `grid-template-columns` */
@@ -19,6 +20,7 @@ enum View {
 /**  `#passage-view`: consists of 1-2 `views` [grid of 1-5 columns/translations of a Bible chapter].  */
 export class PassageView {
     static ID = 'passage-view';
+    static passage:Passage;
     
     /** true: translations are split equally between 2 views. */
     static mirrorOption = LocalStorage.getBoolean(LocalStorageKeys.MIRROR_OPTION);
@@ -28,19 +30,21 @@ export class PassageView {
     static currentView: View = View.None;
 
     /**  Renders `PassageView`, 1-10 translations per chapter, 5 max per view, depending on: `mirrorOption` */
-    static async Render(search:Passage, onto:HTMLElement=ContentView.PlaceHolder()) {
-        const queryString = Api.Passage.From(search).queryString();
-        SearchInput.Placeholder(search.toString());
+    static async Render(passage:Passage, onto:HTMLElement=ContentView.PlaceHolder()) {
+        this.passage = passage;
+
+        const queryString = Api.Passage.From(passage).queryString();
+        SearchInput.Placeholder(passage.toString());
 
         Api.Passage.Fetch(queryString).then(data => {
             if(!data) return;
 
             let [view1_translations = 0, view2_translations] = translations_per_view(data.translations.length);
 
-            this.view1 = this.generateView(search.chapter, view1_translations, IChapter.range(0, view1_translations, data.data));
+            this.view1 = this.generateView(passage.chapter, view1_translations, IChapter.range(0, view1_translations, data.data));
             if(this.view2) delete this.view2;
             if(view2_translations > 0)
-                this.view2 = this.generateView(search.chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data.data));
+                this.view2 = this.generateView(passage.chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data.data));
 
             onto.replaceWith(this.view1)
             this.currentView = View.One;
