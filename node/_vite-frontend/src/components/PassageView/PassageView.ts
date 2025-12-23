@@ -6,6 +6,7 @@ import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 import { SearchInput } from "../SearchInput/SearchInput";
 import { ContentView } from "../../..";
 import type { Passage } from "../../models/Passage.js";
+import type { ChapterPtr } from "../../../../_shared/Bible.js";
 
 
 /**  Determines `width` and `grid-template-columns` */

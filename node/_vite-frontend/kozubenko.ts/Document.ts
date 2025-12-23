@@ -9,7 +9,7 @@ export function Document(
 }
 export namespace Document {
     /**
-    - `window.history.pushState({}, '', route)`
+    - `window.history.pushState(state, '', route)`
     - `document.title = title`
     */
     export function Title(title:string, state:any, route:string) {
