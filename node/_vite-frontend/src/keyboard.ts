@@ -1,6 +1,6 @@
 import { Document } from "../kozubenko.ts/Document";
 import { Api } from "./api/Api";
-import { ChapterPtr } from "../../_shared/Bible";
+import { BIBLE, ChapterPtr } from "../../_shared/Bible";
 import { PassageView } from "./components/PassageView/PassageView";
 import { Passage } from "./models/Passage";
 import { Router, Routes } from "./services/Router";
@@ -10,6 +10,7 @@ import { SearchInput } from "./components/SearchInput/SearchInput";
 
 
 document.addEventListener("keydown", (event) => {
+
     if(Router.isAt(Routes.Index) && !Router.isHome())
     {
         if(event.ctrlKey && event.key === 'm') {
@@ -31,6 +32,23 @@ document.addEventListener("keydown", (event) => {
         if(event.ctrlKey && event.key === "ArrowRight") {
             const ptr = new ChapterPtr(PassageView.passage.book, PassageView.passage.chapter).increment();
             const passage = new Passage(ptr.book, ptr.chapter);
+
+            Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
+            SearchInput.Set(passage.toString(), false);
+            PassageView.Render(passage);
+        }
+    }
+
+    if(Router.isHome()) {
+        if(event.ctrlKey && event.key === "ArrowLeft") {
+            const passage = new Passage(BIBLE.REVELATION, 22);
+
+            Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
+            SearchInput.Set(passage.toString(), false);
+            PassageView.Render(passage);
+        }
+        if(event.ctrlKey && event.key === "ArrowRight") {
+            const passage = new Passage(BIBLE.GENESIS, 1);
 
             Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
             SearchInput.Set(passage.toString(), false);
