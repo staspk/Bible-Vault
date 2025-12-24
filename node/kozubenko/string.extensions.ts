@@ -16,3 +16,14 @@ export function isPositiveInteger(str:string): boolean {
 export function isWhitespace(str:string): boolean {
     return str.trim().length === 0;
 }
+
+export function removeWhitespace(str:string): string {
+    return str.replace(/\s+/g, '');
+}
+
+export function longest_string_length(array:string[]): number {
+    let longest_length = 0;
+    for (const word of array)
+        if(longest_length < word.length) longest_length = word.length;
+    return longest_length;
+}

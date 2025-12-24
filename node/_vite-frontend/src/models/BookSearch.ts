@@ -1,4 +1,5 @@
 import { BIBLE, Book } from "../../../_shared/Bible.js";
+import { longest_string_length, removeWhitespace } from "../../../kozubenko/string.extensions.js";
 
 
 const BOOKS_MAP: Map<string, string[]> = new Map([
@@ -19,11 +20,43 @@ const BOOKS_MAP: Map<string, string[]> = new Map([
     ['O', ['OBADIAH']],
     ['P', ['PSALMS', 'PROVERBS', 'PHILIPPIANS', 'PHILEMON']],
     ['R', ['RUTH', 'ROMANS', 'REVELATION']],
-    ['S', ['SONG OF SOLOMON']],
+    ['S', ['SONGOFSOLOMON']],
     ['T', ['TITUS']],
     ['Z', ['ZEPHANIAH', 'ZECHARIAH']]
 ]);
 
+export function BookSearch(search:string): Book|null {
+    search = removeWhitespace(search).toUpperCase();
+
+    if(!BOOKS_MAP.has(search[0]))
+        return null;
+
+    let possible_valid_searches = BOOKS_MAP.get(search[0]) as string[];
+
+    const MAX_LENGTH = longest_string_length(possible_valid_searches);
+    if(search.length > MAX_LENGTH) return null;
+
+    let possible_searches:Set<string> = new Set(possible_valid_searches);
+    let ptr = 1;
+    while(possible_searches.size > 1) {
+        for (const possible of possible_searches) {
+            if(search[ptr] !== possible[ptr])
+                possible_searches.delete(possible);
+        }
+        ptr++;
+    }
+
+    const result = possible_searches.values().next().value;
+    for (const book of BIBLE.Books()) {
+        if(result === removeWhitespace(book.name).toUpperCase())
+            return book;
+    }
+    
+    return null;
+}
+
+
+/** CURRENTLY DEPRECATED / NOT IN USE */
 const BIBLE_BOOK_SEARCH_TERMS = [
     ['Genesis', 'Gen', 'Бытие'],
     ['Exodus', 'Exod', 'Исход'],
@@ -106,37 +139,3 @@ const BIBLE_BOOK_SEARCH_TERMS = [
     ['4 Maccabees', '4 Mac', '4Maccabees', '4Macc'],
     ['Prayer of Manasseh', 'Manasseh']
 ];
-
-export function BookSearch(search:string): Book|null {
-    search = search.trim().toUpperCase();
-
-    if(!BOOKS_MAP.has(search[0]))
-        return null;
-
-    let possible_valid_searches = BOOKS_MAP.get(search[0]) as string[];
-
-    if(search.length === 1 && possible_valid_searches?.length === 1)
-        return BIBLE.Book(possible_valid_searches[0]);
-
-    
-    let possible_searches:Array<string|null> = Array.from(possible_valid_searches);
-    let still_valid:number = possible_searches.length;
-    for (let i = 1; i < search.length; i++) {
-
-        for (let j = 0; j < possible_searches.length; j++) {
-
-            const possible_word = possible_searches[j];
-            if(possible_word === null)
-                continue;
-
-            if(search[i] !== possible_word[i]) {
-                possible_searches[j] = null;
-                still_valid--;
-
-                if(still_valid === 1)
-                    return BIBLE.Book(possible_searches.find(possibility => possibility) as string);
-            }
-        }
-    }
-    return null;
-}
