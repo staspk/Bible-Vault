@@ -1,4 +1,6 @@
+from kozubenko.print import Print
 from models.Bible import BIBLE
+from parser import identify_psalm_form
 from scrape import Scrape
 
 
@@ -36,4 +38,7 @@ def test_problem_chapters():
         Scrape.Book(translations, BIBLE.JAMES, 1, 1)                # iteration: 11
 
 
-test_problem_chapters()
+# test_problem_chapters()
+
+
+identify_psalm_form()
