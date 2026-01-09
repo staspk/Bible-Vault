@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from dataclasses import dataclass
 from kozubenko.utils import assert_int
 
@@ -28,6 +29,9 @@ class ChapterPtr:
     book:Book
     chapter:int
     index:int
+
+    def __str__(self):
+        return f'{self.index} -> {self.book.name} {self.chapter}'
 
 @dataclass
 class Book:
@@ -145,18 +149,27 @@ class BIBLE:
         if BIBLE._chapters_map is None:
             BIBLE._chapters_map = {}
             for iter in Iterate_Bible_Chapters():
-                BIBLE._chapters_map[iter['i']] = ChapterPtr(
-                    iter['book'],
-                    iter['chapter'],
-                    iter['i']
+                BIBLE._chapters_map[iter.i] = ChapterPtr(
+                    iter.book,
+                    iter.chapter,
+                    iter.i
                 )
         return BIBLE._chapters_map.get(chapter_index, None)
 
 def Iterate_Bible_Chapters():
+    """
+    **How to Use:**
+    ```python
+    for iter in Iterate_Bible_Chapters():
+        iter.i
+        iter.book
+        iter.chapter
+    ```
+    """
     i = 1
     for book in BIBLE.Books():
         for chapter in range(1, book.chapters + 1):
-            yield { 'i': i, 'book': book, 'chapter': chapter }
+            yield SimpleNamespace(i=i, book=book, chapter=chapter)
             i += 1
 
 

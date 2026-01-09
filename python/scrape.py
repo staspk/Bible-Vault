@@ -289,6 +289,7 @@ class Scrape(metaclass=ScrapeContextManager):
 
                 PTR:ChapterPtr = BIBLE.ChaptersMap(chapter)
                 Scrape.Book(target_translations, PTR.book, PTR.chapter, PTR.chapter)
+                Print.green(f'{PTR.book} {PTR.chapter}')
                 chapters_todo.remove(chapter)
 
                 requests += 1
