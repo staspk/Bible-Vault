@@ -85,8 +85,8 @@ server.listen(PORT, '0.0.0.0', () => {
     Print.green('Endpoints: ');
     if (PORT === DEV_PORT) {
         Print.green(`  http://${HOST}:${PORT}/`)
-        Print.green(`  http://${HOST}:${PORT}/report?translations=KJV,NASB,RSV,NKJV,NRSV,ESV,NIV,NET,RUSV,NRT`)
-        Print.green(`  http://${HOST}:${PORT}/?translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET&book=Genesis&chapter=3`)
+        Print.green(`  http://${HOST}:${PORT}/report?translations=KJV,NASB,RSV,RUSV,NKJV,ESV,NRSV,NRT,NIV,NET`)
+        Print.green(`  http://${HOST}:${PORT}/?translations=KJV,NASB,RSV,RUSV,NIV,NKJV,ESV,NRSV,NRT,NET&book=Genesis&chapter=3`)
         // Print.green(`  http://${HOST}:${PORT}/?book=Luke&chapter=21&verses19-21`)
     }
     else if (PORT === HTTP_PORT) {
