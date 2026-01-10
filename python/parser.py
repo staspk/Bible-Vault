@@ -1,13 +1,11 @@
 
 """
 Observation #1:
-    The "Standard Form" has been identified, i.e: #3 (see: ./models/biblegateway/jeremiah-41-esv.txt)
+    The "Standard Form" has been identified: #3 (see: ./models/biblegateway/jeremiah-41-esv.txt)
         5996 chapters / 11890 total
         50.43%
 
 
-Observations:
-    All chapters have
 
 """
 import re, random, subprocess
@@ -16,6 +14,8 @@ from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.cls import instance_attributes
 from kozubenko.os import File
 from kozubenko.print import Print
+from kozubenko.random import random_pop
+from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Book, ChapterPtr, Iterate_Bible_Chapters
 
 
@@ -54,7 +54,36 @@ class BibleChapters:
             raise Exception(f'set must be instantiated in constructor. translation: {translation}')
         self.__dict__[translation].add(chap_index)
 
-    
+
+def CycleBible(translations_per_chapter:int) -> Generator[File]:
+    TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
+    Bible = BibleChapters(*TRANSLATIONS)
+    for PTR in Bible.next_random():
+        translations_done = 1
+        for translation in random_pop(set(TRANSLATIONS)):
+            File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
+            if translations_done == translations_per_chapter:
+                break
+            translations_done += 1
+
+def CycleBible() -> Generator[File]:
+    TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
+    Bible = BibleChapters(*TRANSLATIONS)
+    for PTR in Bible.next_random():
+        for translation in random_pop(set(TRANSLATIONS)):
+            yield File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
+
+def EyeTestChapters(translations_per_chapter:int):
+    i = 0
+    while True:
+        for file in CycleBible():
+            if i == translations_per_chapter:
+                break
+            Subprocess.Notepad(file)
+            i += 1
+        input()
+
+
 def identify_psalm_form():
     translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'NRSV']
 
@@ -71,7 +100,7 @@ def identify_psalm_form():
                 if(left):
                     Print.yellow(f'{PTR.book} {PTR.chapter} [{translation}]')
 
-def identify_standard_form(translations):
+def identify_standard_form(translations:list):
     """standard_form (#3)"""
     Bible = BibleChapters(*translations)
     for PTR in Bible.next_random():
@@ -105,3 +134,4 @@ def identify_chapter(translation:str, book:Book, chapter:int):
     EXPECTED_TOTAL_VERSES = book.total_verses(chapter)
     if lines.__len__() == EXPECTED_TOTAL_VERSES: Print.green(f'{translation}:{book}{chapter} standard_form')
     else:                                        Print.red(f'{translation}:{book}{chapter} NOT standard_form')
+
