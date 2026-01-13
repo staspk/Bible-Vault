@@ -1,21 +1,25 @@
 
 """
-Observation #1:
-    The "Standard Form" has been identified: #3 (see: ./models/biblegateway/jeremiah-41-esv.txt)
-        5996 chapters / 11890 total
-        50.43%
+"Standard Form" (#3) [see: ./models/biblegateway/jeremiah-41-esv.txt]
+    5996 chapters / 11890 total
+    50.43%
+
+"Poetry Form" (#2) [see: ./models/biblegateway/hosea-9-esv.txt]
 
 
+
+Oddities:
+    " " aka: 6/MSP, John 15 NRT, 2 occurences
 
 """
-import re, random, subprocess
+import re, random
 from typing import Generator
 from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
+from kozubenko.random import random_pop
 from kozubenko.print import Print
-from kozubenko.random import next_random_pop, random_pop
 from kozubenko.subprocess import Subprocess
-from models.Bible import BIBLE, Book, ChapterPtr, Iterate_Bible_Chapters
+from models.Bible import BIBLE, ChapterPtr
 
 
 class BibleChapters:
@@ -27,14 +31,6 @@ class BibleChapters:
         for translation in translations:
             self.marked[translation] = set()
 
-    def ratio(self) -> str:
-        """ `{marked}/{total_chapters}` """
-        marked = 0; total_chapters = 0
-        for chapters in self.marked.values():
-            marked += len(chapters)
-            total_chapters += self.TOTAL_CHAPTERS
-        return f'{marked}/{total_chapters}'
-    
     def iterate_Bible(self) -> Generator[ChapterPtr]:
         """
         **Returns:**
@@ -65,6 +61,14 @@ class BibleChapters:
             raise Exception(f'translation/set was not instantiated in constructor. translation: {translation}')
         self.marked[translation].add(chap_index)
 
+    def ratio(self) -> str:
+        """ `{marked}/{total_chapters}` """
+        marked = 0; total_chapters = 0
+        for chapters in self.marked.values():
+            marked += len(chapters)
+            total_chapters += self.TOTAL_CHAPTERS
+        return f'{marked}/{total_chapters}'
+
     def Save_Report(self):
         report = ""
         for translation,marked_chapters in self.marked:
@@ -92,7 +96,7 @@ def identify_psalm_form():
                     Print.yellow(f'{PTR.book} {PTR.chapter} [{translation}]')
 
 def identify_standard_form(translations:list) -> BibleChapters:
-    """standard_form (#3)"""
+    """standard_form (#3). Operation: ~3mins"""
     Chapters = BibleChapters(translations)
     for PTR in Chapters.iterate_Bible():
         expected_total_verses = PTR.book.total_verses(PTR.chapter)
@@ -106,15 +110,11 @@ def identify_standard_form(translations:list) -> BibleChapters:
                     Chapters.mark(translation, PTR.index)
     return Chapters
 
+def identify_poetry_form(translations:list) -> BibleChapters:
+    """poetry_form (#2)"""
+    StandardChapters = identify_standard_form(translations)
 
-def identify_chapter(translation:str, book:Book, chapter:int):
-    """standard_form (#3)"""
-    file = File(BIBLE_TXT_NEW, translation, book.name, f'{chapter}.txt')
-    text = file.contents(encoding='UTF-8')
 
-    lines = re.findall(r'.+', text)     # any single character (except newline), one or more repetitions
 
-    EXPECTED_TOTAL_VERSES = book.total_verses(chapter)
-    if lines.__len__() == EXPECTED_TOTAL_VERSES: Print.green(f'{translation}:{book}{chapter} standard_form')
-    else:                                        Print.red(f'{translation}:{book}{chapter} NOT standard_form')
+
 
