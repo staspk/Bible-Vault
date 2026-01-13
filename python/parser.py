@@ -11,84 +11,75 @@ Observation #1:
 import re, random, subprocess
 from typing import Generator
 from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
-from kozubenko.cls import instance_attributes
 from kozubenko.os import File
 from kozubenko.print import Print
-from kozubenko.random import random_pop
+from kozubenko.random import next_random_pop, random_pop
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Book, ChapterPtr, Iterate_Bible_Chapters
 
 
 class BibleChapters:
-    def __init__(self, *translations):
-        self.set = set(range(1, 1190))
+    TOTAL_CHAPTERS = 1189  # aka: Protestant
+    
+    def __init__(self, translations:list):
+        self.set = set(range(1, self.TOTAL_CHAPTERS+1))
+        self.marked:dict[str,set] = {}
         for translation in translations:
-            self.__dict__[translation] = set()
+            self.marked[translation] = set()
 
     def ratio(self) -> str:
         """ `{marked}/{total_chapters}` """
         marked = 0; total_chapters = 0
-        for attr in instance_attributes(self, ['set']):
-            marked_chapters_for_translation:set[int] = attr.value
-            marked += len(marked_chapters_for_translation)
-            total_chapters += 1189   # total_chapters <- standard protestant bible
+        for chapters in self.marked.values():
+            marked += len(chapters)
+            total_chapters += self.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
     
-    def next_random(self) -> Generator[ChapterPtr]:
+    def iterate_Bible(self) -> Generator[ChapterPtr]:
         """
         **Returns:**
-            A random chapter_index that has not been selected yet (1 - 1189).
+            Pops a random "chapter_index" (1-1189) from `set`.
 
         **How to Use:**
         ```python
-        for PTR in BibleChapters().next_random():
+        for PTR in BibleChapters().iterate_Bible():
         ```
         """
         while self.set.__len__() > 0:
-            chapter:int = random.choice(tuple(self.set))
-            self.set.remove(chapter)
-            yield BIBLE.ChaptersMap(chapter)
+            chapter_index = random_pop(self.set)
+            yield BIBLE.ChaptersMap(chapter_index)
 
-    def mark(self, translation:str, chap_index:int):
-        if translation not in self.__dict__:
-            raise Exception(f'set must be instantiated in constructor. translation: {translation}')
-        self.__dict__[translation].add(chap_index)
-
-
-def CycleBible(translations_per_chapter:int) -> Generator[File]:
-    TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-    Bible = BibleChapters(*TRANSLATIONS)
-    for PTR in Bible.next_random():
-        translations_done = 1
-        for translation in random_pop(set(TRANSLATIONS)):
-            File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
-            if translations_done == translations_per_chapter:
-                break
-            translations_done += 1
-
-def CycleBible() -> Generator[File]:
-    TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-    Bible = BibleChapters(*TRANSLATIONS)
-    for PTR in Bible.next_random():
-        for translation in random_pop(set(TRANSLATIONS)):
+    def next_marked(self) -> Generator[File]:
+        TRANSLATIONS = list(self.marked.keys())
+        marked = { translation:chapters.copy for translation,chapters in self.marked.items() }
+        total = sum(len(set) for set in marked)
+        while total > 0:
+            translation = random.choice(TRANSLATIONS)
+            set = self.marked[translation]
+            chapter_index = random_pop(set)
+            PTR = BIBLE.ChaptersMap(chapter_index)
             yield File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
 
-def EyeTestChapters(translations_per_chapter:int):
-    i = 0
-    while True:
-        for file in CycleBible():
-            if i == translations_per_chapter:
-                break
-            Subprocess.Notepad(file)
-            i += 1
-        input()
+    def mark(self, translation:str, chap_index:int):
+        if translation not in self.marked.keys():
+            raise Exception(f'translation/set was not instantiated in constructor. translation: {translation}')
+        self.marked[translation].add(chap_index)
+
+    def Save_Report(self):
+        report = ""
+        for translation,marked_chapters in self.marked:
+            report += f'{translation} = {str(marked_chapters)}\n'
+        report += f'Standard Form: {self.ratio()}'
+
+        File(PYTHON_TESTS_DIRECTORY, 'identify_standard_form()').save(report, encoding='UTF-8')
+        Print.yellow(f'Standard Form: {self.ratio()}')
 
 
 def identify_psalm_form():
     translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'NRSV']
 
     Bible = BibleChapters()
-    for PTR in Bible.next_random():
+    for PTR in Bible.iterate_Bible():
         if PTR.book.name == BIBLE.PSALMS.name:
             continue
         for translation in translations:
@@ -100,10 +91,10 @@ def identify_psalm_form():
                 if(left):
                     Print.yellow(f'{PTR.book} {PTR.chapter} [{translation}]')
 
-def identify_standard_form(translations:list):
+def identify_standard_form(translations:list) -> BibleChapters:
     """standard_form (#3)"""
-    Bible = BibleChapters(*translations)
-    for PTR in Bible.next_random():
+    Chapters = BibleChapters(translations)
+    for PTR in Chapters.iterate_Bible():
         expected_total_verses = PTR.book.total_verses(PTR.chapter)
         for translation in translations:
             file = File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
@@ -112,17 +103,9 @@ def identify_standard_form(translations:list):
 
                 lines = re.findall(r'.+', text)     # any single character (except newline), one or more repetitions
                 if lines.__len__() == expected_total_verses:
-                    Bible.mark(translation, PTR.index)
+                    Chapters.mark(translation, PTR.index)
+    return Chapters
 
-    report = ""
-    for attr in instance_attributes(Bible, ['set']):
-        translation:str = attr.key
-        marked_chapters:set[int] = attr.value
-        report += f'{translation} = {str(marked_chapters)}\n'
-    report += f'Standard Form: {Bible.ratio()}'
-
-    File(PYTHON_TESTS_DIRECTORY, 'identify_standard_form()').save(report, encoding='UTF-8')
-    Print.green(f'Standard Form: {Bible.ratio()}')
 
 def identify_chapter(translation:str, book:Book, chapter:int):
     """standard_form (#3)"""
