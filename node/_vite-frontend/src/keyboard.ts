@@ -28,6 +28,8 @@ document.addEventListener("keydown", (event) => {
             Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
             SearchInput.Set(passage.toString(), false);
             PassageView.Render(passage);
+            window.scrollTo({ top: 0, behavior: "instant" });
+            return;
         }
         if(event.ctrlKey && event.key === "ArrowRight") {
             const ptr = new ChapterPtr(PassageView.passage.book, PassageView.passage.chapter).increment();
@@ -36,6 +38,8 @@ document.addEventListener("keydown", (event) => {
             Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
             SearchInput.Set(passage.toString(), false);
             PassageView.Render(passage);
+            window.scrollTo({ top: 0, behavior: "instant" });
+            return;
         }
     }
 
@@ -46,6 +50,7 @@ document.addEventListener("keydown", (event) => {
             Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
             SearchInput.Set(passage.toString(), false);
             PassageView.Render(passage);
+            return;
         }
         if(event.ctrlKey && event.key === "ArrowRight") {
             const passage = new Passage(BIBLE.GENESIS, 1);
@@ -53,6 +58,7 @@ document.addEventListener("keydown", (event) => {
             Document.Title(passage.toString(), passage, Api.Passage.From(passage).queryString());
             SearchInput.Set(passage.toString(), false);
             PassageView.Render(passage);
+            return;
         }
     }
 });
