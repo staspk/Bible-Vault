@@ -54,4 +54,9 @@ def visual_test_standard_form():
 translations = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 # identify_standard_form(translations)
 
-StandardForm.Chapters()
+standard:dict[str,set] = StandardForm.Chapters()
+todo = StandardForm.remaining_chapters()
+
+Print.green(todo['KJV'])
+Print.green(len(standard['KJV']))
+Print.green(len(todo['KJV']))

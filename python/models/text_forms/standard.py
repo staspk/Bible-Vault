@@ -1,4 +1,5 @@
 from kozubenko.cls import class_attributes
+from models.BibleChapters import Protestant_Set
 
 
 class StandardForm:
@@ -20,3 +21,10 @@ class StandardForm:
         for key,value in class_attributes(StandardForm):
             dict[key] = value
         return dict
+    
+    def remaining_chapters() -> dict[str,set]:
+        remaining = {}
+        StandardChapters:dict[str,set] = StandardForm.Chapters()
+        for translation in StandardChapters.keys():
+            remaining[translation] = Protestant_Set() - StandardChapters[translation]
+        return remaining

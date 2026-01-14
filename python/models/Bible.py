@@ -142,7 +142,6 @@ class BIBLE:
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-
     _chapters_map: dict[int, ChapterPtr] = None
     def ChaptersMap(chapter_index: int) -> ChapterPtr | None:
         """ `chapter_index` -> 1-1189 """
