@@ -1,16 +1,14 @@
-from models.BibleChapters import BibleChapters
 from scrape import Scrape
 from parser import *
 from kozubenko.subprocess import Subprocess
 from kozubenko.print import Print
 from models.Bible import BIBLE
+from models.BibleChapters import BibleChapters, BibleChapterSets
 from models.text_forms.standard import StandardForm
+from models.text_forms.titled import TitledTrait
 
 
 def test_problem_chapters():
-    """
-    Problem Chapters found 
-    """
     with Scrape:
         translations = ['NASB', 'RSV', 'ESV']
         Scrape.Book(translations, BIBLE.MATTHEW, 17, 17)    # iteration: 23
@@ -40,24 +38,35 @@ def test_problem_chapters():
         Scrape.Book(translations, BIBLE.LUKE, 24, 24)               # iteration: 13
         Scrape.Book(translations, BIBLE.JAMES, 1, 1)                # iteration: 11
 
-def visual_test_standard_form():
-    translations = ['NASB', 'RSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-    Chapters = identify_standard_form(translations)
-
-    stop_every = 50; iteration = 1
-    for file in Chapters.next_marked():
-        Subprocess.Notepad(file)
+def visual_test(chapters:BibleChapters, files_per_iteration=50):
+    iteration = 1
+    for PTR in chapters.iterate():
+        Subprocess.Notepad(File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt'))
         iteration += 1
-        if iteration == stop_every:
+        if iteration == files_per_iteration:
             input()
             iteration = 1
 
 translations = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-# identify_standard_form(translations)
-# standard:dict[str,set] = StandardForm.Chapters()
 
-i = 0
-Chapters = BibleChapters(StandardForm.remaining_chapters())
+Chapters = BibleChapterSets(StandardForm.remaining_chapters())
 for PTR in Chapters.iterate():
-    i += 1
-Print.green(i)
+    FILE = File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+    if FILE.exists():
+        if is_titled(PTR, FILE.contents(encoding='UTF-8')):
+            Chapters.mark(PTR.translation, PTR.index)
+
+# Chapters.Save_Report()
+
+
+visual_test(BibleChapterSets(StandardForm.Chapters()))
+
+
+# PTR = ChapterPtr(BIBLE.PSALMS, 149, None, 'NRSV')
+# PTR = ChapterPtr(BIBLE.PSALMS, 96,  None, 'NIV')
+# PTR = ChapterPtr(BIBLE.PSALMS, 2,   None, 'NRSV')
+# PTR = ChapterPtr(BIBLE.PSALMS, 15,  None, 'NIV')
+
+# result = is_titled_form(PTR, text(PTR))
+# if result: Print.green('true')
+# else: Print.red('false')

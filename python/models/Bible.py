@@ -29,6 +29,7 @@ class ChapterPtr:
     book:Book
     chapter:int
     index:int
+    translation:str = None
 
     def __str__(self):
         return f'{self.index} -> {self.book.name} {self.chapter}'

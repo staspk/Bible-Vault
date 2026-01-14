@@ -23,25 +23,21 @@ class BibleChapters:
         """
         **Yields:**
             Pops a random "chapter_index" (1-1189) from `set`.
-
-        **How to Use:**
-        ```python
-        for PTR in BibleChapters().iterate_Bible():
-        ```
         """
-        while self.set.__len__() > 0:
-            chapter_index = random_pop(self.set)
+        set = self.set.copy()
+        while set.__len__() > 0:
+            chapter_index:int = random_pop(set)
             yield BIBLE.ChaptersMap(chapter_index)
 
     def next_marked(self) -> Generator[File]:
-        TRANSLATIONS = list(self.marked.keys())
-        marked = { translation:chapters.copy for translation,chapters in self.marked.items() }
+        marked = {translation:chapters.copy for translation,chapters in self.marked.items() if len(chapters) > 0}
         total = sum(len(set) for set in marked)
+        TRANSLATIONS = list(marked.keys())
         while total > 0:
             translation = random.choice(TRANSLATIONS)
             set = self.marked[translation]
             chapter_index = random_pop(set)
-            PTR = BIBLE.ChaptersMap(chapter_index)
+            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
             yield File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
 
     def mark(self, translation:str, chap_index:int):
@@ -57,16 +53,16 @@ class BibleChapters:
             total_chapters += BIBLE.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
 
-    def Save_Report(self):
+    def Save_Report(self, file_name:str='identify_titled_form()', form:str='Titled Form'):
         report = ""
-        for translation,marked_chapters in self.marked:
+        for translation,marked_chapters in self.marked.items():
             report += f'{translation} = {str(marked_chapters)}\n'
-        report += f'Standard Form: {self.ratio()}'
+        report += f'{form}: {self.ratio()}'
 
-        File(PYTHON_TESTS_DIRECTORY, 'identify_standard_form()').save(report, encoding='UTF-8')
-        Print.yellow(f'Standard Form: {self.ratio()}')
+        File(PYTHON_TESTS_DIRECTORY, file_name).save(report, encoding='UTF-8')
+        Print.yellow(f'{form}: {self.ratio()}')
 
-class BibleChapters(BibleChapters):
+class BibleChapterSets(BibleChapters):
     def __init__(self, sets:dict[str,set]):
         """ initialize via: `dict[translation,chapters]` """
         self.sets = sets
@@ -78,14 +74,22 @@ class BibleChapters(BibleChapters):
         """
         **Yields:**
             Pops a random "chapter_index" from `sets`.
+        
+        **How to Use:**
+        ```python
+        Chapters = BibleChapters(StandardForm.remaining_chapters())
+        for PTR in Chapters.iterate():
+        ```
         """
         sets = {key:value.copy() for key,value in self.sets.items() if len(value) > 0}
         left = sum(len(set) for set in sets.values())
 
         while left > 0:
             key = random.choice(tuple(sets.keys()))
-            chapter_index = random_pop(sets[key])
-            yield chapter_index
+            chapter_index:int = random_pop(sets[key])
+            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
+            PTR.translation = key
+            yield PTR
 
             left -= 1
             if sets[key].__len__() == 0:
