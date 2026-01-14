@@ -16,19 +16,16 @@ import re
 from definitions import BIBLE_TXT_NEW
 from kozubenko.os import File
 from kozubenko.print import Print
-from models import BibleChapters
 from models.Bible import BIBLE
+from models.BibleChapters import BibleChapters
 from models.text_forms.standard import StandardForm
-
-
-
 
 
 def identify_psalm_form():
     translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'NRSV']
 
     Bible = BibleChapters()
-    for PTR in Bible.iterate_Bible():
+    for PTR in Bible.iterate():
         if PTR.book.name == BIBLE.PSALMS.name:
             continue
         for translation in translations:
@@ -43,7 +40,7 @@ def identify_psalm_form():
 def identify_standard_form(translations:list) -> BibleChapters:
     """standard_form (#3). Operation: ~3mins"""
     Chapters = BibleChapters(translations)
-    for PTR in Chapters.iterate_Bible():
+    for PTR in Chapters.iterate():
         expected_total_verses = PTR.book.total_verses(PTR.chapter)
         for translation in translations:
             file = File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
@@ -57,9 +54,4 @@ def identify_standard_form(translations:list) -> BibleChapters:
 
 def identify_poetry_form(translations:list) -> BibleChapters:
     """poetry_form (#2)"""
-    StandardChapters:dict[str,set] = StandardForm.Chapters()
-
-
-
-
-
+    todo = StandardForm.remaining_chapters()

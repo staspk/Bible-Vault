@@ -1,9 +1,10 @@
-from models.text_forms.standard import StandardForm
+from models.BibleChapters import BibleChapters
 from scrape import Scrape
 from parser import *
-from models.Bible import BIBLE
 from kozubenko.subprocess import Subprocess
 from kozubenko.print import Print
+from models.Bible import BIBLE
+from models.text_forms.standard import StandardForm
 
 
 def test_problem_chapters():
@@ -53,10 +54,10 @@ def visual_test_standard_form():
 
 translations = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 # identify_standard_form(translations)
+# standard:dict[str,set] = StandardForm.Chapters()
 
-standard:dict[str,set] = StandardForm.Chapters()
-todo = StandardForm.remaining_chapters()
-
-Print.green(todo['KJV'])
-Print.green(len(standard['KJV']))
-Print.green(len(todo['KJV']))
+i = 0
+Chapters = BibleChapters(StandardForm.remaining_chapters())
+for PTR in Chapters.iterate():
+    i += 1
+Print.green(i)

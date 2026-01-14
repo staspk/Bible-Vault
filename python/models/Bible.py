@@ -122,6 +122,8 @@ class BIBLE:
     JUDE                 = Book(name="Jude",                abbr="Jude",     index=65,    chapters=1,    verse_map={1:25})
     REVELATION           = Book(name="Revelation",          abbr="Rev",      index=66,    chapters=22,   verse_map={1:20,2:29,3:22,4:11,5:14,6:17,7:17,8:13,9:21,10:11,11:19,12:17,13:18,14:20,15:8,16:21,17:18,18:24,19:21,20:15,21:27,22:21})
 
+    TOTAL_CHAPTERS = 1189   # aka: Protestant
+
     _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
     def Books() -> list[Book]:
         """

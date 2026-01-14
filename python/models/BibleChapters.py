@@ -9,20 +9,19 @@ from models.Bible import BIBLE, ChapterPtr
 
 def Protestant_Set() -> set[int]:
     """ **Returns:** `set[chapter_index]` : {1-1189} """
-    return set(range(1, BibleChapters.TOTAL_CHAPTERS+1))
+    return set(range(1, BIBLE.TOTAL_CHAPTERS+1))
 
 class BibleChapters:
-    TOTAL_CHAPTERS = 1189  # aka: Protestant
-    
+    """ Iterates across one,default `set` {1-1189} """
     def __init__(self, translations:list):
-        self.set = set(range(1, self.TOTAL_CHAPTERS+1))
+        self.set = Protestant_Set()
         self.marked:dict[str,set] = {}
         for translation in translations:
             self.marked[translation] = set()
 
-    def iterate_Bible(self) -> Generator[ChapterPtr]:
+    def iterate(self) -> Generator[ChapterPtr]:
         """
-        **Returns:**
+        **Yields:**
             Pops a random "chapter_index" (1-1189) from `set`.
 
         **How to Use:**
@@ -55,7 +54,7 @@ class BibleChapters:
         marked = 0; total_chapters = 0
         for chapters in self.marked.values():
             marked += len(chapters)
-            total_chapters += self.TOTAL_CHAPTERS
+            total_chapters += BIBLE.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
 
     def Save_Report(self):
@@ -66,3 +65,28 @@ class BibleChapters:
 
         File(PYTHON_TESTS_DIRECTORY, 'identify_standard_form()').save(report, encoding='UTF-8')
         Print.yellow(f'Standard Form: {self.ratio()}')
+
+class BibleChapters(BibleChapters):
+    def __init__(self, sets:dict[str,set]):
+        """ initialize via: `dict[translation,chapters]` """
+        self.sets = sets
+        self.marked:dict[str,set] = {}
+        for translation in sets.keys():
+            self.marked[translation] = set()
+
+    def iterate(self) -> Generator[ChapterPtr]:
+        """
+        **Yields:**
+            Pops a random "chapter_index" from `sets`.
+        """
+        sets = {key:value.copy() for key,value in self.sets.items() if len(value) > 0}
+        left = sum(len(set) for set in sets.values())
+
+        while left > 0:
+            key = random.choice(tuple(sets.keys()))
+            chapter_index = random_pop(sets[key])
+            yield chapter_index
+
+            left -= 1
+            if sets[key].__len__() == 0:
+                del sets[key]
