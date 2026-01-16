@@ -24,17 +24,20 @@ abbreviations for apocrypha:
     4Ma
 """
 
-@dataclass
+@dataclass(frozen=True)
 class ChapterPtr:
     book:Book
     chapter:int
     index:int
     translation:str = None
-
+    
     def __str__(self):
-        return f'{self.index} -> {self.book.name} {self.chapter}'
+        string = f'{self.index} -> {self.book.name} {self.chapter}'
+        if self.translation is not None:
+            string += f' [{self.translation}]'
+        return string
 
-@dataclass
+@dataclass(frozen=True)
 class Book:
     """
     * `name:str`      -> *"Genesis"*
@@ -145,7 +148,7 @@ class BIBLE:
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-    _chapters_map: dict[int, ChapterPtr] = None
+    _chapters_map:dict[int, ChapterPtr] = None
     def ChaptersMap(chapter_index: int) -> ChapterPtr | None:
         """ `chapter_index` -> 1-1189 """
         if BIBLE._chapters_map is None:
@@ -156,7 +159,8 @@ class BIBLE:
                     iter.chapter,
                     iter.i
                 )
-        return BIBLE._chapters_map.get(chapter_index, None)
+        ptr = BIBLE._chapters_map.get(chapter_index, None)
+        return ptr
 
 def Iterate_Bible_Chapters():
     """

@@ -33,6 +33,7 @@ from models.BibleChapters import BibleChapters
 from models.text_forms.standard import StandardForm
 
 
+def file(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def text(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def identify_standard_form(translations:list) -> BibleChapters:

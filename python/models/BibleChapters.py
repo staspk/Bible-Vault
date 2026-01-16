@@ -29,16 +29,18 @@ class BibleChapters:
             chapter_index:int = random_pop(set)
             yield BIBLE.ChaptersMap(chapter_index)
 
-    def next_marked(self) -> Generator[File]:
-        marked = {translation:chapters.copy for translation,chapters in self.marked.items() if len(chapters) > 0}
-        total = sum(len(set) for set in marked)
-        TRANSLATIONS = list(marked.keys())
-        while total > 0:
-            translation = random.choice(TRANSLATIONS)
-            set = self.marked[translation]
-            chapter_index = random_pop(set)
+    def iterate_marked(self) -> Generator[ChapterPtr]:
+        marked = {key:value.copy() for key,value in self.marked.items() if len(value) > 0}
+        left = sum(len(set) for set in marked.values())
+        while left > 0:
+            translation = random.choice(tuple(marked.keys()))
+            chapter_index = random_pop(marked[translation])
             PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
-            yield File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
+            yield ChapterPtr(PTR.book, PTR.chapter, PTR.index, translation)
+
+            left -= 1
+            if marked[translation].__len__() == 0:
+                del marked[translation]
 
     def mark(self, translation:str, chap_index:int):
         if translation not in self.marked.keys():
@@ -70,6 +72,10 @@ class BibleChapterSets(BibleChapters):
         for translation in sets.keys():
             self.marked[translation] = set()
 
+    def From(translations:list[str]) -> BibleChapterSets:
+        """static constructor"""
+        return BibleChapterSets({translation:Protestant_Set() for translation in translations})
+
     def iterate(self) -> Generator[ChapterPtr]:
         """
         **Yields:**
@@ -85,12 +91,11 @@ class BibleChapterSets(BibleChapters):
         left = sum(len(set) for set in sets.values())
 
         while left > 0:
-            key = random.choice(tuple(sets.keys()))
-            chapter_index:int = random_pop(sets[key])
+            translation = random.choice(tuple(sets.keys()))
+            chapter_index = random_pop(sets[translation])
             PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
-            PTR.translation = key
-            yield PTR
+            yield ChapterPtr(PTR.book, PTR.chapter, PTR.index, translation)
 
             left -= 1
-            if sets[key].__len__() == 0:
-                del sets[key]
+            if sets[translation].__len__() == 0:
+                del sets[translation]
