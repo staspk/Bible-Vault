@@ -18,8 +18,8 @@ document.addEventListener("keydown", (event) => {
             window.location.reload();
         }
 
-        if(event.key === "ArrowLeft")  PassageView.toggleView();
-        if(event.key === "ArrowRight") PassageView.toggleView();
+        if(event.key === "ArrowLeft")  PassageView.changeView('LEFT');
+        if(event.key === "ArrowRight") PassageView.changeView('RIGHT');
 
         if(event.ctrlKey && event.key === "ArrowLeft") {
             const ptr = new ChapterPtr(PassageView.passage.book, PassageView.passage.chapter).decrement();
