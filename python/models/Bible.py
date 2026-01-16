@@ -149,7 +149,7 @@ class BIBLE:
         return BIBLE.Books()[index - 1]
 
     _chapters_map:dict[int, ChapterPtr] = None
-    def ChaptersMap(chapter_index: int) -> ChapterPtr | None:
+    def ChaptersMap(chapter_index:int, translation:str=None) -> ChapterPtr | None:
         """ `chapter_index` -> 1-1189 """
         if BIBLE._chapters_map is None:
             BIBLE._chapters_map = {}
@@ -160,6 +160,8 @@ class BIBLE:
                     iter.i
                 )
         ptr = BIBLE._chapters_map.get(chapter_index, None)
+        if translation:
+            return ChapterPtr(ptr.book, ptr.chapter, ptr.index, translation)
         return ptr
 
 def Iterate_Bible_Chapters():

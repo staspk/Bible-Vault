@@ -25,7 +25,7 @@ class StandardForm:
             dict[key] = value
         return dict
     
-    def remaining_chapters() -> dict[str,set]:
+    def Inverse() -> dict[str,set]:
         """ **Returns:** `dict[translation, chapters]` """
         remaining = {}
         StandardChapters:dict[str,set] = StandardForm.Chapters()

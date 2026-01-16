@@ -1,13 +1,9 @@
-from definitions import BIBLE_TXT_NEW
 from scrape import Scrape
 from parser import file
-from kozubenko.os import File
 from kozubenko.subprocess import Subprocess
-from kozubenko.print import Print
-from models.Bible import BIBLE, ChapterPtr
+from models.Bible import BIBLE
 from models.BibleChapters import BibleChapters, BibleChapterSets
 from models.text_forms.standard import StandardForm
-from models.text_forms.titled import TitledTrait
 
 
 def test_problem_chapters():
@@ -51,24 +47,4 @@ def visual_test(chapters:BibleChapters, files_per_iteration=50):
 
 translations = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
-# Chapters = BibleChapterSets(StandardForm.remaining_chapters())
-# for PTR in Chapters.iterate():
-#     FILE = file(PTR)
-#     if FILE.exists():
-#         if is_titled(PTR, FILE.contents(encoding='UTF-8')):
-#             Chapters.mark(PTR.translation, PTR.index)
-
-# Chapters.Save_Report()
-
-
-# visual_test(BibleChapterSets(StandardForm.Chapters()))
-
-Chapters:BibleChapterSets = BibleChapterSets.From(translations)
-for PTR in Chapters.iterate():
-    if not file(PTR).exists():
-        Chapters.mark(PTR.translation, PTR.index)
-
-Chapters.Save_Report('identify_missing_chapters()', 'Missing Chapters')
-
-for PTR in Chapters.iterate_marked():
-    Print.red(str(PTR))
+Chapters = BibleChapterSets(StandardForm.Inverse())
