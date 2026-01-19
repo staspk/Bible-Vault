@@ -13,6 +13,9 @@ def Protestant_Set() -> set[int]:
 
 class BibleChapters:
     """ Iterates across one,default `set` {1-1189} """
+    @property
+    def total_marked(self): return sum(len(set) for set in self.marked.values())
+
     def __init__(self, translations:list):
         self.set = Protestant_Set()
         self.marked:dict[str,set] = {}
