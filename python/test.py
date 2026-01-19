@@ -1,7 +1,10 @@
+from typing import Any
+from kozubenko.time import Timer
 from scrape import Scrape
-from parser import file
+from parser import *
+from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
-from models.Bible import BIBLE
+from models.Bible import BIBLE, Iterate_Bible_Chapters
 from models.BibleChapters import BibleChapters, BibleChapterSets
 from models.text_forms.standard import StandardForm
 
@@ -36,15 +39,45 @@ def test_problem_chapters():
         Scrape.Book(translations, BIBLE.LUKE, 24, 24)               # iteration: 13
         Scrape.Book(translations, BIBLE.JAMES, 1, 1)                # iteration: 11
 
-def visual_test(chapters:BibleChapters, files_per_iteration=50):
+def visual_test(iterator:Callable, files_per_iteration=50):
+    """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
     iteration = 1
-    for PTR in chapters.iterate():
+    for PTR in iterator():
         Subprocess.Notepad(file(PTR))
         iteration += 1
         if iteration == files_per_iteration:
-            input()
+            colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)
             iteration = 1
 
-translations = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
+ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
 Chapters = BibleChapterSets(StandardForm.Inverse())
+for PTR in Chapters.iterate():
+    if is_titled(PTR, text(PTR)):
+        Chapters.mark(PTR.translation, PTR.index)
+
+Print.red(Chapters.total_marked)
+Chapters.Save_Report()
+# visual_test(Chapters.iterate_marked)
+
+# translation = 'NKJV'; book = BIBLE.SECOND_SAMUEL; chapter = 13
+# Subprocess.Notepad(file(ChapterPtr(book, chapter, None, translation)))
+# debug_chapter(translation, book, chapter, is_titled)
+
+
+def standardize_chapter_number_formatting():
+    """
+    **From:**  `f'1 '`  
+    **To:** `f'{PTR.chapter} '`
+    """
+    Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
+    for PTR in Chapters.iterate():
+        if is_numbered_wrong(PTR, text(PTR)):
+            Chapters.mark(PTR.translation, PTR.index)
+
+    Print.yellow(Chapters.total_marked)
+    
+    visual_test(Chapters.iterate_marked)
+
+# standardize_chapter_number_formatting()
+

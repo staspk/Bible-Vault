@@ -25,7 +25,7 @@ class BibleChapters:
     def iterate(self) -> Generator[ChapterPtr]:
         """
         **Yields:**
-            Pops a random "chapter_index" (1-1189) from `set`.
+            Pops a random "chapter_index" {1-1189} from `set`, yielding corresponding `ChapterPtr` without `translation`.
         """
         set = self.set.copy()
         while set.__len__() > 0:
@@ -82,7 +82,7 @@ class BibleChapterSets(BibleChapters):
     def iterate(self) -> Generator[ChapterPtr]:
         """
         **Yields:**
-            Pops a random "chapter_index" from `sets`.
+            Pops a random "chapter_index" from `sets`, yielding corresponding `ChapterPtr` including `translation`.
         
         **How to Use:**
         ```python
