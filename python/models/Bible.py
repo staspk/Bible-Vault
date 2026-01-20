@@ -24,16 +24,20 @@ abbreviations for apocrypha:
     4Ma
 """
 
-@dataclass
+@dataclass(frozen=True)
 class ChapterPtr:
     book:Book
     chapter:int
     index:int
-
+    translation:str = None
+    
     def __str__(self):
-        return f'{self.index} -> {self.book.name} {self.chapter}'
+        string = f'{self.index} -> {self.book.name} {self.chapter}'
+        if self.translation is not None:
+            string += f' [{self.translation}]'
+        return string
 
-@dataclass
+@dataclass(frozen=True)
 class Book:
     """
     * `name:str`      -> *"Genesis"*
@@ -122,6 +126,8 @@ class BIBLE:
     JUDE                 = Book(name="Jude",                abbr="Jude",     index=65,    chapters=1,    verse_map={1:25})
     REVELATION           = Book(name="Revelation",          abbr="Rev",      index=66,    chapters=22,   verse_map={1:20,2:29,3:22,4:11,5:14,6:17,7:17,8:13,9:21,10:11,11:19,12:17,13:18,14:20,15:8,16:21,17:18,18:24,19:21,20:15,21:27,22:21})
 
+    TOTAL_CHAPTERS = 1189   # aka: Protestant
+
     _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
     def Books() -> list[Book]:
         """
@@ -142,9 +148,8 @@ class BIBLE:
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-
-    _chapters_map: dict[int, ChapterPtr] = None
-    def ChaptersMap(chapter_index: int) -> ChapterPtr | None:
+    _chapters_map:dict[int, ChapterPtr] = None
+    def ChaptersMap(chapter_index:int, translation:str=None) -> ChapterPtr | None:
         """ `chapter_index` -> 1-1189 """
         if BIBLE._chapters_map is None:
             BIBLE._chapters_map = {}
@@ -154,7 +159,10 @@ class BIBLE:
                     iter.chapter,
                     iter.i
                 )
-        return BIBLE._chapters_map.get(chapter_index, None)
+        ptr = BIBLE._chapters_map.get(chapter_index, None)
+        if translation:
+            return ChapterPtr(ptr.book, ptr.chapter, ptr.index, translation)
+        return ptr
 
 def Iterate_Bible_Chapters():
     """

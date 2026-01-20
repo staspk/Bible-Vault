@@ -6,7 +6,6 @@ import { LocalStorageKeys } from '../../storage/LocalStorageKeys.enum';
 import { SearchInput } from "../SearchInput/SearchInput";
 import { ContentView } from "../../..";
 import type { Passage } from "../../models/Passage.js";
-import type { ChapterPtr } from "../../../../_shared/Bible.js";
 
 
 /**  Determines `width` and `grid-template-columns` */
@@ -39,10 +38,9 @@ export class PassageView {
         Api.Passage.Fetch(queryString).then(data => {
             if(!data) return;
 
-            let [view1_translations = 0, view2_translations] = translations_per_view(data.translations.length);
+            let [view1_translations, view2_translations] = translations_per_view(data.translations.length);
 
             this.view1 = this.generateView(passage.chapter, view1_translations, IChapter.range(0, view1_translations, data.data));
-            if(this.view2) delete this.view2;
             if(view2_translations > 0)
                 this.view2 = this.generateView(passage.chapter, view2_translations, IChapter.range(view1_translations, (view1_translations+view2_translations), data.data));
 
@@ -103,34 +101,34 @@ export class PassageView {
             nodes = passageView.querySelectorAll(`.row-${row}`)
         }
     }
-    
-    /**  Toggles between `PassageView.view1` and `PassageView.view2` depending on: `PassageView.currentView`  */
-    static toggleView() {
-        if(PassageView.currentView === View.None) {
-            console.error('PassageView.toggleView(): cannot be called before PassageView.Render(), ie: PassageView.currentView === View.None. Skipping Function...');
+
+    /**  Switches between `this.view1`/`this.view2`, depending on: `this.currentView`  */
+    static changeView(direction:Direction) {
+        if(this.currentView === View.None) {
+            console.error('PassageView.changeView(): called before PassageView.Render(), ie: PassageView.currentView === View.None. Skipping Function...');
             return;
         }
-        
+
         const passageView = document.getElementById(PassageView.ID);
         if(!passageView) {
-            console.error('PassageView.toggleView(): PassageView could not be found via PassageView.ID. Skipping function...');
+            console.error('PassageView.changeView(): PassageView could not be found via PassageView.ID. Skipping function...');
             return;
         }
-        
-        if(PassageView.currentView === View.One) {
-            if(PassageView.view2) {
-                passageView.replaceWith(PassageView.view2);
-                PassageView.alignVerses();
-                PassageView.currentView = View.Two;
+
+        if(direction === 'LEFT' && this.currentView === View.Two) {
+            passageView.replaceWith(this.view1);
+            this.alignVerses();
+            this.currentView = View.One;
+            return;
+        }
+
+        if(direction === 'RIGHT' && this.currentView === View.One) {
+            if(this.view2) {
+                passageView.replaceWith(this.view2);
+                this.alignVerses();
+                this.currentView = View.Two;
                 return;
             }
-        }
-        
-        if(PassageView.currentView === View.Two) {
-            passageView.replaceWith(PassageView.view1);
-            PassageView.alignVerses();
-            PassageView.currentView = View.One;
-            return;
         }
     }
 }
@@ -150,3 +148,10 @@ function translations_per_view(total_translations:number, mirrorOption=true): [n
 
     return [view1_translations, view2_translations]
 }
+
+const Direction = {
+    LEFT: 'LEFT',
+    RIGHT: 'RIGHT'
+} as const;
+
+type Direction = typeof Direction[keyof typeof Direction];

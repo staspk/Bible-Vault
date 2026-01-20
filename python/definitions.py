@@ -13,8 +13,8 @@ BIBLE_HTML                    =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_htm
 BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt')
 BIBLE_TXT_NEW                 =  os.path.join(PYTHON_ROOT_DIRECTORY, 'bible_txt')
 
-TEMP_OUTPUT                   =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')
+TEMP_DIR    =  os.path.join(PYTHON_ROOT_DIRECTORY, 'temp')
+TEMP_OUTPUT =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')
 
 
 # ENV                   =  os.path.join(PROJECT_ROOT_DIRECTORY, '.env', '.env')
-# TEMP_DIR              =  os.path.join(PROJECT_ROOT_DIRECTORY, 'temp')
