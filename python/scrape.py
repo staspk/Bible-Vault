@@ -19,7 +19,7 @@ from kozubenko.string import String
 from kozubenko.time import Time
 from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list
 from tor.tor import Tor
-from models.Bible import BIBLE, Book, ChapterPtr
+from models.Bible import BIBLE, Book, Chapter
 
 
 
@@ -272,7 +272,7 @@ class Scrape(metaclass=ScrapeContextManager):
             out_dir = Scrape.OUT_DIRECTORY
 
         def chapter_already_scraped(chapter:int) -> bool:
-            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter)
+            PTR:Chapter = BIBLE.Chapter(chapter)
             for translation in target_translations:
                 if File(out_dir, translation, PTR.book.name, f'{PTR.chapter}.txt').exists():
                     return True
@@ -287,7 +287,7 @@ class Scrape(metaclass=ScrapeContextManager):
                     chapters_todo.remove(chapter)
                     continue
 
-                PTR:ChapterPtr = BIBLE.ChaptersMap(chapter)
+                PTR:Chapter = BIBLE.Chapter(chapter)
                 Scrape.Book(target_translations, PTR.book, PTR.chapter, PTR.chapter)
                 Print.green(f'{PTR.book} {PTR.chapter}')
                 chapters_todo.remove(chapter)

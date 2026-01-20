@@ -1,8 +1,8 @@
 """
 "Standard Form" (#1) [see: ./models/biblegateway/#1-jeremiah-41-esv.txt]
     entire verse on one line
-    5996/11890
-    50.43%
+    6006/11890
+    50.51%
 
 "Poetry Form" (#2)   [see: ./models/biblegateway/#2-hosea-9-esv.txt]
     every verse made up of lines, ie: zero "Standard Form" verses
@@ -19,9 +19,11 @@
 
 Oddities:
     " " aka: 6/MSP, John 15 NRT, 2 occurences. NOTE: NRT is riddled with these.
+    Joshua 12 - iffy formatting: "one"
+    Chapter(BIBLE.JOHN, 1)
 
 Observations:
-    - NKJV: DOES separate the second speaker in a verse into a separate line, see: ChapterPtr(BIBLE.SECOND_SAMUEL, 13, None, 'NKJV')
+    - NKJV: DOES separate the second speaker in a verse into a separate line, see: Chapter(BIBLE.SECOND_SAMUEL, 13, None, 'NKJV')
 
 RESOLVED:
     11613/11890 Transformations: First verse in txts identified by "{book.chapter}" have all been standardized to "1", ie: "{verse}"
@@ -32,24 +34,24 @@ from collections.abc import Callable
 from kozubenko.os import File
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
-from models.Bible import BIBLE, Book, ChapterPtr
+from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapters import BibleChapterSets
 
 
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
-def chapter_file(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+def chapter_File(PTR:Chapter): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(PTR:Chapter): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Callable):
-    ptr = ChapterPtr(book, chapter, None, translation)
+    ptr = Chapter(book, chapter, None, translation)
     identifying_func(ptr, chapter_text(ptr))
 
 def visual_test(iterator:Callable, files_per_iteration=50):
     """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
     iteration = 1
     for PTR in iterator():
-        Subprocess.Notepad(chapter_file(PTR))
+        Subprocess.Notepad(chapter_File(PTR))
         iteration += 1
         if iteration == files_per_iteration:
             colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)
@@ -68,25 +70,43 @@ def strip_title(text:str) -> tuple[str, str]:
 
     raise Exception('strip_title(): unexpected runtime path')
 
-def is_standard_form(PTR:ChapterPtr, text:str) -> bool:
+def is_standard_form(PTR:Chapter, text:str) -> bool:
     expected_total_verses = PTR.book.total_verses(PTR.chapter)
     lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
     if lines.__len__() == expected_total_verses:
         return True
     return False
 
-def is_poetry_form(PTR:ChapterPtr, text:str) -> bool:
+def is_poetry_form(PTR:Chapter) -> bool:
     """poetry_form (#2)"""
     TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
-    for verse in range(1, TOTAL_VERSES+1):
-        if text.find(f'{verse} \n') == -1:
-            return False
-    
-    return True
 
-    
+    (title, text) = strip_title(chapter_text(PTR))
+    HAS_TITLE = title != ""
 
-def is_numbered_wrong(PTR:ChapterPtr, text:str) -> bool:
+    if HAS_TITLE:
+        for verse in range(1, TOTAL_VERSES+1):
+            start_index = text.find(f'\n{verse} \n')
+            if start_index == -1:
+                return False
+        return True
+    else:
+        return False
+
+def has_standard_line(PTR:Chapter) -> bool:
+    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
+    (title, text) = strip_title(chapter_text(PTR))
+
+    lines = re.findall(r'.+', text)
+
+    lines = text.splitlines()
+    verse = 1
+    for line in lines:
+        pass
+
+
+
+def is_numbered_wrong(PTR:Chapter, text:str) -> bool:
     start_index = text.find(f'1 ')
     if start_index == 0: return True
     return False
@@ -122,7 +142,7 @@ def standardize_chapter_number_formatting():
         if start_index == 0:
             text = "1" + text[len(str(PTR.chapter)):]
 
-            chapter_file(PTR).save(f'{title}{text}', encoding='UTF-8')
+            chapter_File(PTR).save(f'{title}{text}', encoding='UTF-8')
             Chapters.mark(PTR.translation, PTR.index)
             
     Print.yellow(Chapters.total_marked)

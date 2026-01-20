@@ -4,7 +4,7 @@ from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
 from kozubenko.random import random_pop
 from kozubenko.print import Print
-from models.Bible import BIBLE, ChapterPtr
+from models.Bible import BIBLE, Chapter
 
 
 def Protestant_Set() -> set[int]:
@@ -22,24 +22,24 @@ class BibleChapters:
         for translation in translations:
             self.marked[translation] = set()
 
-    def iterate(self) -> Generator[ChapterPtr]:
+    def iterate(self) -> Generator[Chapter]:
         """
         **Yields:**
-            Pops a random "chapter_index" {1-1189} from `set`, yielding corresponding `ChapterPtr` without `translation`.
+            Pops a random "chapter_index" {1-1189} from `set`, yielding corresponding `Chapter` without `translation`.
         """
         set = self.set.copy()
         while set.__len__() > 0:
             chapter_index:int = random_pop(set)
-            yield BIBLE.ChaptersMap(chapter_index)
+            yield BIBLE.Chapter(chapter_index)
 
-    def iterate_marked(self) -> Generator[ChapterPtr]:
+    def iterate_marked(self) -> Generator[Chapter]:
         marked = {key:value.copy() for key,value in self.marked.items() if len(value) > 0}
         left = sum(len(set) for set in marked.values())
         while left > 0:
             translation = random.choice(tuple(marked.keys()))
             chapter_index = random_pop(marked[translation])
-            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
-            yield ChapterPtr(PTR.book, PTR.chapter, PTR.index, translation)
+            PTR:Chapter = BIBLE.Chapter(chapter_index)
+            yield Chapter(PTR.book, PTR.chapter, PTR.index, translation)
 
             left -= 1
             if marked[translation].__len__() == 0:
@@ -79,10 +79,10 @@ class BibleChapterSets(BibleChapters):
         """static constructor"""
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
 
-    def iterate(self) -> Generator[ChapterPtr]:
+    def iterate(self) -> Generator[Chapter]:
         """
         **Yields:**
-            Pops a random "chapter_index" from `sets`, yielding corresponding `ChapterPtr` including `translation`.
+            Pops a random "chapter_index" from `sets`, yielding corresponding `Chapter` including `translation`.
         
         **How to Use:**
         ```python
@@ -96,8 +96,8 @@ class BibleChapterSets(BibleChapters):
         while left > 0:
             translation = random.choice(tuple(sets.keys()))
             chapter_index = random_pop(sets[translation])
-            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter_index)
-            yield ChapterPtr(PTR.book, PTR.chapter, PTR.index, translation)
+            PTR:Chapter = BIBLE.Chapter(chapter_index)
+            yield Chapter(PTR.book, PTR.chapter, PTR.index, translation)
 
             left -= 1
             if sets[translation].__len__() == 0:
