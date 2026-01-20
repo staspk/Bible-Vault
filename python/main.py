@@ -3,7 +3,7 @@ from kozubenko.cls import class_attributes
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE
 from models.BibleChapters import BibleChapterSets, Protestant_Set
-from parser import file
+from parser import chapter_file
 from scrape import Book, Scrape
 
 """
