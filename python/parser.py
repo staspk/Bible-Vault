@@ -1,107 +1,129 @@
-
 """
-Observation #1:
-    The "Standard Form" has been identified, i.e: #3 (see: ./models/biblegateway/jeremiah-41-esv.txt)
-        5996 chapters / 11890 total
-        50.43%
+"Standard Form" (#1) [see: ./models/biblegateway/#1-jeremiah-41-esv.txt]
+    entire verse on one line
+    5996/11890
+    50.43%
 
+"Poetry Form" (#2)   [see: ./models/biblegateway/#2-hosea-9-esv.txt]
+    every verse made up of lines, ie: zero "Standard Form" verses
+
+
+"Mixed Form" (#3)    [see: ./models/biblegateway/#3-genesis-49-esv.txt]
+    
+
+"Titled" Trait [see: ./models/biblegateway/psalms-42-net.txt]
+    potential trait of #2-#3
+    909/11890
+    7.64%
+
+
+Oddities:
+    " " aka: 6/MSP, John 15 NRT, 2 occurences. NOTE: NRT is riddled with these.
 
 Observations:
-    All chapters have
+    - NKJV: DOES separate the second speaker in a verse into a separate line, see: ChapterPtr(BIBLE.SECOND_SAMUEL, 13, None, 'NKJV')
 
+RESOLVED:
+    11613/11890 Transformations: First verse in txts identified by "{book.chapter}" have all been standardized to "1", ie: "{verse}"
 """
-import re, random, subprocess
-from typing import Generator
-from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
-from kozubenko.cls import instance_attributes
+import re
+from definitions import BIBLE_TXT_NEW
+from collections.abc import Callable
 from kozubenko.os import File
-from kozubenko.print import Print
-from models.Bible import BIBLE, Book, ChapterPtr, Iterate_Bible_Chapters
+from kozubenko.print import ANSI, Print, colored_input
+from kozubenko.subprocess import Subprocess
+from models.Bible import BIBLE, Book, ChapterPtr
+from models.BibleChapters import BibleChapterSets
 
 
-class BibleChapters:
-    def __init__(self, *translations):
-        self.set = set(range(1, 1190))
-        for translation in translations:
-            self.__dict__[translation] = set()
+ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
-    def ratio(self) -> str:
-        """ `{marked}/{total_chapters}` """
-        marked = 0; total_chapters = 0
-        for attr in instance_attributes(self, ['set']):
-            marked_chapters_for_translation:set[int] = attr.value
-            marked += len(marked_chapters_for_translation)
-            total_chapters += 1189   # total_chapters <- standard protestant bible
-        return f'{marked}/{total_chapters}'
+def chapter_file(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(PTR:ChapterPtr): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+
+def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Callable):
+    ptr = ChapterPtr(book, chapter, None, translation)
+    identifying_func(ptr, chapter_text(ptr))
+
+def visual_test(iterator:Callable, files_per_iteration=50):
+    """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
+    iteration = 1
+    for PTR in iterator():
+        Subprocess.Notepad(chapter_file(PTR))
+        iteration += 1
+        if iteration == files_per_iteration:
+            colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)
+            iteration = 1
+
+
+def strip_title(text:str) -> tuple[str, str]:
+    """
+    If no title in text: `title == ""`
+
+    **Returns:** `(title, rest)`
+    """
+    start_index = text.find('1 ')
+    if start_index == 0:   return ("", text)
+    elif start_index != 0: return (text[0:start_index], text[start_index:])
+
+    raise Exception('strip_title(): unexpected runtime path')
+
+def is_standard_form(PTR:ChapterPtr, text:str) -> bool:
+    expected_total_verses = PTR.book.total_verses(PTR.chapter)
+    lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
+    if lines.__len__() == expected_total_verses:
+        return True
+    return False
+
+def is_poetry_form(PTR:ChapterPtr, text:str) -> bool:
+    """poetry_form (#2)"""
+    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
+    for verse in range(1, TOTAL_VERSES+1):
+        if text.find(f'{verse} \n') == -1:
+            return False
     
-    def next_random(self) -> Generator[ChapterPtr]:
-        """
-        **Returns:**
-            A random chapter_index that has not been selected yet (1 - 1189).
-
-        **How to Use:**
-        ```python
-        for PTR in BibleChapters().next_random():
-        ```
-        """
-        while self.set.__len__() > 0:
-            chapter:int = random.choice(tuple(self.set))
-            self.set.remove(chapter)
-            yield BIBLE.ChaptersMap(chapter)
-
-    def mark(self, translation:str, chap_index:int):
-        if translation not in self.__dict__:
-            raise Exception(f'set must be instantiated in constructor. translation: {translation}')
-        self.__dict__[translation].add(chap_index)
+    return True
 
     
-def identify_psalm_form():
-    translations = ['KJV', 'NASB', 'RSV', 'NKJV', 'NRSV']
 
-    Bible = BibleChapters()
-    for PTR in Bible.next_random():
-        if PTR.book.name == BIBLE.PSALMS.name:
-            continue
-        for translation in translations:
-            file = File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
-            if file.exists():
-                text = file.contents(encoding='UTF-8')
+def is_numbered_wrong(PTR:ChapterPtr, text:str) -> bool:
+    start_index = text.find(f'1 ')
+    if start_index == 0: return True
+    return False
 
-                left = text.split(str(PTR.chapter), 1)[0]
-                if(left):
-                    Print.yellow(f'{PTR.book} {PTR.chapter} [{translation}]')
 
-def identify_standard_form(translations):
-    """standard_form (#3)"""
-    Bible = BibleChapters(*translations)
-    for PTR in Bible.next_random():
-        expected_total_verses = PTR.book.total_verses(PTR.chapter)
-        for translation in translations:
-            file = File(BIBLE_TXT_NEW, translation, PTR.book.name, f'{PTR.chapter}.txt')
-            if file.exists():
-                text = file.contents(encoding='UTF-8')
 
-                lines = re.findall(r'.+', text)     # any single character (except newline), one or more repetitions
-                if lines.__len__() == expected_total_verses:
-                    Bible.mark(translation, PTR.index)
 
-    report = ""
-    for attr in instance_attributes(Bible, ['set']):
-        translation:str = attr.key
-        marked_chapters:set[int] = attr.value
-        report += f'{translation} = {str(marked_chapters)}\n'
-    report += f'Standard Form: {Bible.ratio()}'
 
-    File(PYTHON_TESTS_DIRECTORY, 'identify_standard_form()').save(report, encoding='UTF-8')
-    Print.green(f'Standard Form: {Bible.ratio()}')
 
-def identify_chapter(translation:str, book:Book, chapter:int):
-    """standard_form (#3)"""
-    file = File(BIBLE_TXT_NEW, translation, book.name, f'{chapter}.txt')
-    text = file.contents(encoding='UTF-8')
 
-    lines = re.findall(r'.+', text)     # any single character (except newline), one or more repetitions
 
-    EXPECTED_TOTAL_VERSES = book.total_verses(chapter)
-    if lines.__len__() == EXPECTED_TOTAL_VERSES: Print.green(f'{translation}:{book}{chapter} standard_form')
-    else:                                        Print.red(f'{translation}:{book}{chapter} NOT standard_form')
+
+""" 
+Archived
+"""
+def standardize_chapter_number_formatting():
+    """
+    **From:**  `f'1 '`  
+    **To:** `f'{PTR.chapter} '`
+
+    NOTE: `strip_title()` changed since this function used!
+    """
+    i = 1
+    Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
+    for PTR in Chapters.iterate():
+        TEXT = chapter_text(PTR)
+        text = TEXT
+
+        if is_titled(PTR, text): (title, text) = strip_title(PTR, text)
+        else: title = ""
+        
+        start_index = text.find(f'{PTR.chapter} ')
+        if start_index == 0:
+            text = "1" + text[len(str(PTR.chapter)):]
+
+            chapter_file(PTR).save(f'{title}{text}', encoding='UTF-8')
+            Chapters.mark(PTR.translation, PTR.index)
+            
+    Print.yellow(Chapters.total_marked)
+    Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")
