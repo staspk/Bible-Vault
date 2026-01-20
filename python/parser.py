@@ -30,7 +30,7 @@ import re
 from definitions import BIBLE_TXT_NEW
 from collections.abc import Callable
 from kozubenko.os import File
-from kozubenko.print import ANSI, colored_input
+from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Book, ChapterPtr
 from models.BibleChapters import BibleChapterSets
@@ -56,29 +56,17 @@ def visual_test(iterator:Callable, files_per_iteration=50):
             iteration = 1
 
 
-def strip_title(PTR:ChapterPtr, text:str) -> tuple[str, str]:
+def strip_title(text:str) -> tuple[str, str]:
     """
-    Assumes: `is_titled(text) -> True`
-    
+    If no title in text: `title == ""`
+
     **Returns:** `(title, rest)`
     """
-    start_index = text.find(f'{PTR.chapter} ')
-    if start_index != -1:
-        return (text[0:start_index], text[start_index:] )
-    
     start_index = text.find('1 ')
-    if start_index != -1:
-        return (text[0:start_index], text[start_index:])
+    if start_index == 0:   return ("", text)
+    elif start_index != 0: return (text[0:start_index], text[start_index:])
 
-    raise Exception('strip_title(): is_titled(text) -> False. Illegal runtime path.')
-
-def is_titled(PTR:ChapterPtr, text:str) -> bool:
-    start_index_1 = text.find(f'{PTR.chapter} ')
-    start_index_2 = text.find(f'1 ')
-
-    if start_index_1 == 0 or start_index_2 == 0:
-        return False
-    return True
+    raise Exception('strip_title(): unexpected runtime path')
 
 def is_standard_form(PTR:ChapterPtr, text:str) -> bool:
     expected_total_verses = PTR.book.total_verses(PTR.chapter)
@@ -89,6 +77,13 @@ def is_standard_form(PTR:ChapterPtr, text:str) -> bool:
 
 def is_poetry_form(PTR:ChapterPtr, text:str) -> bool:
     """poetry_form (#2)"""
+    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
+    for verse in range(1, TOTAL_VERSES+1):
+        if text.find(f'{verse} \n') == -1:
+            return False
+    
+    return True
+
     
 
 def is_numbered_wrong(PTR:ChapterPtr, text:str) -> bool:
@@ -111,6 +106,8 @@ def standardize_chapter_number_formatting():
     """
     **From:**  `f'1 '`  
     **To:** `f'{PTR.chapter} '`
+
+    NOTE: `strip_title()` changed since this function used!
     """
     i = 1
     Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)

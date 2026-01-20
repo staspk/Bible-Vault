@@ -3,7 +3,7 @@ from collections.abc import Callable
 from definitions import TEMP_DIR
 from kozubenko.os import File
 from scrape import Scrape
-from parser import chapter_file, chapter_text, is_poetry_form, is_titled, strip_title, is_numbered_wrong, debug_chapter, visual_test
+from parser import chapter_file, chapter_text, is_poetry_form, strip_title, is_numbered_wrong, debug_chapter, visual_test
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, ChapterPtr, Iterate_Bible_Chapters
@@ -15,13 +15,17 @@ from models.text_forms.titled import TitledTrait
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
 Chapters:BibleChapterSets = BibleChapterSets(StandardForm.Inverse())
-# for PTR in Chapters.iterate():
-#     if is_poetry_form(PTR, chapter_text(PTR)):
-#         Chapters.mark(PTR.translation, PTR.index)
+for PTR in Chapters.iterate():
+    (title, text) = strip_title(chapter_text(PTR))
+    # File(TEMP_DIR, 'new_text.txt').save(text, encoding='UTF-8').open()
+    # input()
+    if is_poetry_form(PTR, text):
+        Chapters.mark(PTR.translation, PTR.index)
 
-# Print.red(Chapters.total_marked)
-# Chapters.Save_Report()
-visual_test(Chapters.iterate)
+
+Print.red(Chapters.total_marked)
+Chapters.Save_Report()
+# visual_test(Chapters.iterate)
 
 # translation = 'NKJV'; book = BIBLE.SECOND_SAMUEL; chapter = 13
 # Subprocess.Notepad(file(ChapterPtr(book, chapter, None, translation)))

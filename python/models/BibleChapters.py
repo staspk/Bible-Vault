@@ -58,7 +58,7 @@ class BibleChapters:
             total_chapters += BIBLE.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
 
-    def Save_Report(self, file_name:str='identify_titled_form()', form:str='Titled Form'):
+    def Save_Report(self, file_name:str='identify_poetry_form()', form:str='Poetry Form'):
         report = ""
         for translation,marked_chapters in self.marked.items():
             report += f'{translation} = {str(marked_chapters)}\n'
