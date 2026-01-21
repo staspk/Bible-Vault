@@ -2,6 +2,7 @@ import time
 from collections.abc import Callable
 from definitions import TEMP_DIR
 from kozubenko.os import File
+from models.text_forms.missing_verses import MissingVerses
 from scrape import Scrape
 from parser import *
 from kozubenko.print import ANSI, Print, colored_input
@@ -71,3 +72,9 @@ def identify_Chapters_missing_verses():
     Chapters.Save_Report('Missing Verses')
 
 
+count = 0
+for translations,chapter in MissingVerses.iterate():
+    Print.green(f'{translations}: {chapter.book} {chapter.chapter}')
+    count += translations.__len__()
+
+Print.red(count)

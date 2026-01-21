@@ -1,6 +1,12 @@
+from typing import Iterator
 from kozubenko.cls import class_attributes
+from kozubenko.random import random_pop
+from models.Bible import Chapter
 from models.BibleChapters import Protestant_Set
 
+
+translation = str
+chapter_index = int
 
 class MissingVerses:
     """ 195 chapters """
@@ -15,13 +21,16 @@ class MissingVerses:
     NIV = {1026, 515, 1033, 1046, 1062, 946, 947, 952, 964, 966, 968, 972, 597, 990, 481, 482, 483, 996, 485, 486, 487, 484, 496, 500}
     NET = {1026, 1091, 996, 964, 966, 1062, 968, 1033, 1002, 972, 946, 947, 1046, 952, 990}
 
+    @classmethod
     def Chapters(cls) -> dict[str,set]:
         """ **Returns:** `dict[translation, chapters]` """
         dict:dict[str,set] = {}
         for key,value in class_attributes(cls):
-            dict[key] = value
+            if value.__len__() > 0:
+                dict[key] = value
         return dict
     
+    @classmethod
     def Inverse(cls) -> dict[str,set]:
         """ **Returns:** `dict[translation, chapters]` """
         remaining = {}
@@ -29,3 +38,17 @@ class MissingVerses:
         for translation in StandardChapters.keys():
             remaining[translation] = Protestant_Set() - StandardChapters[translation]
         return remaining
+    
+    @classmethod
+    def iterate(cls) -> Iterator[tuple[list[translation], Chapter]]:
+        """  """
+        dict:dict[chapter_index,list[translation]] = {}
+
+        for translation,set in cls.Chapters().items():
+            for i in range(set.__len__()):
+                chapter_index = set.pop()
+                if chapter_index in dict: dict[chapter_index].append(translation)
+                else: dict[chapter_index] = [translation]
+        
+        for chapter_index,translation in dict.items():
+            yield (translation, Chapter.From(chapter_index))

@@ -37,6 +37,9 @@ class Chapter:
         if self.index is None:
             set_frozen_attr(self, "index", BIBLE.find_chapter_index(self.book, self.chapter))
 
+    def From(chapter_index:int, translation:Optional[str]=None) -> Chapter:
+        return BIBLE.Chapter(chapter_index, translation)
+
     def __str__(self):
         string = f'{self.index} -> {self.book.name} {self.chapter}'
         if self.translation is not None:
