@@ -58,14 +58,14 @@ class BibleChapters:
             total_chapters += BIBLE.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
 
-    def Save_Report(self, file_name:str='identify_poetry_form()', form:str='Poetry Form'):
+    def Save_Report(self, test='Poetry Form'):
         report = ""
         for translation,marked_chapters in self.marked.items():
             report += f'{translation} = {str(marked_chapters)}\n'
-        report += f'{form}: {self.ratio()}'
+        report += f'{test}: {self.ratio()}'
 
-        File(PYTHON_TESTS_DIRECTORY, file_name).save(report, encoding='UTF-8')
-        Print.yellow(f'{form}: {self.ratio()}')
+        File(PYTHON_TESTS_DIRECTORY, f'identify_{test.replace(" ", "_").lower()}').save(report, encoding='UTF-8')
+        Print.yellow(f'{test}: {self.ratio()}')
 
 class BibleChapterSets(BibleChapters):
     def __init__(self, sets:dict[str,set]):

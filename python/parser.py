@@ -20,7 +20,7 @@
 Oddities:
     " " aka: 6/MSP, John 15 NRT, 2 occurences. NOTE: NRT is riddled with these.
     Joshua 12 - iffy formatting: "one"
-    Chapter(BIBLE.JOHN, 1)
+    Chapter(BIBLE.JOHN, 5) -> only 3 verses were parsed for several translations...perhaps many more chapters are corrupted.
 
 Observations:
     - NKJV: DOES separate the second speaker in a verse into a separate line, see: Chapter(BIBLE.SECOND_SAMUEL, 13, None, 'NKJV')
@@ -70,7 +70,8 @@ def strip_title(text:str) -> tuple[str, str]:
 
     raise Exception('strip_title(): unexpected runtime path')
 
-def is_standard_form(PTR:Chapter, text:str) -> bool:
+def is_standard_form(PTR:Chapter) -> bool:
+    text = chapter_text(PTR)
     expected_total_verses = PTR.book.total_verses(PTR.chapter)
     lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
     if lines.__len__() == expected_total_verses:
@@ -104,7 +105,17 @@ def has_standard_line(PTR:Chapter) -> bool:
     for line in lines:
         pass
 
+def has_missing_verses(PTR:Chapter) -> bool:
+    text = chapter_text(PTR)
+    start = 0; END = text.__len__()
 
+    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
+    for verse in range(1, TOTAL_VERSES+1):
+        start = text[start:END].find(f'{verse} ')
+        if start == -1:
+            return True
+        
+    return False
 
 def is_numbered_wrong(PTR:Chapter, text:str) -> bool:
     start_index = text.find(f'1 ')

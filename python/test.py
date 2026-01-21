@@ -3,7 +3,7 @@ from collections.abc import Callable
 from definitions import TEMP_DIR
 from kozubenko.os import File
 from scrape import Scrape
-from parser import chapter_File, chapter_text, has_standard_line, is_poetry_form, is_standard_form, strip_title, is_numbered_wrong, debug_chapter, visual_test
+from parser import *
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Chapter, Iterate_Bible_Chapters
@@ -62,5 +62,11 @@ def identify_Mixed_Form() -> BibleChapters:
 
 # identify_Mixed_Form()
 
-chapter = Chapter(BIBLE.JOHN, 1)
-Print.green(str(chapter))
+
+Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
+for PTR in Chapters.iterate():
+    if has_missing_verses(PTR):
+        Chapters.mark(PTR.translation, PTR.index)
+
+Print.red(Chapters.total_marked)
+Chapters.Save_Report('Missing Verses')
