@@ -5,15 +5,14 @@ from kozubenko.os import File
 from kozubenko.random import random_pop
 from kozubenko.print import Print
 from models.Bible import BIBLE, Chapter
-from models.IChapterIterator import IChapterIterator
 
 
 def Protestant_Set() -> set[int]:
     """ **Returns:** `set[chapter_index]` : {1-1189} """
     return set(range(1, BIBLE.TOTAL_CHAPTERS+1))
 
-class BibleChapters(IChapterIterator):
-    """ Iterates across one,default `set` {1-1189}"""
+class BibleChapters():
+    """ Iterates across one,default `set[chapter_index:int]` {1-1189}"""
     @property
     def total_marked(self): return sum(len(set) for set in self.marked.values())
 
@@ -70,10 +69,12 @@ class BibleChapters(IChapterIterator):
 
 class BibleChapterSets(BibleChapters):
     """
-    Contructor() -> init with a ready
+    `BibleChapterSets(sets)` -> Init with pre-existing `dict[translation,set[chapter_index:int]]`
+
+    `BibleChapterSets.From(list[translation:str]]) -> Init a set {1-1189} for every `translation`
     """
     def __init__(self, sets:dict[str,set]):
-        """ initialize via: `dict[translation,chapters]` """
+        """ initialize via: `dict[translation,set[chapter_index:int]]` """
         self.sets = sets
         self.marked:dict[str,set] = {}
         for translation in sets.keys():
