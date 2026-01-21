@@ -60,13 +60,14 @@ def identify_Mixed_Form() -> BibleChapters:
         if has_standard_line(PTR):
             Chapters.mark(PTR.translation, PTR.index)
 
-# identify_Mixed_Form()
+def identify_Chapters_missing_verses():
+    Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
+    for PTR in Chapters.iterate():
+        if has_missing_verses(PTR):
+            Chapters.mark(PTR.translation, PTR.index)
+
+    Print.red(Chapters.total_marked)
+    visual_test(Chapters.iterate_marked)
+    Chapters.Save_Report('Missing Verses')
 
 
-Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
-for PTR in Chapters.iterate():
-    if has_missing_verses(PTR):
-        Chapters.mark(PTR.translation, PTR.index)
-
-Print.red(Chapters.total_marked)
-Chapters.Save_Report('Missing Verses')

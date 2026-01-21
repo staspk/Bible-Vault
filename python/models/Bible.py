@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Generator, Iterator, Optional
 from types import SimpleNamespace
 from dataclasses import dataclass
 from kozubenko.cls import set_frozen_attr
@@ -179,7 +179,7 @@ class BIBLE:
 
         return BIBLE._book_to_cumulative_total_chapters[book.index] + chapter
 
-def Iterate_Bible_Chapters() -> Generator[Chapter]:
+def Iterate_Bible_Chapters() -> Iterator[Chapter]:
     """
     **How to Use:**
     ```python

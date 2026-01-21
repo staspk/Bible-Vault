@@ -1,8 +1,8 @@
-import random
-import time
+import time, random
+from typing import Any, Self
+from collections.abc import Iterator
 from dataclasses import dataclass, fields
 from datetime import datetime
-from typing import Any, Self
 
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
@@ -200,6 +200,9 @@ class Scrape(metaclass=ScrapeContextManager):
 
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
+
+    def ChapterSet(chapter_iterator:Callable[[], Iterator[Chapter]]):
+        """ """
 
     def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None):
         """

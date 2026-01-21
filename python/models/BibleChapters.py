@@ -1,18 +1,19 @@
 import random
-from typing import Generator
+from typing import Iterator
 from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
 from kozubenko.random import random_pop
 from kozubenko.print import Print
 from models.Bible import BIBLE, Chapter
+from models.IChapterIterator import IChapterIterator
 
 
 def Protestant_Set() -> set[int]:
     """ **Returns:** `set[chapter_index]` : {1-1189} """
     return set(range(1, BIBLE.TOTAL_CHAPTERS+1))
 
-class BibleChapters:
-    """ Iterates across one,default `set` {1-1189} """
+class BibleChapters(IChapterIterator):
+    """ Iterates across one,default `set` {1-1189}"""
     @property
     def total_marked(self): return sum(len(set) for set in self.marked.values())
 
@@ -22,7 +23,7 @@ class BibleChapters:
         for translation in translations:
             self.marked[translation] = set()
 
-    def iterate(self) -> Generator[Chapter]:
+    def iterate(self) -> Iterator[Chapter]:
         """
         **Yields:**
             Pops a random "chapter_index" {1-1189} from `set`, yielding corresponding `Chapter` without `translation`.
@@ -32,7 +33,7 @@ class BibleChapters:
             chapter_index:int = random_pop(set)
             yield BIBLE.Chapter(chapter_index)
 
-    def iterate_marked(self) -> Generator[Chapter]:
+    def iterate_marked(self) -> Iterator[Chapter]:
         marked = {key:value.copy() for key,value in self.marked.items() if len(value) > 0}
         left = sum(len(set) for set in marked.values())
         while left > 0:
@@ -68,6 +69,9 @@ class BibleChapters:
         Print.yellow(f'{test}: {self.ratio()}')
 
 class BibleChapterSets(BibleChapters):
+    """
+    Contructor() -> init with a ready
+    """
     def __init__(self, sets:dict[str,set]):
         """ initialize via: `dict[translation,chapters]` """
         self.sets = sets
@@ -79,7 +83,7 @@ class BibleChapterSets(BibleChapters):
         """static constructor"""
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
 
-    def iterate(self) -> Generator[Chapter]:
+    def iterate(self) -> Iterator[Chapter]:
         """
         **Yields:**
             Pops a random "chapter_index" from `sets`, yielding corresponding `Chapter` including `translation`.

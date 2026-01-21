@@ -3,7 +3,7 @@ from models.BibleChapters import Protestant_Set
 
 
 class MissingVerses:
-    """ 195 txts """
+    """ 195 chapters """
     KJV = set()
     NASB = {1026, 964, 966, 1062, 1033, 1002, 972, 946, 947, 1042, 1046, 952}
     RSV = {1026, 387, 1033, 1042, 1046, 1062, 941, 946, 947, 950, 952, 964, 966, 968, 72, 972, 990, 995, 996, 997, 1002, 1147}
