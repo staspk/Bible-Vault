@@ -40,7 +40,7 @@ from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapters import BibleChapterSets
 
 
-DIRECTORY = BIBLE_TXT_PARTIAL
+DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')

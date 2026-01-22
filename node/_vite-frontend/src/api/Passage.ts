@@ -1,5 +1,5 @@
 import { ApiEndpoints } from "../../../_shared/ApiEndpoints.js";
-import type { BibleTranslation } from "../../../_shared/BibleTranslations.js";
+import type { Translation } from "../../../_shared/BibleTranslations.js";
 import type { IChapterResponse } from "../../../_shared/interfaces/IResponses.js";
 import type { Book } from "../../../_shared/Bible.js";
 import { Passage } from "../models/Passage.js";
@@ -12,10 +12,10 @@ import { LocalStorageKeys } from "../storage/LocalStorageKeys.enum.js";
 export class PassageApi {
     static ENDPOINT = ApiEndpoints.Passage;
 
-    static translationsDefault = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as BibleTranslation[];
+    static translationsDefault = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as Translation[];
 
     constructor(
-        public translations: BibleTranslation[],
+        public translations: Translation[],
         public book: Book,
         public chapter: number,
         public verse?: number,
@@ -25,7 +25,7 @@ export class PassageApi {
     /** *Static Constructor* */
     static From(
         passage:Passage,
-        translations = URLQueryParams.translations() ?? LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS) as BibleTranslation[]
+        translations = URLQueryParams.translations() ?? LocalStorage.getArray(LocalStorageKeys.TRANSLATIONS) as Translation[]
     ) {
         return new PassageApi(translations, passage.book, passage.chapter, passage.verse, passage.verseEnd);
     }

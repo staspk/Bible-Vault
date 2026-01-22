@@ -72,19 +72,20 @@ def identify_Chapters_missing_verses() -> BibleChapterSets:
     Chapters.Save_Report('Missing Verses')
     return Chapters
 
+identify_Chapters_missing_verses()
 
-MISSING_VERSES = BibleChapterSets(MissingVerses.Chapters())
+# MISSING_VERSES = BibleChapterSets(MissingVerses.Chapters())
 
-FUCKUPS = BibleChapterSets(ScrapeFail.Chapters())
+# FUCKUPS = BibleChapterSets(ScrapeFail.Chapters())
 
-successes = MISSING_VERSES.subtract(FUCKUPS)
-for PTR in successes.iterate():
-    if has_missing_verses(PTR):
-        successes.mark(PTR.translation, PTR.index)
-        chapter_File(PTR).delete()
-successes.Save_Report('New To Move')
-Print.red(successes.total)
-Print.red(successes.total_marked)
+# successes = MISSING_VERSES.subtract(FUCKUPS)
+# for PTR in successes.iterate():
+#     if has_missing_verses(PTR):
+#         successes.mark(PTR.translation, PTR.index)
+#         chapter_File(PTR).delete()
+# successes.Save_Report('New To Move')
+# Print.red(successes.total)
+# Print.red(successes.total_marked)
 
 
 
