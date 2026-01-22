@@ -29,6 +29,7 @@ RESOLVED:
     11613/11890 Transformations: First verse in txts identified by "{book.chapter}" have all been standardized to "1", ie: "{verse}"
 """
 import re
+import time
 from typing import Iterator
 from definitions import BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 from collections.abc import Callable
@@ -39,10 +40,11 @@ from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapters import BibleChapterSets
 
 
+DIRECTORY = BIBLE_TXT_PARTIAL
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
-def chapter_File(PTR:Chapter): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter): return File(BIBLE_TXT_NEW, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Callable):
     ptr = Chapter(book, chapter, None, translation)
@@ -52,9 +54,10 @@ def visual_test(iterator:Callable[[], Iterator[Chapter]], files_per_iteration=50
     """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
     iteration = 1
     for PTR in iterator():
-        Print.green(f'{PTR.__str__()} -> SHOULD HAVE: ', new_line=False)
-        Print.red(PTR.book.total_verses(PTR.chapter))
+        # Print.green(f'{PTR.__str__()} -> SHOULD HAVE: ', new_line=False)
+        # Print.red(PTR.book.total_verses(PTR.chapter))
         Subprocess.Notepad(chapter_File(PTR))
+        time.sleep(.02)
         iteration += 1
         if iteration == files_per_iteration:
             colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)

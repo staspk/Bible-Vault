@@ -13,6 +13,7 @@ BIBLE_HTML                    =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_htm
 BIBLE_TXT                     =  os.path.join(PROJECT_ROOT_DIRECTORY, 'bible_txt')
 BIBLE_TXT_NEW                 =  os.path.join(PYTHON_ROOT_DIRECTORY, 'bible_txt')
 BIBLE_TXT_PARTIAL             =  os.path.join(PYTHON_ROOT_DIRECTORY, 'bible_txt_partial')
+BIBLE_TXT_TO_MOVE             =  os.path.join(PYTHON_ROOT_DIRECTORY, 'bible_txt_to_move')
 
 TEMP_DIR    =  os.path.join(PYTHON_ROOT_DIRECTORY, 'temp')
 TEMP_OUTPUT =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')

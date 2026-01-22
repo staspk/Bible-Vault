@@ -228,6 +228,7 @@ class Scrape(metaclass=ScrapeContextManager):
             chapter_text += f"{span.text}\n"
 
         OUT_TXT.save(chapter_text, encoding='UTF-8')
+        return True
 
     def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[list[translation], Chapter]]]) -> BibleChapterSets:
         """

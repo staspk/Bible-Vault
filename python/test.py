@@ -1,10 +1,10 @@
 import time
-from collections.abc import Callable
-from definitions import TEMP_DIR
+from definitions import BIBLE_TXT_TO_MOVE, TEMP_DIR
 from kozubenko.iter import iterate_list
 from kozubenko.os import File
 from models.text_forms.missing_verses import MissingVerses
 # from scrape import Scrape
+from models.text_forms.scrape_fail import ScrapeFail
 from parser import *
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
@@ -72,5 +72,22 @@ def identify_Chapters_missing_verses() -> BibleChapterSets:
     Chapters.Save_Report('Missing Verses')
     return Chapters
 
-chapters = identify_Chapters_missing_verses()
-visual_test(chapters)
+
+MISSING_VERSES = BibleChapterSets(MissingVerses.Chapters())
+
+FUCKUPS = BibleChapterSets(ScrapeFail.Chapters())
+
+successes = MISSING_VERSES.subtract(FUCKUPS)
+for PTR in successes.iterate():
+    if has_missing_verses(PTR):
+        successes.mark(PTR.translation, PTR.index)
+        chapter_File(PTR).delete()
+successes.Save_Report('New To Move')
+Print.red(successes.total)
+Print.red(successes.total_marked)
+
+
+
+# for PTR in successes.iterate_marked():
+#     chapter_File(PTR).move(File(BIBLE_TXT_TO_MOVE, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt'))
+

@@ -70,6 +70,9 @@ class BibleChapterSets(BibleChapters):
 
     `BibleChapterSets.From(list[translation:str]]) -> Init a set {1-1189} for every `translation`
     """
+    @property
+    def total(self) -> int: return sum(len(set) for set in self.sets.values())
+    
     def __init__(self, sets:dict[str,set]):
         """ initialize via: `dict[translation,set[chapter_index:int]]` """
         self.sets = sets
@@ -104,3 +107,12 @@ class BibleChapterSets(BibleChapters):
             left -= 1
             if sets[translation].__len__() == 0:
                 del sets[translation]
+
+    def subtract(self, other:BibleChapterSets) -> BibleChapterSets:
+        """ Assumes: no protection is needed against `other` having a value that `self` does not have """
+        sets = {key:value.copy() for key,value in self.sets.items() if len(value) > 0}
+
+        for translation,set in other.sets.items():
+            sets[translation] = sets[translation] - set
+        
+        return BibleChapterSets(sets)

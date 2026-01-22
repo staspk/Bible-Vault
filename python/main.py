@@ -17,7 +17,7 @@ rus_translations  = ['RUSV', 'NRT']
 
 with Scrape:
     not_scraped:BibleChapterSets = Scrape.ChapterSet(MissingVerses.iterate)
-    not_scraped.Save_Report('Scrape Failure')
+    not_scraped.Save_Report('Scrape Fails')
     Print.red(not_scraped.total_marked)
 
 # with Scrape(BIBLE_TXT_PARTIAL):
