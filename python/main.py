@@ -1,6 +1,7 @@
 from definitions import *
 from kozubenko.cls import class_attributes
 from kozubenko.os import Directory
+from kozubenko.print import Print
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE
 from models.BibleChapters import BibleChapterSets, Protestant_Set
@@ -14,6 +15,11 @@ rus_translations  = ['RUSV', 'NRT']
 
 # Scrape.Bible_Random_Order(rus_translations)
 
+with Scrape:
+    not_scraped:BibleChapterSets = Scrape.ChapterSet(MissingVerses.iterate)
+    not_scraped.Save_Report('Scrape Failure')
+    Print.red(not_scraped.total_marked)
 
-with Scrape(BIBLE_TXT_PARTIAL):
-    Scrape.ChapterSet(MissingVerses.iterate)
+# with Scrape(BIBLE_TXT_PARTIAL):
+#     for translations,Chapter in MissingVerses.iterate:
+#         Scrape.scrape_chapter(translations, Chapter)

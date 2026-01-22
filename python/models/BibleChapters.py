@@ -14,13 +14,11 @@ def Protestant_Set() -> set[int]:
 class BibleChapters():
     """ Iterates across one,default `set[chapter_index:int]` {1-1189}"""
     @property
-    def total_marked(self): return sum(len(set) for set in self.marked.values())
+    def total_marked(self) -> int: return sum(len(set) for set in self.marked.values())
 
-    def __init__(self, translations:list):
+    def __init__(self):
         self.set = Protestant_Set()
-        self.marked:dict[str,set] = {}
-        for translation in translations:
-            self.marked[translation] = set()
+        self.marked:dict[str,set[int]] = {}
 
     def iterate(self) -> Iterator[Chapter]:
         """
@@ -46,9 +44,8 @@ class BibleChapters():
                 del marked[translation]
 
     def mark(self, translation:str, chap_index:int):
-        if translation not in self.marked.keys():
-            raise Exception(f'translation/set was not instantiated in constructor. translation: {translation}')
-        self.marked[translation].add(chap_index)
+        if translation not in self.marked.keys(): self.marked[translation] = set([chap_index])
+        else: self.marked[translation].add(chap_index)
 
     def ratio(self) -> str:
         """ `{marked}/{total_chapters}` """

@@ -12,6 +12,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from definitions import *
+from kozubenko.iter import iterate_list
 from kozubenko.os import File
 from kozubenko.print import *
 from kozubenko.string import String
@@ -19,9 +20,11 @@ from kozubenko.time import Time
 from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list
 from tor.tor import Tor
 from models.Bible import BIBLE, Book, Chapter
-from models.BibleChapters import BibleChapterSets
+from models.BibleChapters import BibleChapterSets, BibleChapters
 
 
+
+translation = str
 
 @dataclass
 class ProblemChapter:
@@ -171,8 +174,9 @@ def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
     else:
         return expected_cls
 
-class ScrapeContextManager():
-    def __enter__(cls, out_directory:str):
+class ScrapeContextManager(type):
+    def __enter__(cls):
+        if Scrape.OUT_DIRECTORY is None: raise Exception('Must Set: Scrape.OUT_DIRECTORY')
         Tor.Start()
         Scrape.setup_driver()
         return cls
@@ -181,13 +185,11 @@ class ScrapeContextManager():
         if(Scrape.driver): Scrape.driver.quit()
         Tor.Stop()
 
-class Scrape(ScrapeContextManager):
-    OUT_DIRECTORY:str
+class Scrape(metaclass=ScrapeContextManager):
+    OUT_DIRECTORY:str = BIBLE_TXT_PARTIAL # BIBLE_TXT_NEW
     driver:Any = None
 
-    def setup_driver(out_directory:str):
-        Scrape.OUT_DIRECTORY = out_directory
-
+    def setup_driver():
         profile = webdriver.FirefoxProfile()
         profile.set_preference("network.proxy.type",             1)
         profile.set_preference("network.proxy.socks",            Tor.HOST)
@@ -203,46 +205,51 @@ class Scrape(ScrapeContextManager):
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
 
-    # def scrape_chapter(target_translations:list[str], Chapter:Chapter) -> bool:
-    #     URL = fr"https://www.biblegateway.com/passage/?search={book.abbr}%20{chapter}&version={";".join(target_translations)}"
+    def scrape_chapter(translation:str, Chapter:Chapter) -> bool:
+        OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, Chapter.book.name, f'{Chapter.chapter}.txt')
 
-    #     Scrape.driver.get(URL)
+        css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
+        element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
 
-    #     if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
-    #         ProblemChapter(translation, book, chapter, 'AttemptToSetPageState() failure')
-    #         continue
+        selector = f"span[class*='text {Chapter.book.abbr}-{Chapter.chapter}-']"
+        spans = element.find_elements(By.CSS_SELECTOR, selector)
 
-    #     for translation in target_translations:
-    #         OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, book.name, f'{chapter}.txt')
+        expected_cls = f"text {Chapter.book.abbr}-{Chapter.chapter}-1"
+        chapter_text = ""
+        iteration = 0
+        for span in spans:
+            iteration += 1
+            expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
+            if expected_cls == False:
+                return False
+            if String.isEmptyOrWhitespace(span.text):
+                continue
 
-    #         css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
-    #         element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
+            chapter_text += f"{span.text}\n"
 
-    #         selector = f"span[class*='text {book.abbr}-{chapter}-']"
-    #         spans = element.find_elements(By.CSS_SELECTOR, selector)
+        OUT_TXT.save(chapter_text, encoding='UTF-8')
 
-    #         expected_cls = f"text {book.abbr}-{chapter}-1"
-    #         chapter_text = ""
-    #         iteration = 0
-    #         for span in spans:
-    #             iteration += 1
-    #             expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
-    #             if expected_cls == False:
-    #                 problem = ProblemChapter(translation, book, chapter, f'not still_on_expected_path() on iteration: {iteration}')
-    #                 problem_chapters.append(problem); Print.yellow(f'{str(problem)}\n')
-    #                 break
+    def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[list[translation], Chapter]]]) -> BibleChapterSets:
+        """
+        Relies on: `Scrape.scrape_chapter()`
+        
+        **Returns:** `BibleChapterSets.marked` -> `Chapters` unable to scrape.
+        """
+        Chapters = BibleChapters()
+        for TRANSLATIONS,Chapter in Chapter_iterator():
+            for translations in iterate_list(TRANSLATIONS, step=5):
+                URL = fr"https://www.biblegateway.com/passage/?search={Chapter.book.abbr}%20{Chapter.chapter}&version={";".join(translations)}"
 
-    #             if String.isEmptyOrWhitespace(span.text):
-    #                 continue
+                Scrape.driver.get(URL)
+                if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
+                    for translation in translations:
+                        Chapters.mark(translation, Chapter.index)
+                    continue
 
-    #             chapter_text += f"{span.text}\n"
-
-    #         OUT_TXT.save(chapter_text, encoding='UTF-8')
-
-    def ChapterSet(Chapter_iterator:Callable[[], Iterator[Chapter]]) -> BibleChapterSets:
-        """ `Chapter.translation` is NOT optional! """
-        for Chapter in Chapter_iterator():
-            pass
+                for translation in translations:
+                    if not Scrape.scrape_chapter(translation, Chapter):
+                        Chapters.mark(translation, Chapter.index)
+        return Chapters
 
     def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None):
         """
@@ -250,7 +257,7 @@ class Scrape(ScrapeContextManager):
 
         **EXAMPLE:**
         ```python
-        with Scrape(out_directory):
+        with Scrape:
             Scrape.Book(translations, book, chapter, chapter)
             Scrape.Book(translations, book, chapter, chapter)
         ```
@@ -302,6 +309,8 @@ class Scrape(ScrapeContextManager):
     def Bible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
         """
         - `target_translations` - supported length: 1-5
+
+        Relies on: `Scrape.Book()`
         """
         assert_int("index_book_start", index_book_start, min_val=1,                max_val=66)
         assert_int("index_book_end",   index_book_end,   min_val=index_book_start, max_val=66)
@@ -313,6 +322,8 @@ class Scrape(ScrapeContextManager):
     def Bible_Random_Order(target_translations:list[str], out_dir:str=None):
         """
         NOTE: Written before `BibleChapters`/`BibleChapterSets` existed. Plug in, if you ever use this again.
+
+        Relies on: `Scrape.Book()`
         """
         if out_dir is None:
             out_dir = Scrape.OUT_DIRECTORY

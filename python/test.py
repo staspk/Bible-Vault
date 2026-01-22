@@ -1,9 +1,10 @@
 import time
 from collections.abc import Callable
 from definitions import TEMP_DIR
+from kozubenko.iter import iterate_list
 from kozubenko.os import File
 from models.text_forms.missing_verses import MissingVerses
-from scrape import Scrape
+# from scrape import Scrape
 from parser import *
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
@@ -20,7 +21,7 @@ def debug_chapter(translation='KJV', book=BIBLE.SECOND_CHRONICLES, chapter=2):
     chapter_File(PTR).open()
     debug_chapter(translation, book, chapter, is_standard_form)
 
-def identify_Standard_Form() -> BibleChapters:
+def identify_Standard_Form() -> BibleChapterSets:
     Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
     for PTR in Chapters.iterate():
         if is_standard_form(PTR, chapter_text(PTR)):
@@ -30,7 +31,7 @@ def identify_Standard_Form() -> BibleChapters:
     Chapters.Save_Report('identify_standard_form()', 'Standard Form')
     return Chapters
 
-def identify_Poetry_Form() -> BibleChapters:
+def identify_Poetry_Form() -> BibleChapterSets:
     Chapters:BibleChapterSets = BibleChapterSets(StandardForm.Inverse())
     for PTR in Chapters.iterate():
         chapter_File(PTR).open()
@@ -53,7 +54,7 @@ def identify_Poetry_Form() -> BibleChapters:
 # visual_test(Chapters.iterate)
 
 
-def identify_Mixed_Form() -> BibleChapters:
+def identify_Mixed_Form() -> BibleChapterSets:
     Chapters:BibleChapterSets = BibleChapterSets(StandardForm.Inverse())
     for PTR in Chapters.iterate():
         chapter_File(PTR).open()
@@ -61,20 +62,15 @@ def identify_Mixed_Form() -> BibleChapters:
         if has_standard_line(PTR):
             Chapters.mark(PTR.translation, PTR.index)
 
-def identify_Chapters_missing_verses():
+def identify_Chapters_missing_verses() -> BibleChapterSets:
     Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
     for PTR in Chapters.iterate():
         if has_missing_verses(PTR):
             Chapters.mark(PTR.translation, PTR.index)
-
+        
     Print.red(Chapters.total_marked)
-    visual_test(Chapters.iterate_marked)
     Chapters.Save_Report('Missing Verses')
+    return Chapters
 
-
-count = 0
-for translations,chapter in MissingVerses.iterate():
-    Print.green(f'{translations}: {chapter.book} {chapter.chapter}')
-    count += translations.__len__()
-
-Print.red(count)
+chapters = identify_Chapters_missing_verses()
+visual_test(chapters)

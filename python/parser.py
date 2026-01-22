@@ -29,7 +29,8 @@ RESOLVED:
     11613/11890 Transformations: First verse in txts identified by "{book.chapter}" have all been standardized to "1", ie: "{verse}"
 """
 import re
-from definitions import BIBLE_TXT_NEW
+from typing import Iterator
+from definitions import BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 from collections.abc import Callable
 from kozubenko.os import File
 from kozubenko.print import ANSI, Print, colored_input
@@ -47,10 +48,12 @@ def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Call
     ptr = Chapter(book, chapter, None, translation)
     identifying_func(ptr, chapter_text(ptr))
 
-def visual_test(iterator:Callable, files_per_iteration=50):
+def visual_test(iterator:Callable[[], Iterator[Chapter]], files_per_iteration=50):
     """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
     iteration = 1
     for PTR in iterator():
+        Print.green(f'{PTR.__str__()} -> SHOULD HAVE: ', new_line=False)
+        Print.red(PTR.book.total_verses(PTR.chapter))
         Subprocess.Notepad(chapter_File(PTR))
         iteration += 1
         if iteration == files_per_iteration:
@@ -114,16 +117,8 @@ def has_missing_verses(PTR:Chapter) -> bool:
         start = text[start:END].find(f'{verse} ')
         if start == -1:
             return True
-        
+
     return False
-
-def is_numbered_wrong(PTR:Chapter, text:str) -> bool:
-    start_index = text.find(f'1 ')
-    if start_index == 0: return True
-    return False
-
-
-
 
 
 
@@ -133,12 +128,12 @@ def is_numbered_wrong(PTR:Chapter, text:str) -> bool:
 """ 
 Archived
 """
-def standardize_chapter_number_formatting():
+def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
-    **From:**  `f'1 '`  
-    **To:** `f'{PTR.chapter} '`
+    **From:** `"{PTR.chapter} "`
+    **To:** `"1 "`
 
-    NOTE: `strip_title()` changed since this function used!
+    NOTE: strip_title() assumptions have CHANGED since using this function !!!
     """
     i = 1
     Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
@@ -146,8 +141,7 @@ def standardize_chapter_number_formatting():
         TEXT = chapter_text(PTR)
         text = TEXT
 
-        if is_titled(PTR, text): (title, text) = strip_title(PTR, text)
-        else: title = ""
+        (title, text) = strip_title(PTR, text)
         
         start_index = text.find(f'{PTR.chapter} ')
         if start_index == 0:
@@ -158,3 +152,4 @@ def standardize_chapter_number_formatting():
             
     Print.yellow(Chapters.total_marked)
     Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")
+    return Chapters
