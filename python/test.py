@@ -1,45 +1,46 @@
-import time
-from collections.abc import Callable
-from definitions import TEMP_DIR
-from kozubenko.os import File
-from scrape import Scrape
-from parser import chapter_file, chapter_text, is_poetry_form, strip_title, is_numbered_wrong, debug_chapter, visual_test
-from kozubenko.print import ANSI, Print, colored_input
-from kozubenko.subprocess import Subprocess
-from models.Bible import BIBLE, ChapterPtr, Iterate_Bible_Chapters
-from models.BibleChapters import BibleChapters, BibleChapterSets
-from models.text_forms.standard import StandardForm
-from models.text_forms.titled import TitledTrait
+from parser import *
+from kozubenko.print import Print
+from models.Bible import BIBLE
+from models.IBibleChapterSet import IBibleChapterSet
+from models.BibleChapterSets import BibleChapterSets
+from models.bible_chapter_sets.standard import StandardForm
+from models.bible_chapter_sets.missing_verses import MissingVerses
+from models.bible_chapter_sets.missing_chapters import MissingChapters
+from models.bible_chapter_sets.chapters_failing_iterate_verses import IterateVersesFails
 
 
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
+ALL_CHAPTERS:BibleChapterSets = BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
-Chapters:BibleChapterSets = BibleChapterSets(StandardForm.Inverse())
-for PTR in Chapters.iterate():
-    (title, text) = strip_title(chapter_text(PTR))
-    # File(TEMP_DIR, 'new_text.txt').save(text, encoding='UTF-8').open()
-    # input()
-    if is_poetry_form(PTR, text):
-        Chapters.mark(PTR.translation, PTR.index)
+def open_Chapters(Chapters:BibleChapterSets, step=50):
+    i = 0
+    for Chapter in Chapters.iterate():
+        chapter_File(Chapter).open()
+        i += 1
+        if i == 50:
+            colored_input(f'Press Enter for {step} more...')
+            i = 0
+
+# Chapters:BibleChapterSets = identify_Standard_Form()
+# for chapter in Chapters.iterate():
+#     continue
+
+identify_missing_chapters()
+identify_Chapters_missing_verses()
+identify_Standard_Form()
+TEST_iterate_verses()
 
 
-Print.red(Chapters.total_marked)
-Chapters.Save_Report()
-# visual_test(Chapters.iterate)
-
-# translation = 'NKJV'; book = BIBLE.SECOND_SAMUEL; chapter = 13
-# Subprocess.Notepad(file(ChapterPtr(book, chapter, None, translation)))
-# debug_chapter(translation, book, chapter, is_titled)
 
 
+"""
+"{verse} \n" -> Lined Verse
 
-    # visual_test(Chapters.iterate_marked)
+"{verse} 
 
-# standardize_chapter_number_formatting()
+"{1 } \n{2 }" -> Standard Line
 
-# debug_chapter('NRSV', BIBLE.GENESIS, 35, is_numbered_wrong)
-# debug_chapter('NET', BIBLE.PSALMS, 55, is_numbered_wrong)
-
-# Chapters:BibleChapterSets = BibleChapterSets(TitledTrait.Chapters())
-# visual_test(Chapters.iterate)
-
+TODO: 
+    to identify mixed form
+    assert 1 Lined Verse
+"""

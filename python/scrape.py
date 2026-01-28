@@ -1,9 +1,7 @@
-import random
-import time
+import time, random
+from typing import Any, Iterator, Self
 from dataclasses import dataclass, fields
 from datetime import datetime
-from typing import Any, Self
-
 from selenium import webdriver
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 # from selenium.webdriver.chrome.options import Options
@@ -13,15 +11,19 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from definitions import *
-from kozubenko.os import File
-from kozubenko.print import *
-from kozubenko.string import String
-from kozubenko.time import Time
-from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list
+from models.IBibleChapterSet import IBibleChapterSet
 from tor.tor import Tor
-from models.Bible import BIBLE, Book, ChapterPtr
+from kozubenko.print import *
+from kozubenko.os import File
+from kozubenko.iter import iterate_list
+from kozubenko.string import String
+from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list
+from models.Bible import BIBLE, Book, Chapter
+from models.BibleChapterSets import BibleChapterSets
 
 
+
+translation = str
 
 @dataclass
 class ProblemChapter:
@@ -173,6 +175,7 @@ def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
 
 class ScrapeContextManager(type):
     def __enter__(cls):
+        if Scrape.OUT_DIRECTORY is None: raise Exception('Must Set: Scrape.OUT_DIRECTORY')
         Tor.Start()
         Scrape.setup_driver()
         return cls
@@ -182,7 +185,7 @@ class ScrapeContextManager(type):
         Tor.Stop()
 
 class Scrape(metaclass=ScrapeContextManager):
-    OUT_DIRECTORY:str = BIBLE_TXT_NEW
+    OUT_DIRECTORY:str = BIBLE_TXT_PARTIAL # BIBLE_TXT_NEW
     driver:Any = None
 
     def setup_driver():
@@ -200,6 +203,54 @@ class Scrape(metaclass=ScrapeContextManager):
 
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
+
+    def scrape_chapter(translation:str, Chapter:Chapter) -> bool:
+        OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, Chapter.book.name, f'{Chapter.chapter}.txt')
+
+        css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
+        element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
+
+        selector = f"span[class*='text {Chapter.book.abbr}-{Chapter.chapter}-']"
+        spans = element.find_elements(By.CSS_SELECTOR, selector)
+
+        expected_cls = f"text {Chapter.book.abbr}-{Chapter.chapter}-1"
+        chapter_text = ""
+        iteration = 0
+        for span in spans:
+            iteration += 1
+            expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
+            if expected_cls == False:
+                return False
+            if String.isEmptyOrWhitespace(span.text):
+                continue
+
+            chapter_text += f"{span.text}\n"
+
+        OUT_TXT.save(chapter_text, encoding='UTF-8')
+        return True
+
+    def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[Chapter, list[translation]]]]) -> BibleChapterSets:
+        """
+        Relies on: `Scrape.scrape_chapter()`
+        
+        **Returns:** `BibleChapterSets.marked` -> `Chapters` unable to scrape.
+        """
+        Chapters = BibleChapterSets({})
+        for Chapter,TRANSLATIONS, in Chapter_iterator():
+            for translations in iterate_list(TRANSLATIONS, step=5):
+                if len(translations) > 1:
+                    URL = fr"https://www.biblegateway.com/passage/?search={Chapter.book.abbr}%20{Chapter.chapter}&version={";".join(translations)}"
+
+                    Scrape.driver.get(URL)
+                    if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
+                        for translation in translations:
+                            Chapters.mark(translation, Chapter.index)
+                        continue
+
+                    for translation in translations:
+                        if not Scrape.scrape_chapter(translation, Chapter):
+                            Chapters.mark(translation, Chapter.index)
+        return BibleChapterSets(Chapters)
 
     def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None):
         """
@@ -259,6 +310,8 @@ class Scrape(metaclass=ScrapeContextManager):
     def Bible(target_translations:list[str], index_book_start = 1, index_book_end = 66):
         """
         - `target_translations` - supported length: 1-5
+
+        Relies on: `Scrape.Book()`
         """
         assert_int("index_book_start", index_book_start, min_val=1,                max_val=66)
         assert_int("index_book_end",   index_book_end,   min_val=index_book_start, max_val=66)
@@ -268,11 +321,16 @@ class Scrape(metaclass=ScrapeContextManager):
             Print.green(f"{target_translations}:{book.name} Done.")
 
     def Bible_Random_Order(target_translations:list[str], out_dir:str=None):
+        """
+        NOTE: Written before `BibleChapters`/`BibleChapterSets` existed. Plug in, if you ever use this again.
+
+        Relies on: `Scrape.Book()`
+        """
         if out_dir is None:
             out_dir = Scrape.OUT_DIRECTORY
 
         def chapter_already_scraped(chapter:int) -> bool:
-            PTR:ChapterPtr = BIBLE.ChaptersMap(chapter)
+            PTR:Chapter = BIBLE.Chapter(chapter)
             for translation in target_translations:
                 if File(out_dir, translation, PTR.book.name, f'{PTR.chapter}.txt').exists():
                     return True
@@ -287,7 +345,7 @@ class Scrape(metaclass=ScrapeContextManager):
                     chapters_todo.remove(chapter)
                     continue
 
-                PTR:ChapterPtr = BIBLE.ChaptersMap(chapter)
+                PTR:Chapter = BIBLE.Chapter(chapter)
                 Scrape.Book(target_translations, PTR.book, PTR.chapter, PTR.chapter)
                 Print.green(f'{PTR.book} {PTR.chapter}')
                 chapters_todo.remove(chapter)

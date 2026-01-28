@@ -11,4 +11,4 @@ export const BibleTranslations = {
     RUSV: 'RUSV'
 } as const;
 
-export type BibleTranslation = typeof BibleTranslations[keyof typeof BibleTranslations];
+export type Translation = typeof BibleTranslations[keyof typeof BibleTranslations];

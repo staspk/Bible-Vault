@@ -1,36 +1,32 @@
+from typing import Iterator, Optional
 from types import SimpleNamespace
 from dataclasses import dataclass
+from kozubenko.cls import set_frozen_attr
 from kozubenko.utils import assert_int
 
-"""
-abbreviations for apocrypha:
-    Tob
-    Jdt
-    GkEsth
-    Wis
-    Sir
-    Bar
-    EpJer
-    SgThr
-    Sus
-    Bel
-    1Macc
-    2Macc
-    1Esd
-    PrMan
-    Ps151
-    3Ma
-    2Esd
-    4Ma
-"""
 
 @dataclass(frozen=True)
-class ChapterPtr:
+class Chapter:
     book:Book
     chapter:int
-    index:int
-    translation:str = None
-    
+    index:int = None
+    translation:Optional[str] = None
+
+    @property
+    def total_verses(self) -> int:
+        if self.book.name == '2 Corinthians' and self.chapter == 13 and self.translation in ('NRSV', 'NRT', 'NET'): return 13   # usually: 14
+        if self.book.name == '3 John' and self.chapter == 1 and self.translation in ('KJV', 'NKJV', 'RUSV'): return 14   # usually: 15
+        if self.book.name == 'Revelation' and self.chapter == 12 and self.translation in ('NRSV', 'NET'): return 18   # usually: 17
+
+        return self.book.total_verses(self.chapter)
+
+    def __post_init__(self):
+        if self.index is None:
+            set_frozen_attr(self, "index", BIBLE.find_chapter_index(self.book, self.chapter))
+
+    def From(chapter_index:int, translation:Optional[str]=None) -> Chapter:
+        return BIBLE.Chapter(chapter_index, translation)
+
     def __str__(self):
         string = f'{self.index} -> {self.book.name} {self.chapter}'
         if self.translation is not None:
@@ -58,7 +54,9 @@ class Book:
     def __str__(self):
         return self.name
 
-class BIBLE: 
+class BIBLE:
+    TOTAL_CHAPTERS = 1189   # aka: Protestant
+
     GENESIS              = Book(name="Genesis",             abbr="Gen",      index=1,     chapters=50,   verse_map={1:31,2:25,3:24,4:26,5:32,6:22,7:24,8:22,9:29,10:32,11:32,12:20,13:18,14:24,15:21,16:16,17:27,18:33,19:38,20:18,21:34,22:24,23:20,24:67,25:34,26:35,27:46,28:22,29:35,30:43,31:55,32:32,33:20,34:31,35:29,36:43,37:36,38:30,39:23,40:23,41:57,42:38,43:34,44:34,45:28,46:34,47:31,48:22,49:33,50:26})
     EXODUS               = Book(name="Exodus",              abbr="Exod",     index=2,     chapters=40,   verse_map={1:22,2:25,3:22,4:31,5:23,6:30,7:25,8:32,9:35,10:29,11:10,12:51,13:22,14:31,15:27,16:36,17:16,18:27,19:25,20:26,21:36,22:31,23:33,24:18,25:40,26:37,27:21,28:43,29:46,30:38,31:18,32:35,33:23,34:35,35:35,36:38,37:29,38:31,39:43,40:38})
     LEVITICUS            = Book(name="Leviticus",           abbr="Lev",      index=3,     chapters=27,   verse_map={1:17,2:16,3:17,4:35,5:19,6:30,7:38,8:36,9:24,10:20,11:47,12:8,13:59,14:57,15:33,16:34,17:16,18:30,19:37,20:27,21:24,22:33,23:44,24:23,25:55,26:46,27:34})
@@ -122,20 +120,18 @@ class BIBLE:
     SECOND_PETER         = Book(name="2 Peter",             abbr="2Pet",     index=61,    chapters=3,    verse_map={1:21,2:22,3:18})
     FIRST_JOHN           = Book(name="1 John",              abbr="1John",    index=62,    chapters=5,    verse_map={1:10,2:29,3:24,4:21,5:21})
     SECOND_JOHN          = Book(name="2 John",              abbr="2John",    index=63,    chapters=1,    verse_map={1:13})
-    THIRD_JOHN           = Book(name="3 John",              abbr="3John",    index=64,    chapters=1,    verse_map={1:14})
+    THIRD_JOHN           = Book(name="3 John",              abbr="3John",    index=64,    chapters=1,    verse_map={1:15})
     JUDE                 = Book(name="Jude",                abbr="Jude",     index=65,    chapters=1,    verse_map={1:25})
     REVELATION           = Book(name="Revelation",          abbr="Rev",      index=66,    chapters=22,   verse_map={1:20,2:29,3:22,4:11,5:14,6:17,7:17,8:13,9:21,10:11,11:19,12:17,13:18,14:20,15:8,16:21,17:18,18:24,19:21,20:15,21:27,22:21})
 
-    TOTAL_CHAPTERS = 1189   # aka: Protestant
-
-    _Books:list[Book] = None        # Lazy-loaded. Use BIBLE.Books() to access
+    _Books:list[Book] = None
     def Books() -> list[Book]:
         """
         **Returns:** the standard 66 books as a `list[Book]`
         """
         if BIBLE._Books is None:
             BIBLE._Books = []
-            for name, book in BIBLE.__dict__.items():
+            for name,book in BIBLE.__dict__.items():
                 if not name.startswith("__") and isinstance(book, Book):
                     BIBLE._Books.append(book)
 
@@ -143,35 +139,44 @@ class BIBLE:
 
     def Book(index:int) -> Book:
         """
-        **Returns:** a `Book` by index (not by offset), i.e: `BIBLE.Book(1) -> Genesis`
+        e.g: `BIBLE.Book(1) -> Genesis`
         """
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-    _chapters_map:dict[int, ChapterPtr] = None
-    def ChaptersMap(chapter_index:int, translation:str=None) -> ChapterPtr | None:
-        """ `chapter_index` -> 1-1189 """
-        if BIBLE._chapters_map is None:
-            BIBLE._chapters_map = {}
-            for iter in Iterate_Bible_Chapters():
-                BIBLE._chapters_map[iter.i] = ChapterPtr(
-                    iter.book,
-                    iter.chapter,
-                    iter.i
-                )
-        ptr = BIBLE._chapters_map.get(chapter_index, None)
+    _Chapters:dict[int, Chapter] = None
+    def Chapter(chapter_index:int, translation:str=None) -> Chapter | None:
+        """ `chapter_index`: [1-1189] """
+        if BIBLE._Chapters is None:
+            BIBLE._Chapters = {}
+            for it in Iterate_Bible_Chapters():
+                BIBLE._Chapters[it.i] = Chapter(it.book, it.chapter, it.i)
+        
+        ptr = BIBLE._Chapters.get(chapter_index, None)
         if translation:
-            return ChapterPtr(ptr.book, ptr.chapter, ptr.index, translation)
+            return Chapter(ptr.book, ptr.chapter, ptr.index, translation)
         return ptr
 
-def Iterate_Bible_Chapters():
+    _book_to_cumulative_total_chapters:dict[int, int] = None    # Book.index -> Book.chapters + total_chapters(all_books_before_Book)
+    def find_chapter_index(book:Book, chapter:int) -> int:
+        if BIBLE._book_to_cumulative_total_chapters is None:
+            BIBLE._book_to_cumulative_total_chapters = {}
+            books:list[Book] = BIBLE.Books()
+            cumulative_total_chapters = 0
+            for BOOK in books:
+                cumulative_total_chapters += BOOK.chapters
+                BIBLE._book_to_cumulative_total_chapters[BOOK.index] = cumulative_total_chapters
+
+        return BIBLE._book_to_cumulative_total_chapters[book.index] + chapter
+
+def Iterate_Bible_Chapters() -> Iterator[Chapter]:
     """
     **How to Use:**
     ```python
-    for iter in Iterate_Bible_Chapters():
-        iter.i
-        iter.book
-        iter.chapter
+    for it in Iterate_Bible_Chapters():
+        it.i
+        it.book
+        it.chapter
     ```
     """
     i = 1
@@ -179,7 +184,6 @@ def Iterate_Bible_Chapters():
         for chapter in range(1, book.chapters + 1):
             yield SimpleNamespace(i=i, book=book, chapter=chapter)
             i += 1
-
 
 class Abbreviations:
     """

@@ -1,12 +1,12 @@
 import { ApiEndpoints } from "../../../_shared/ApiEndpoints.js";
-import type { BibleTranslation } from "../../../_shared/BibleTranslations.js"
+import type { Translation } from "../../../_shared/BibleTranslations.js"
 import type { IReportResponse } from "../../../_shared/interfaces/IResponses.js";
 
 
 
 /** `/api/bible-report` */
 export class BibleReportApi {
-    static DEFAULT_TRANSLATIONS = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as BibleTranslation[];
+    static DEFAULT_TRANSLATIONS = ['KJV','NASB','RSV','RUSV','NKJV','ESV','NRSV','NRT'] as Translation[];
 
     static async Fetch(translations = this.DEFAULT_TRANSLATIONS): Promise<IReportResponse|false> {
         const response = await fetch(`${ApiEndpoints.Bible_Report}?translations=${translations.toString()}`);
