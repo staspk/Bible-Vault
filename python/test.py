@@ -1,12 +1,7 @@
 from parser import *
 from kozubenko.print import Print
 from models.Bible import BIBLE
-from models.IBibleChapterSet import IBibleChapterSet
 from models.BibleChapterSets import BibleChapterSets
-from models.bible_chapter_sets.standard import StandardForm
-from models.bible_chapter_sets.missing_verses import MissingVerses
-from models.bible_chapter_sets.missing_chapters import MissingChapters
-from models.bible_chapter_sets.chapters_failing_iterate_verses import IterateVersesFails
 
 
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
@@ -21,16 +16,19 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
             colored_input(f'Press Enter for {step} more...')
             i = 0
 
-# Chapters:BibleChapterSets = identify_Standard_Form()
+# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
 # for chapter in Chapters.iterate():
 #     continue
 
-identify_missing_chapters()
-identify_Chapters_missing_verses()
-identify_Standard_Form()
-TEST_iterate_verses()
+
+# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
+# for chapter in Chapters.iterate():
+#     iterate_verses(chapter)
+
+# Print.red(Chapters.total)
 
 
+Print.green(TEST_iterate_verses().total_marked)
 
 
 """

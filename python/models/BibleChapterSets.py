@@ -69,25 +69,6 @@ class BibleChapterSets:
             if sets[translation].__len__() == 0:
                 del sets[translation]
 
-    def iterate_marked(self) -> Iterator[Chapter]:
-        """
-        NOTE: Essentially deprecated Not recommended
-
-        **Yields:**
-            Pops a random "chapter_index" from `self.marked`, yielding corresponding `Chapter` including `translation`.
-        """
-        marked = {key:value.copy() for key,value in self.marked.items() if len(value) > 0}
-        left = sum(len(set) for set in marked.values())
-        while left > 0:
-            translation = random.choice(tuple(marked.keys()))
-            chapter_index = random_pop(marked[translation])
-            PTR:Chapter = BIBLE.Chapter(chapter_index)
-            yield Chapter(PTR.book, PTR.chapter, PTR.index, translation)
-
-            left -= 1
-            if marked[translation].__len__() == 0:
-                del marked[translation]
-
     def ratio(self) -> str:
         """
         `marked / total_chapters`
@@ -100,19 +81,15 @@ class BibleChapterSets:
             total_chapters += BIBLE.TOTAL_CHAPTERS
         return f'{marked}/{total_chapters}'
 
-    def Save_Report(self, file_name:str, set_to_save:BibleChapterSet=None):
+    def Save_Report(self, file_name:str):
         """ Saves `self.marked` by default. Save `self.set` instead, by passing to `set_to_save`.  """
-        if set_to_save is None: set_to_save = self.marked
-        count = sum(len(set) for set in set_to_save.values())
-        total = sum(1189 for translation in set_to_save.keys())
-
         report = ""
-        for translation,marked_chapters in set_to_save.items():
+        for translation,marked_chapters in self.set.items():
             report += f'{translation} = {str(marked_chapters)}\n'
-        report += f'Ratio: {count}/{total}'
+        report += f'Ratio: {self.total_marked}/{self.total}'
 
         File(PYTHON_TESTS_DIRECTORY, f'{file_name}').save(report, encoding='UTF-8')
-        Print.yellow(f'{file_name}: {count}')
+        Print.yellow(f'{file_name}: {self.total_marked}')
 
     def Subtract(
         A:dict[translation, set[chapter_index]],

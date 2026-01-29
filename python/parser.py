@@ -44,13 +44,11 @@ from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
-from models.bible_chapter_sets.missing_verses import MissingVerses
-from models.bible_chapter_sets.standard import StandardForm
 
 
 DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-ALL_CHAPTERS:BibleChapterSets = BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
+def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
@@ -170,10 +168,9 @@ def identify_missing_chapters(Chapters:BibleChapterSets = BibleChapterSets.From(
         if not chapter_File(PTR).exists():
             Chapters.mark(PTR.translation, PTR.index)
 
-    Chapters.Save_Report('missing_chapters')
-    return BibleChapterSets(Chapters.marked)
+    return Chapters
 
-def identify_Chapters_missing_verses(Chapters:BibleChapterSets = ALL_CHAPTERS) -> BibleChapterSets:
+def identify_Chapters_missing_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     """
     Missing Verses == LESS verses than expected and NOT a Psalms chapter
     
@@ -185,31 +182,29 @@ def identify_Chapters_missing_verses(Chapters:BibleChapterSets = ALL_CHAPTERS) -
         if has_missing_verses(PTR) and PTR.book != BIBLE.PSALMS:
             Chapters.mark(PTR.translation, PTR.index)
         
-    Chapters.Save_Report('missing_verses')
-    return BibleChapterSets(Chapters.marked)
+    return Chapters
 
 
-def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS, save_report=False) -> BibleChapterSets:
+def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     for PTR in Chapters.iterate():
         if is_standard_form(PTR):
             Chapters.mark(PTR.translation, PTR.index)
 
-    if save_report:
-        Chapters.Save_Report('identify_Standard_Form')
-    return BibleChapterSets(Chapters.marked)
+    return Chapters
 
 
-def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS) -> BibleChapterSets:
+def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     """ Failure == `iterate_verses()` yields wrong # of verses """
-    for PTR in Chapters.iterate():
-        TEXT = chapter_text(PTR)
-        length = len(list(iterate_verses(PTR)))
-        if not is_standard_form(PTR):
-            if PTR.total_verses != length and PTR.book != BIBLE.PSALMS:
-                Chapters.mark(PTR.translation, PTR.index)
 
-    Chapters.Save_Report('test_iterate_verses')
-    return BibleChapterSets(Chapters.marked)
+    for PTR in Chapters.iterate():
+        ACTUAL = len(list(iterate_verses(PTR)))
+        # Print.yellow(f'{str(PTR)}')
+        # Print.yellow(f'  expected: {PTR.total_verses}')
+        # Print.yellow(f'  actual  : {ACTUAL}\n')
+        if PTR.total_verses != ACTUAL and PTR.book != BIBLE.PSALMS:
+            Chapters.mark(PTR.translation, PTR.index)
+
+    return Chapters
 
 
 def identify_Chapters_with_Standard_Lined_verse() -> BibleChapterSets:
