@@ -1,10 +1,10 @@
 from parser import *
-from models.bible_chapter_sets.missing_chapters import MissingChapters
-from kozubenko.print import Print
+from transform import standardize_verse_form
+from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE
 from models.BibleChapterSets import BibleChapterSets
+from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS
-from transform import standardize_verse_form
 
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
@@ -23,16 +23,8 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 #     continue
 
 
-# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
-# for chapter in Chapters.iterate():
-#     iterate_verses(chapter)
+standardize_verse_form(Chapter(BIBLE.GENESIS, 46, translation='NKJV'))
 
-# Print.red(Chapters.total)
-
-
-
-
-standardize_verse_form()
 
 
 
