@@ -16,6 +16,25 @@ def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.
 
 
 def standardize_verse_form() -> BibleChapterSets:
+    """
+    STEP 2
+
+
+    **EXAMPLE:** Genesis 46 NKJV
+    ```
+    1 So Israel took his journey with all that he had, and came to Beersheba, and offered sacrifices to the God of his father Isaac.
+    2 Then God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!”
+    And he said, “Here I am.”
+    ```
+    **BECOMES**
+    ```
+    1
+    So Israel took his journey with all that he had, and came to Beersheba, and offered sacrifices to the God of his father Isaac.
+    2
+    Then God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!”
+    And he said, “Here I am.”
+    ```
+    """
     pass
 
 
@@ -23,14 +42,14 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
     STEP 1
 
+    NOTE: strip_title() assumptions have CHANGED since using this to transform !!!  
+    NOTE: this version did not account for chapter mismatches between Eng/Rus
+
     **From:** `"{PTR.chapter} "`  
     **To:** `"1 "`
 
     **Returns:**
         `marked` Chapters that were transformed.
-
-    NOTE: strip_title() assumptions have CHANGED since using this function !!!  
-    NOTE: this version did not account for chapter mismatches between Eng/Rus
 
     **EXAMPLE:** Genesis 3
     ```
@@ -38,7 +57,7 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
     He said to the woman, “Did God actually say, ‘You shall not eat of any tree in the garden’?”
     2 And the woman said to the serpent, “We may eat of the fruit of the trees in the garden,
     ```
-    **BECOMES**
+    **BECOMES:**
     ```
     1 Now the serpent was more crafty than any other beast of the field that the Lord God had made.
     He said to the woman, “Did God actually say, ‘You shall not eat of any tree in the garden’?”

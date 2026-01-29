@@ -85,7 +85,13 @@ def strip_title(text:str) -> tuple[str, str]:
 
 def find_skipped_verses() -> BibleChapterSets:
     """
-    The syntax to mark such a verse (assume: verse 7):
+    The syntax to mark such a verse, at least on the NIV, (assume: verse 7):
+    
+    **ORIGINAL:**
+    ```
+    [7] 
+    ```
+    **TRANSFORMED TO:**
     ```
     7
     [7]

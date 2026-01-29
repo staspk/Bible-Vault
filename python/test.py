@@ -6,7 +6,7 @@ from models.BibleChapterSets import BibleChapterSets
 from definitions import ALL_TRANSLATIONS
 
 
-ALL_CHAPTERS:BibleChapterSets = BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
+def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
 def open_Chapters(Chapters:BibleChapterSets, step=50):
     i = 0
@@ -22,14 +22,14 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 #     continue
 
 
-Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
-for chapter in Chapters.iterate():
-    iterate_verses(chapter)
+# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
+# for chapter in Chapters.iterate():
+#     iterate_verses(chapter)
 
 # Print.red(Chapters.total)
 
 
-Print.green(TEST_iterate_verses().total_marked)
+open_Chapters(BibleChapterSets({translation:set(range(46,47)) for translation in ALL_TRANSLATIONS}))
 
 
 """
