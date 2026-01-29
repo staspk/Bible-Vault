@@ -46,12 +46,25 @@ from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 
 
+
+
 DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
+def iterate_verses(PTR:Chapter) -> Iterator[str]:
+    TEXT = chapter_text(PTR); LENGTH = len(TEXT)
+    verse = 1
+    start = TEXT.find(f"{verse} ")
+    end   = TEXT.find(f"{verse+1} ")
+    while end != -1:
+        yield TEXT[start:end]
+        verse += 1
+        start = TEXT.find(f"{verse} ", start)
+        end   = TEXT.find(f"{verse+1} ", start)
+    yield TEXT[start:LENGTH]
 
 def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Callable):
     ptr = Chapter(book, chapter, None, translation)
@@ -146,18 +159,6 @@ def has_missing_verses(PTR:Chapter) -> bool:
             return True
 
     return False
-
-def iterate_verses(PTR:Chapter) -> Iterator[str]:
-    TEXT = chapter_text(PTR); LENGTH = len(TEXT)
-    verse = 1
-    start = TEXT.find(f"{verse} ")
-    end   = TEXT.find(f"{verse+1} ")
-    while end != -1:
-        yield TEXT[start:end]
-        verse += 1
-        start = TEXT.find(f"{verse} ", start)
-        end   = TEXT.find(f"{verse+1} ", start)
-    yield TEXT[start:LENGTH]
 
 
 

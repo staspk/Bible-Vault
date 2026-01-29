@@ -1,9 +1,10 @@
 from kozubenko.os import File
 from kozubenko.print import Print
-from models.Bible import Chapter
+from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
+from parser import iterate_verses
 
 
 
@@ -15,10 +16,13 @@ def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 
-def standardize_verse_form() -> BibleChapterSets:
+def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     """
     STEP 2
 
+    **REQUIRED:**
+        - `standardize_chapter_number_formatting()`
+        - `TEST_iterate_verses().total_marked == 0`
 
     **EXAMPLE:** Genesis 46 NKJV
     ```
@@ -26,7 +30,7 @@ def standardize_verse_form() -> BibleChapterSets:
     2 Then God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!”
     And he said, “Here I am.”
     ```
-    **BECOMES**
+    **BECOMES:**
     ```
     1
     So Israel took his journey with all that he had, and came to Beersheba, and offered sacrifices to the God of his father Isaac.
@@ -35,8 +39,9 @@ def standardize_verse_form() -> BibleChapterSets:
     And he said, “Here I am.”
     ```
     """
-    pass
-
+    for PTR in Chapters.iterate():
+        for verse in iterate_verses(Chapter(BIBLE.GENESIS, 46, translation='NKJV')):
+            Print.yellow(verse)
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """

@@ -29,7 +29,8 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # Print.red(Chapters.total)
 
 
-open_Chapters(BibleChapterSets({translation:set(range(46,47)) for translation in ALL_TRANSLATIONS}))
+Print.red(TEST_iterate_verses().total_marked)
+
 
 
 """
