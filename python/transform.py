@@ -21,11 +21,9 @@ def compare_changes(before:str, after:str):
     time.sleep(.01)
     File(TEMP_DIR, 'post.txt').save(after, None).open()
     input()
-    Directory(TEMP_DIR).delete()
 
 
-# def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
-def standardize_verse_form(PTR:Chapter) -> BibleChapterSets:
+def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     """
     STEP 2
 
@@ -44,26 +42,26 @@ def standardize_verse_form(PTR:Chapter) -> BibleChapterSets:
     And he said, “Here I am.”
     ```
     """
-    # if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
-    # if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
+    if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
+    if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
 
-    # for PTR in Chapters.iterate():
-    # i = 1
-    # for verse in iterate_verses(Chapter(BIBLE.GENESIS, 46, translation='NKJV')):
-    #     Print.yellow(verse)
+    for PTR in Chapters.iterate():
+        TEXT = chapter_text(PTR)
+        new_text = ""
 
-    #     i += 1
+        i = 1
+        for verse in iterate_verses(PTR):
+            first_line, rest = verse.split('\n', maxsplit=1)
 
-    TEXT = chapter_text(PTR)
-    new_text = ""
+            if len(first_line) > 3:
+                first_line_text = first_line.split(f'{i} ')[1]
+                new_text += f'{i}\n{first_line_text}\n{rest}'
+            else:
+                new_text += verse
 
-    i = 1
-    for verse in iterate_verses(PTR):
-        
-        i += 1
+            i += 1
 
-    compare_changes(TEXT, new_text)
-
+        chapter_File(PTR).save(new_text)
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
@@ -109,4 +107,3 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
     Print.yellow(Chapters.total_marked)
     Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")
     return Chapters
-

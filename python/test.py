@@ -1,3 +1,4 @@
+import random
 from parser import *
 from transform import standardize_verse_form
 from kozubenko.print import Print, colored_input
@@ -23,8 +24,7 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 #     continue
 
 
-standardize_verse_form(Chapter(BIBLE.GENESIS, 46, translation='NKJV'))
-
+standardize_verse_form()
 
 
 
