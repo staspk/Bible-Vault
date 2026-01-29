@@ -34,16 +34,14 @@ RESOLVED:
     TODO:
         Certain verses mix both the Standard/Lined format, increases parsing difficulty.
 """
-import re, time
+import re
 from typing import Iterator
-from collections.abc import Callable
 from kozubenko.os import File
-from kozubenko.print import ANSI, Print, colored_input
-from kozubenko.subprocess import Subprocess
-from models.Bible import BIBLE, Book, Chapter
+from kozubenko.print import Print
+from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
-from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
+from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW
 
 
 
@@ -65,23 +63,6 @@ def iterate_verses(PTR:Chapter) -> Iterator[str]:
         start = TEXT.find(f"{verse} ", start)
         end   = TEXT.find(f"{verse+1} ", start)
     yield TEXT[start:LENGTH]
-
-def debug_chapter(translation:str, book:Book, chapter:int, identifying_func:Callable):
-    ptr = Chapter(book, chapter, None, translation)
-    identifying_func(ptr, chapter_text(ptr))
-
-def visual_test(iterator:Callable[[], Iterator[Chapter]], files_per_iteration=50):
-    """ **iterator:** `Chapters.iterate()` || `Chapters.iterate_marked()` """
-    iteration = 1
-    for PTR in iterator():
-        # Print.green(f'{PTR.__str__()} -> SHOULD HAVE: ', new_line=False)
-        # Print.red(PTR.book.total_verses(PTR.chapter))
-        Subprocess.Notepad(chapter_File(PTR))
-        time.sleep(.02)
-        iteration += 1
-        if iteration == files_per_iteration:
-            colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)
-            iteration = 1
 
 def strip_title(text:str) -> tuple[str, str]:
     """
@@ -122,33 +103,14 @@ def find_skipped_verses() -> BibleChapterSets:
 
 def is_standard_form(PTR:Chapter) -> bool:
     text = chapter_text(PTR)
-    expected_total_verses = PTR.book.total_verses(PTR.chapter)
+    expected_total_verses = PTR.total_verses
     lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
     if lines.__len__() == expected_total_verses:
         return True
     return False
 
-def is_poetry_form(PTR:Chapter) -> bool:
-    """ TODO: DOES NOT WORK!"""
-    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
-
-    (title, text) = strip_title(chapter_text(PTR))
-
-
-def has_standard_line(PTR:Chapter) -> bool:
-    """ TODO: DOES NOT WORK!"""
-    TOTAL_VERSES = PTR.book.total_verses(PTR.chapter)
-    (title, text) = strip_title(chapter_text(PTR))
-
-    lines = re.findall(r'.+', text)
-
-    lines = text.splitlines()
-    verse = 1
-    for line in lines:
-        pass
-
 def has_missing_verses(PTR:Chapter) -> bool:
-    """ Logic Problem: false positives where chapter mismatches exist between Eng/Rus (Psalms) """
+    """ I lack 100% certainty on this one, edge-case-wise. But keeping as an alternate iterating implementation """
     text = chapter_text(PTR)
     start = 0; END = text.__len__()
 
@@ -158,7 +120,6 @@ def has_missing_verses(PTR:Chapter) -> bool:
             return True
 
     return False
-
 
 
 
@@ -189,7 +150,6 @@ def identify_Chapters_missing_verses(Chapters:BibleChapterSets = ALL_CHAPTERS())
         
     return Chapters
 
-
 def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     for PTR in Chapters.iterate():
         if is_standard_form(PTR):
@@ -214,23 +174,3 @@ def TEST_chapter_number_formatting(Chapters:BibleChapterSets = ALL_CHAPTERS()) -
             Chapters.mark(PTR.translation, PTR.index)
     
     return Chapters
-
-
-def identify_Chapters_with_Standard_Lined_verse() -> BibleChapterSets:
-    """
-    TODO: NOT COMPLETE  
-    Certain verses mix both the Standard/Lined format, increasing parsing difficulty.
-
-    **EXAMPLE:**
-    ```
-    1 Paul and Timothy, servants of Christ Jesus,
-    To all God’s holy people in Christ Jesus at Philippi, together with the overseers and deacons:
-    2 Grace and peace to you from God our Father and the Lord Jesus Christ.
-    ```
-    """
-    Chapters:BibleChapterSets = StandardForm.Inverse
-    for PTR in Chapters.iterate():
-        TEXT = chapter_text(PTR)
-        for text in iterate_verses(PTR):
-            pass
-            Chapters.mark(PTR.translation, PTR.index)
