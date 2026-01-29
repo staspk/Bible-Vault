@@ -83,7 +83,6 @@ def visual_test(iterator:Callable[[], Iterator[Chapter]], files_per_iteration=50
             colored_input(f'Press Enter to open another {files_per_iteration} chapters in Notepad++...', ANSI.YELLOW)
             iteration = 1
 
-
 def strip_title(text:str) -> tuple[str, str]:
     """
     If no title in text: `title == ""`
@@ -207,10 +206,19 @@ def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChap
 
     return Chapters
 
+def TEST_chapter_number_formatting(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
+    """ Failure == a Chapter, after `strip_title()`, not starting with "1", i.e: the correct verse_number """
+    for PTR in Chapters.iterate():
+        title,text = strip_title(chapter_text(PTR))
+        if text[0] != "1":
+            Chapters.mark(PTR.translation, PTR.index)
+    
+    return Chapters
+
 
 def identify_Chapters_with_Standard_Lined_verse() -> BibleChapterSets:
     """
-    TODO: NOT COMPLETE
+    TODO: NOT COMPLETE  
     Certain verses mix both the Standard/Lined format, increasing parsing difficulty.
 
     **EXAMPLE:**

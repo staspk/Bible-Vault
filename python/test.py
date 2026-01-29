@@ -4,6 +4,7 @@ from kozubenko.print import Print
 from models.Bible import BIBLE
 from models.BibleChapterSets import BibleChapterSets
 from definitions import ALL_TRANSLATIONS
+from transform import standardize_verse_form
 
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
@@ -29,7 +30,9 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # Print.red(Chapters.total)
 
 
-Print.red(TEST_iterate_verses().total_marked)
+
+
+standardize_verse_form()
 
 
 

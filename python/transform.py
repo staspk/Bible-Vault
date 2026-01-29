@@ -4,7 +4,7 @@ from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
-from parser import iterate_verses
+from parser import TEST_chapter_number_formatting, TEST_iterate_verses, iterate_verses
 
 
 
@@ -39,9 +39,12 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     And he said, “Here I am.”
     ```
     """
+    if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
+    if TEST_iterate_verses(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
+
     for PTR in Chapters.iterate():
         for verse in iterate_verses(Chapter(BIBLE.GENESIS, 46, translation='NKJV')):
-            Print.yellow(verse)
+            pass
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
