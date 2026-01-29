@@ -24,7 +24,10 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 #     continue
 
 
-standardize_verse_form()
+# Print.green(standardize_verse_form().total_marked)
+standardize_verse_form(BibleChapterSets({
+    'NRSV':{788}
+}))
 
 
 

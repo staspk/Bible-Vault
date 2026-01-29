@@ -2,6 +2,7 @@ from typing import Iterator, Optional
 from types import SimpleNamespace
 from dataclasses import dataclass
 from kozubenko.cls import set_frozen_attr
+from kozubenko.parse import substring_between
 from kozubenko.utils import assert_int
 
 
@@ -26,6 +27,12 @@ class Chapter:
 
     def From(chapter_index:int, translation:Optional[str]=None) -> Chapter:
         return BIBLE.Chapter(chapter_index, translation)
+    
+    def FromStr(string:str) -> Chapter:
+        """ Assumes `translation` exists """
+        chapter_index = string.split('\n')[0]
+        translation = substring_between(string, '[', ']')
+        return Chapter.From(chapter_index, translation)
 
     def __str__(self):
         string = f'{self.index} -> {self.book.name} {self.chapter}'

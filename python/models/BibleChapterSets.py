@@ -42,8 +42,8 @@ class BibleChapterSets:
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
     
     def mark(self, translation:str, chap_index:int):
-        if translation not in self.marked.keys(): self.marked[translation] = set([chap_index])
-        else: self.marked[translation].add(chap_index)
+        if translation in self.marked.keys(): self.marked[translation].add(chap_index)
+        else:                                 self.marked[translation] = set([chap_index])
 
     def iterate(self) -> Iterator[Chapter]:
         """

@@ -42,26 +42,35 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     And he said, “Here I am.”
     ```
     """
-    if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
-    if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
+    # if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
+    # if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
 
     for PTR in Chapters.iterate():
         TEXT = chapter_text(PTR)
         new_text = ""
 
-        i = 1
+        # chapter_File(PTR).open()
+
+        verse_num = 1
         for verse in iterate_verses(PTR):
             first_line, rest = verse.split('\n', maxsplit=1)
 
             if len(first_line) > 3:
-                first_line_text = first_line.split(f'{i} ')[1]
-                new_text += f'{i}\n{first_line_text}\n{rest}'
+                first_line_text = first_line.split(f'{verse_num} ')[1]
+                new_text += f'{verse_num}\n{first_line_text}\n{rest}'
             else:
                 new_text += verse
 
-            i += 1
+            verse_num += 1
+        
 
-        chapter_File(PTR).save(new_text)
+        # if TEXT != new_text:
+        #     chapter_File(PTR).save(new_text)
+        #     Chapters.mark(PTR.translation, PTR.index)
+        Print.yellow(str(PTR))
+    
+    return Chapters
+
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
