@@ -3,7 +3,7 @@ from parser import *
 from transform import standardize_verse_form
 from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE
-from models.BibleChapterSets import BibleChapterSets
+from models.BibleChapterSets import BibleChapterSets, Protestant_Set
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS
 
@@ -25,11 +25,15 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 
 
 # Print.green(standardize_verse_form().total_marked)
-standardize_verse_form(BibleChapterSets({
-    'NRSV':{788}
-}))
+# standardize_verse_form(BibleChapterSets({
+#     'NRSV':{788}
+# }))
 
 
+Chapters = BibleChapterSets({'RUSV':Protestant_Set()})
+for PTR in Chapters.iterate():
+    if is_standard_form(PTR):
+        Chapters.mark(PTR)
 
 """
 "{verse} \n" -> Lined Verse

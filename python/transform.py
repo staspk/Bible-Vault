@@ -49,11 +49,13 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
         TEXT = chapter_text(PTR)
         new_text = ""
 
-        # chapter_File(PTR).open()
-
         verse_num = 1
         for verse in iterate_verses(PTR):
-            first_line, rest = verse.split('\n', maxsplit=1)
+            try:
+                first_line, rest = verse.split('\n', maxsplit=1)
+            except:
+                chapter_File(PTR).open()
+                Print.red(verse)
 
             if len(first_line) > 3:
                 first_line_text = first_line.split(f'{verse_num} ')[1]
@@ -66,8 +68,8 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
 
         # if TEXT != new_text:
         #     chapter_File(PTR).save(new_text)
-        #     Chapters.mark(PTR.translation, PTR.index)
-        Print.yellow(str(PTR))
+        #     Chapters.mark(PTR)
+        # Print.yellow(str(PTR))
     
     return Chapters
 
@@ -111,7 +113,7 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
             text = "1" + text[len(str(PTR.chapter)):]
 
             chapter_File(PTR).save(f'{title}{text}', encoding='UTF-8')
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
             
     Print.yellow(Chapters.total_marked)
     Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")

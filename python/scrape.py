@@ -231,26 +231,25 @@ class Scrape(metaclass=ScrapeContextManager):
 
     def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[Chapter, list[translation]]]]) -> BibleChapterSets:
         """
-        Relies on: `Scrape.scrape_chapter()`
-        
-        **Returns:** `BibleChapterSets.marked` -> `Chapters` unable to scrape.
+        **Returns:** `Chapters` unable to scrape.
         """
         Chapters = BibleChapterSets({})
-        for Chapter,TRANSLATIONS, in Chapter_iterator():
+        for CHAPTER,TRANSLATIONS, in Chapter_iterator():
             for translations in iterate_list(TRANSLATIONS, step=5):
                 if len(translations) > 1:
-                    URL = fr"https://www.biblegateway.com/passage/?search={Chapter.book.abbr}%20{Chapter.chapter}&version={";".join(translations)}"
+                    URL = fr"https://www.biblegateway.com/passage/?search={CHAPTER.book.abbr}%20{CHAPTER.chapter}&version={";".join(translations)}"
 
                     Scrape.driver.get(URL)
                     if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
                         for translation in translations:
-                            Chapters.mark(translation, Chapter.index)
+                            Chapters.mark(Chapter(CHAPTER.index, translation=translation))
                         continue
 
                     for translation in translations:
-                        if not Scrape.scrape_chapter(translation, Chapter):
-                            Chapters.mark(translation, Chapter.index)
-        return BibleChapterSets(Chapters)
+                        if not Scrape.scrape_chapter(translation, CHAPTER):
+                            Chapters.mark(Chapter(CHAPTER.index, translation=translation))
+
+        return BibleChapterSets(Chapters.marked)
 
     def Book(target_translations:list[str], book:Book, startChapter = 1, lastChapter:int=None):
         """

@@ -1,5 +1,5 @@
 import random
-from typing import Iterator
+from typing import Iterator, overload
 from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
 from kozubenko.random import random_pop
@@ -41,9 +41,13 @@ class BibleChapterSets:
         """ static constructor """
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
     
-    def mark(self, translation:str, chap_index:int):
-        if translation in self.marked.keys(): self.marked[translation].add(chap_index)
-        else:                                 self.marked[translation] = set([chap_index])
+    def mark(self, chapter:Chapter):
+        """ """
+        translation = chapter.translation
+        chapter_index = chapter.index
+
+        if translation in self.marked.keys(): self.marked[translation].add(chapter_index)
+        else:                                 self.marked[translation] = set([chapter_index])
 
     def iterate(self) -> Iterator[Chapter]:
         """

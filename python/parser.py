@@ -97,7 +97,7 @@ def find_skipped_verses() -> BibleChapterSets:
         for i in range(1, PTR.total_verses+1):
             start = TEXT.find(f'[{i}]')
             if start != -1:
-                Chapters.mark(PTR.translation, PTR.index)
+                Chapters.mark(PTR)
     Print.red(Chapters.total_marked)
     return BibleChapterSets(Chapters.marked)
 
@@ -132,7 +132,7 @@ def identify_missing_chapters(Chapters:BibleChapterSets = BibleChapterSets.From(
     """
     for PTR in Chapters.iterate():
         if not chapter_File(PTR).exists():
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
 
     return Chapters
 
@@ -146,14 +146,14 @@ def identify_Chapters_missing_verses(Chapters:BibleChapterSets = ALL_CHAPTERS())
     """
     for PTR in Chapters.iterate():
         if has_missing_verses(PTR) and PTR.book != BIBLE.PSALMS:
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
         
     return Chapters
 
 def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     for PTR in Chapters.iterate():
         if is_standard_form(PTR):
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
 
     return Chapters
 
@@ -162,7 +162,7 @@ def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChap
     """ Failure == `iterate_verses()` yields wrong # of verses """
     for PTR in Chapters.iterate():
         if PTR.total_verses != len(list(iterate_verses(PTR))):
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
 
     return Chapters
 
@@ -171,6 +171,6 @@ def TEST_chapter_number_formatting(Chapters:BibleChapterSets = ALL_CHAPTERS()) -
     for PTR in Chapters.iterate():
         title,text = strip_title(chapter_text(PTR))
         if text[0] != "1":
-            Chapters.mark(PTR.translation, PTR.index)
+            Chapters.mark(PTR)
     
     return Chapters
