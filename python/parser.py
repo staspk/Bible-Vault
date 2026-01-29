@@ -37,17 +37,16 @@ RESOLVED:
 import re, time
 from typing import Iterator
 from collections.abc import Callable
-from definitions import BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 from kozubenko.os import File
 from kozubenko.print import ANSI, Print, colored_input
 from kozubenko.subprocess import Subprocess
 from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
+from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 
 
 DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
-ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
@@ -195,13 +194,8 @@ def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleC
 
 def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     """ Failure == `iterate_verses()` yields wrong # of verses """
-
     for PTR in Chapters.iterate():
-        ACTUAL = len(list(iterate_verses(PTR)))
-        # Print.yellow(f'{str(PTR)}')
-        # Print.yellow(f'  expected: {PTR.total_verses}')
-        # Print.yellow(f'  actual  : {ACTUAL}\n')
-        if PTR.total_verses != ACTUAL and PTR.book != BIBLE.PSALMS:
+        if PTR.total_verses != len(list(iterate_verses(PTR))):
             Chapters.mark(PTR.translation, PTR.index)
 
     return Chapters
@@ -225,33 +219,3 @@ def identify_Chapters_with_Standard_Lined_verse() -> BibleChapterSets:
         for text in iterate_verses(PTR):
             pass
             Chapters.mark(PTR.translation, PTR.index)
-
-""" 
-ARCHIVED
-"""
-def standardize_chapter_number_formatting() -> BibleChapterSets:
-    """
-    **From:** `"{PTR.chapter} "`
-    **To:** `"1 "`
-
-    NOTE: strip_title() assumptions have CHANGED since using this function !!!
-    NOTE: this version did not account for chapter mismatches between Eng/Rus
-    """
-    i = 1
-    Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
-    for PTR in Chapters.iterate():
-        TEXT = chapter_text(PTR)
-        text = TEXT
-
-        (title, text) = strip_title(PTR, text)
-        
-        start_index = text.find(f'{PTR.chapter} ')
-        if start_index == 0:
-            text = "1" + text[len(str(PTR.chapter)):]
-
-            chapter_File(PTR).save(f'{title}{text}', encoding='UTF-8')
-            Chapters.mark(PTR.translation, PTR.index)
-            
-    Print.yellow(Chapters.total_marked)
-    Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")
-    return Chapters

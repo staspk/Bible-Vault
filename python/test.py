@@ -1,10 +1,11 @@
 from parser import *
+from models.bible_chapter_sets.missing_chapters import MissingChapters
 from kozubenko.print import Print
 from models.Bible import BIBLE
 from models.BibleChapterSets import BibleChapterSets
+from definitions import ALL_TRANSLATIONS
 
 
-ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 ALL_CHAPTERS:BibleChapterSets = BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
 def open_Chapters(Chapters:BibleChapterSets, step=50):
@@ -21,9 +22,9 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 #     continue
 
 
-# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
-# for chapter in Chapters.iterate():
-#     iterate_verses(chapter)
+Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
+for chapter in Chapters.iterate():
+    iterate_verses(chapter)
 
 # Print.red(Chapters.total)
 
