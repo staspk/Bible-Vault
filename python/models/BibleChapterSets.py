@@ -4,8 +4,7 @@ from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
 from kozubenko.random import random_pop
 from kozubenko.print import Print
-from models.Bible import BIBLE, Chapter
-# from models.bible_chapter_sets.missing_chapters import MissingChapters
+from models.Bible import BIBLE, Book, Chapter
 
 
 translation = str
@@ -15,6 +14,7 @@ BibleChapterSet = dict[translation, set[chapter_index]]
 def Protestant_Set() -> set[int]:
     """ **Returns:** `set[chapter_index]` : {1-1189} """
     return set(range(1, BIBLE.TOTAL_CHAPTERS+1))
+
 
 class BibleChapterSets:
     """

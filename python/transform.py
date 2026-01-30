@@ -17,9 +17,9 @@ def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def compare_changes(before:str, after:str):
-    File(TEMP_DIR, 'pre.txt').save(before, None).open()
-    time.sleep(.01)
-    File(TEMP_DIR, 'post.txt').save(after, None).open()
+    File(TEMP_DIR, 'pre.txt').save(before).open()
+    time.sleep(.02)
+    File(TEMP_DIR, 'post.txt').save(after).open()
     input()
 
 
