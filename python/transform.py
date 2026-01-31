@@ -26,16 +26,30 @@ def compare_changes(before:str, after:str):
 
 def strip_title(PTR:Chapter) -> tuple[str, str]:
     """
-    NOTE: This `strip_title()`
+    NOTE: This `strip_title()` was intended to be used Post-Step1-Transformation, i.e: after `standardize_chapter_number_formatting()`
     
-    **Returns:** `(title, rest)`
+    **Returns:**
+        `(title, rest)`
+            `title == ""`, if no title in text
     """
     TEXT = chapter_text(PTR)
-    
-    
+    lines = TEXT.splitlines(keepends=True)
 
-def iterate_line_by_line(PTR:Chapter):
+    first_line = lines[0]
+    if first_line[0:2] == "1 ": return ("", TEXT)
 
+    # Guaranteed that title exists, so long as title does not begin with "1 " (I have never seen this, though not proven)
+
+    # Every title <= 2 lines. To be safe, working backwards from line 5 to find first verse...
+    i = 4
+    while i > -1:
+        if lines[i][0:2] == "1 ":
+            title = "".join(lines[:i])
+            rest  = "".join(lines[i:])
+            return (title, rest)
+        i -= 1
+    
+    raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
 def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     """
@@ -63,7 +77,7 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
 
     for PTR in Chapters.iterate():
-        TEXT = chapter_text(PTR)
+        title, text = strip_title(PTR)
         new_text = ""
 
         try:

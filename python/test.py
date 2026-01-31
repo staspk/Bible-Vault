@@ -1,7 +1,7 @@
 import random
 import time
-from parser import *
-from transform import Test, Test2, compare_changes, iterate_verses, standardize_verse_form
+from parser import chapter_File
+from transform import Test, Test2, compare_changes, standardize_verse_form, strip_title
 from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE
 from models.BibleChapterSets import BibleChapterSets, Protestant_Set
@@ -27,6 +27,17 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 
 
 Print.green(standardize_verse_form().total_marked)
+# marked:BibleChapterSets = BibleChapterSets.From()
+# for PTR in ALL_CHAPTERS().iterate():
+#     title, text = strip_title(PTR)
+#     if len(title.splitlines()) < 2:
+#         continue
+#     Print.red(f'"{title}"')
+#     print()
+#     marked.mark(PTR)
+#     time.sleep(.03)
+
+# Print.red(marked.total_marked)
 
 
 

@@ -1,10 +1,10 @@
 import random
 from typing import Iterator, Self
-from definitions import BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 from kozubenko.os import File
 from kozubenko.random import random_pop
 from kozubenko.print import Print
 from models.Bible import BIBLE, Book, Chapter
+from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 
 
 translation = str
@@ -37,7 +37,7 @@ class BibleChapterSets:
         for translation in chapter_set.keys():
             self.marked[translation] = set()
 
-    def From(translations:list[str]) -> BibleChapterSets:
+    def From(translations:list[str]=ALL_TRANSLATIONS) -> BibleChapterSets:
         """ static constructor """
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
     
