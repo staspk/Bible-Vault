@@ -84,7 +84,35 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
 
         verse_num = 1
         for line in text.splitlines():
-            pass
+
+            if verse_num == 1 and len(line) > 2:
+                verse_text = line.split(f'{verse_num} ')[1]
+                new_text += f'{verse_num}\n{verse_text}\n'
+
+            elif len(line) > 2:
+                try:
+                    verse_text = line.split(f'{verse_num} ')[1]
+                except:
+                    pass
+                    # chapter_File(PTR).open()
+                    # Print.red(f'{verse_num}')
+                    # input()
+                new_text += f'{verse_num}\n{verse_text}\n'
+
+            else:
+                new_text += f'{line.replace("\n", "")}\n'
+
+            verse_num += 1
+
+        if verse_num != PTR.total_verses:
+            raise Exception(f'standardize_verse_form(): unexpected # of verses encountered.\n{str(PTR)}\nExpected: {verse_num}. Actual: {PTR.total_verses}')
+        
+        if text != new_text:
+            Chapters.mark(PTR)
+            # File(TEMP_DIR, PTR.translation, PTR.book, f'{PTR.chapter}.txt').save(new_text)
+            """ Change Operation Goes Here! """
+
+        return Chapters
 
         # try:
         #     verse_num = 1

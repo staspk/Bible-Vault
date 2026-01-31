@@ -28,6 +28,8 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 
 # Print.green(standardize_verse_form().total_marked)
 
+Chapters:BibleChapterSets = standardize_verse_form()
+Print.green(Chapters.total_marked)
 
 
 """
