@@ -52,13 +52,25 @@ def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleCh
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
-def iterate_verses(PTR:Chapter) -> Iterator[str]:
+def iterate_verses(PTR:Chapter) -> Iterator[tuple[int, str]]:
+    """
+    NOTE: This `iterate_verses()` was intended to be used Post-Step2-Transformation.
+
+    **Yields:** (verse_num, verse_text)
+    ```
+    (1, "In the beginning God created the heavens and the earth.")
+    (2, "The earth was without form and void, and darkness was upon the face of the deep; and the Spirit of God...")
+    etc.
+    ```
+    """
     TEXT = chapter_text(PTR); LENGTH = len(TEXT)
     verse = 1
     start = TEXT.find(f"{verse} ")
-    end   = TEXT.find(f"{verse+1} ")
+    end   = TEXT.find(f"{verse+1} ", start)
     while end != -1:
-        yield TEXT[start:end]
+        full_verse = TEXT[start:end]
+
+        yield full_verse
         verse += 1
         start = TEXT.find(f"{verse} ", start)
         end   = TEXT.find(f"{verse+1} ", start)

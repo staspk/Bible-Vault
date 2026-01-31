@@ -1,6 +1,5 @@
 from typing import Iterator, Optional
-from types import SimpleNamespace
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from kozubenko.cls import set_frozen_attr
 from kozubenko.parse import substring_between
 from kozubenko.utils import assert_int
@@ -30,7 +29,7 @@ class Chapter:
     
     def FromStr(string:str) -> Chapter:
         """ Assumes `translation` exists """
-        chapter_index = string.split('\n')[0]
+        chapter_index = string.split(' ', maxsplit=1)[0]
         translation = substring_between(string, '[', ']')
         return Chapter.From(chapter_index, translation)
 
@@ -49,11 +48,11 @@ class Book:
     * `chapters:int`  -> total chapters, e.g: *50*
     * `verse_map:dict` -> <chapter,total verses>
     """
-    name: str
-    abbr: str
-    index: int
-    chapters: int
-    verse_map: dict
+    name:str
+    abbr:str
+    index:int
+    chapters:int
+    verse_map:dict = field(compare=False, hash=False)
 
     def total_verses(self, chapter):
         return self.verse_map.get(chapter)
@@ -156,8 +155,8 @@ class BIBLE:
         """ `chapter_index`: [1-1189] """
         if BIBLE._Chapters is None:
             BIBLE._Chapters = {}
-            for it in Iterate_Bible_Chapters():
-                BIBLE._Chapters[it.i] = Chapter(it.book, it.chapter, it.i)
+            for i,book,chapter in Iterate_Bible_Chapters():
+                BIBLE._Chapters[i] = Chapter(book, chapter, i)
         
         ptr = BIBLE._Chapters.get(chapter_index, None)
         if translation:
@@ -167,20 +166,21 @@ class BIBLE:
     _book_to_cumulative_total_chapters:dict[int, int] = None    # Book.index -> Book.chapters + total_chapters(all_books_before_Book)
     def find_chapter_index(book:Book, chapter:int) -> int:
         if BIBLE._book_to_cumulative_total_chapters is None:
-            BIBLE._book_to_cumulative_total_chapters = {}
             books:list[Book] = BIBLE.Books()
+            BIBLE._book_to_cumulative_total_chapters = {}
+            
             cumulative_total_chapters = 0
             for BOOK in books:
                 cumulative_total_chapters += BOOK.chapters
-                BIBLE._book_to_cumulative_total_chapters[BOOK.index] = cumulative_total_chapters
+                BIBLE._book_to_cumulative_total_chapters[BOOK.index] = cumulative_total_chapters - BOOK.chapters
 
         return BIBLE._book_to_cumulative_total_chapters[book.index] + chapter
 
-def Iterate_Bible_Chapters() -> Iterator[Chapter]:
+def Iterate_Bible_Chapters() -> Iterator[tuple[int, str, int]]:
     """
     **How to Use:**
     ```python
-    for it in Iterate_Bible_Chapters():
+    for i,book,chapter in Iterate_Bible_Chapters():
         it.i
         it.book
         it.chapter
@@ -189,7 +189,7 @@ def Iterate_Bible_Chapters() -> Iterator[Chapter]:
     i = 1
     for book in BIBLE.Books():
         for chapter in range(1, book.chapters + 1):
-            yield SimpleNamespace(i=i, book=book, chapter=chapter)
+            yield (i, book, chapter)
             i += 1
 
 class Abbreviations:

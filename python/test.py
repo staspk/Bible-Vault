@@ -1,6 +1,7 @@
 import random
+import time
 from parser import *
-from transform import compare_changes, standardize_verse_form
+from transform import Test, Test2, compare_changes, iterate_verses, standardize_verse_form
 from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE
 from models.BibleChapterSets import BibleChapterSets, Protestant_Set
@@ -19,38 +20,15 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
             colored_input(f'Press Enter for {step} more...')
             i = 0
 
-# Chapters:BibleChapterSets = BibleChapterSets(identify_Standard_Form().marked)
-# for chapter in Chapters.iterate():
-#     continue
+# identify_missing_chapters().Save_Report('identify_missing_chapters')
+# identify_Chapters_missing_verses().Save_Report('identify_Chapters_missing_verses')
+# identify_Standard_Form().Save_Report('identify_Standard_Form')
+# TEST_iterate_verses().Save_Report('TEST_iterate_verses')
 
 
-# Print.green(standardize_verse_form().total_marked)
-# standardize_verse_form(BibleChapterSets({
-#     'NRSV':{788}
-# }))
-
-def chapter_File(PTR:Chapter): return File(BIBLE_TXT, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter): return File(BIBLE_TXT, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
-
-books = [BIBLE.FIRST_KINGS, BIBLE.FIRST_CHRONICLES, BIBLE.SECOND_CHRONICLES, BIBLE.SECOND_KINGS, BIBLE.SECOND_SAMUEL, BIBLE.ECCLESIASTES, BIBLE.ESTHER, BIBLE.EZRA, BIBLE.JOB, BIBLE.NEHEMIAH, BIBLE.PROVERBS, BIBLE.PSALMS, BIBLE.SONG_OF_SOLOMON, BIBLE.ZEPHANIAH]
-for book in books:
-    for chapter in range(1, book.chapters+1):
-        PTR = Chapter(book, chapter, translation='RUSV')
-        TEXT = chapter_text(PTR)
-        new_text = ""
-
-        lines = TEXT.splitlines()
-        for verse_num, verse in enumerate(lines, start=1):
-            new_text += f"{verse[len(str(verse_num))+1:]}\n"
-
-        chapter_File(PTR).save(new_text)
+Print.green(standardize_verse_form().total_marked)
 
 
-# Chapters = BibleChapterSets.Subtract(BibleChapterSets({'RUSV':Protestant_Set()}).set, MissingChapters.chapters())
-# for PTR in Chapters.iterate():
-#     if is_standard_form(PTR):
-#         Chapters.mark(PTR)
-# Print.yellow(Chapters.total_marked)
 
 """
 "{verse} \n" -> Lined Verse
