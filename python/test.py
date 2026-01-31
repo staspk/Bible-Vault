@@ -26,18 +26,7 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # TEST_iterate_verses().Save_Report('TEST_iterate_verses')
 
 
-Print.green(standardize_verse_form().total_marked)
-# marked:BibleChapterSets = BibleChapterSets.From()
-# for PTR in ALL_CHAPTERS().iterate():
-#     title, text = strip_title(PTR)
-#     if len(title.splitlines()) < 2:
-#         continue
-#     Print.red(f'"{title}"')
-#     print()
-#     marked.mark(PTR)
-#     time.sleep(.03)
-
-# Print.red(marked.total_marked)
+# Print.green(standardize_verse_form().total_marked)
 
 
 
