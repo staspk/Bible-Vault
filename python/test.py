@@ -1,4 +1,3 @@
-import random
 import time
 from parser import chapter_File
 from transform import Test, Test2, compare_changes, standardize_verse_form, strip_title
@@ -25,21 +24,14 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # identify_Standard_Form().Save_Report('identify_Standard_Form')
 # TEST_iterate_verses().Save_Report('TEST_iterate_verses')
 
+# standardize_verse_form(BibleChapterSets({
+#     'RSV': {354,1122}
+# }))
 
-# Print.green(standardize_verse_form().total_marked)
+standardize_verse_form()
 
-Chapters:BibleChapterSets = standardize_verse_form()
-Print.green(Chapters.total_marked)
+# Chapters:BibleChapterSets = standardize_verse_form()
+# Print.green(Chapters.total_marked)
 
 
-"""
-"{verse} \n" -> Lined Verse
 
-"{verse} 
-
-"{1 } \n{2 }" -> Standard Line
-
-TODO: 
-    to identify mixed form
-    assert 1 Lined Verse
-"""

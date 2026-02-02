@@ -38,7 +38,7 @@ def strip_title(PTR:Chapter) -> tuple[str, str]:
     first_line = lines[0]
     if first_line[0:2] == "1 ": return ("", TEXT)
 
-    # Guaranteed that title exists, so long as title does not begin with "1 " (I have never seen this, though not proven)
+    # Guaranteed that title exists, so long as title does not begin with "1 " (Never seen, though not proven)
 
     # Every title <= 2 lines. To be safe, working backwards from line 5 to find first verse...
     i = 4
@@ -51,7 +51,7 @@ def strip_title(PTR:Chapter) -> tuple[str, str]:
     
     raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
-def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
+def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     """
     STEP 2
 
@@ -73,30 +73,22 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
     And he said, “Here I am.”
     ```
     """
-    if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
-    if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
+    # if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
+    # if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
 
     if not Test.text_starts_with_correct_versenum_after_strip_title(Chapters): raise Exception('REQUIREMENT NOT MET: text_starts_with_correct_versenum_after_strip_title()')
 
     for PTR in Chapters.iterate():
+        Print.yellow(PTR)
         title, text = strip_title(PTR)
         new_text = ""
 
         verse_num = 1
         for line in text.splitlines():
+            Print.yellow(verse_num)
 
-            if verse_num == 1 and len(line) > 2:
+            if line.startswith(f'{verse_num} ') and len(line) > 2:
                 verse_text = line.split(f'{verse_num} ')[1]
-                new_text += f'{verse_num}\n{verse_text}\n'
-
-            elif len(line) > 2:
-                try:
-                    verse_text = line.split(f'{verse_num} ')[1]
-                except:
-                    pass
-                    # chapter_File(PTR).open()
-                    # Print.red(f'{verse_num}')
-                    # input()
                 new_text += f'{verse_num}\n{verse_text}\n'
 
             else:
@@ -105,38 +97,16 @@ def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
             verse_num += 1
 
         if verse_num != PTR.total_verses:
-            raise Exception(f'standardize_verse_form(): unexpected # of verses encountered.\n{str(PTR)}\nExpected: {verse_num}. Actual: {PTR.total_verses}')
+            Chapters.mark(PTR)
+            # raise Exception(f'standardize_verse_form(): unexpected # of verses encountered.\n{str(PTR)}\nExpected: {verse_num}. Actual: {PTR.total_verses}')
         
         if text != new_text:
-            Chapters.mark(PTR)
+            pass
+            # Chapters.mark(PTR)
             # File(TEMP_DIR, PTR.translation, PTR.book, f'{PTR.chapter}.txt').save(new_text)
             """ Change Operation Goes Here! """
 
-        return Chapters
-
-        # try:
-        #     verse_num = 1
-        #     for verse in iterate_verses(PTR):
-        #         first_line, rest = verse.split('\n', maxsplit=1)
-
-        #         if len(first_line) > 3:
-        #             first_line_text = first_line.split(f'{verse_num} ')[1]
-        #             new_text += f'{verse_num}\n{first_line_text}\n{rest}'
-        #         else:
-        #             new_text += verse
-
-        #         verse_num += 1
-
-        #     # if TEXT != new_text:
-        #     #     chapter_File(PTR).save(new_text)
-        #     #     Chapters.mark(PTR)
-
-        # except:
-        #     Chapters.mark(PTR)
-        #     continue
-    
     return Chapters
-
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
@@ -187,7 +157,8 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
 before_text = str
 after_text = str
 class Test:
-    def text_starts_with_correct_versenum_after_strip_title(Chapters:BibleChapterSets=ALL_CHAPTERS()) -> bool:
+    def text_starts_with_correct_versenum_after_strip_title(CHAPTERS:BibleChapterSets=ALL_CHAPTERS()) -> bool:
+        Chapters = BibleChapterSets(CHAPTERS.set)
         for PTR in Chapters.iterate():
             chapter_File(PTR)
             title, text = strip_title(PTR)

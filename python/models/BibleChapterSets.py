@@ -18,7 +18,7 @@ def Protestant_Set() -> set[int]:
 
 class BibleChapterSets:
     """
-    `BibleChapterSets(set)` -> Init with pre-existing `BibleChapterSet`
+    `BibleChapterSets(set)` -> Init with pre-existing `BibleChapterSet`, i.e: `dict[translation, set[chapter_index]]`
 
     `BibleChapterSets.From(list[translation:str]])` -> Init full set {1-1189} for every `translation`
     
