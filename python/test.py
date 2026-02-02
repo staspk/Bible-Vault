@@ -1,5 +1,5 @@
 import time
-from parser import chapter_File
+from parser import chapter_File, identify_Standard_Form
 from transform import Test, Test2, compare_changes, standardize_verse_form, strip_title
 from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE
@@ -24,14 +24,7 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # identify_Standard_Form().Save_Report('identify_Standard_Form')
 # TEST_iterate_verses().Save_Report('TEST_iterate_verses')
 
-# standardize_verse_form(BibleChapterSets({
-#     'RSV': {354,1122}
-# }))
 
-standardize_verse_form()
-
-# Chapters:BibleChapterSets = standardize_verse_form()
-# Print.green(Chapters.total_marked)
-
+# Chapters = standardize_verse_form()
 
 

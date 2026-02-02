@@ -177,12 +177,3 @@ def TEST_iterate_verses(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChap
             Chapters.mark(PTR)
 
     return Chapters
-
-def TEST_chapter_number_formatting(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
-    """ Failure == a Chapter, after `strip_title()`, not starting with "1", i.e: the correct verse_number """
-    for PTR in Chapters.iterate():
-        title,text = strip_title(chapter_text(PTR))
-        if text[0] != "1":
-            Chapters.mark(PTR)
-    
-    return Chapters

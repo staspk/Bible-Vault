@@ -1,10 +1,10 @@
 import time
 from typing import Iterator
-from parser import TEST_chapter_number_formatting, TEST_iterate_verses
+from parser import TEST_iterate_verses
 from kozubenko.os import Directory, File
 from kozubenko.print import Print
 from models.Bible import BIBLE, Chapter
-from models.BibleChapterSets import BibleChapterSets
+from models.BibleChapterSets import BibleChapterSet, BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL, TEMP_DIR
 from tests.data.Test2_edge_cases import Edge_Case, IChapterIterator, NET_Psalms_42
@@ -51,18 +51,21 @@ def strip_title(PTR:Chapter) -> tuple[str, str]:
     
     raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
-def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
+def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> tuple[BibleChapterSet, BibleChapterSet]:
     """
     STEP 2
-
-    **RETURNS:**
-        `BibleChapterSets.marked` -> successfully transformed. NOTE: NOT CURRENTLY TRUE
+    
+    **RETURNS:**  
+        `tuple[transformed, skipped]`  
+        - `transformed` -> Chapters successfully transformed.
+        - `skipped` -> Chapters that need a manual look/edit before `standardize_verse_form()` can transform text to new shape/formatting.
 
     **EXAMPLE:** Genesis 46 NKJV
     ```
     1 So Israel took his journey with all that he had, and came to Beersheba, and offered sacrifices to the God of his father Isaac.
     2 Then God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!”
     And he said, “Here I am.”
+    3 
     ```
     **BECOMES:**
     ```
@@ -71,42 +74,41 @@ def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleC
     2
     Then God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!”
     And he said, “Here I am.”
+    3
     ```
     """
-    # if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
-    # if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
-
     if not Test.text_starts_with_correct_versenum_after_strip_title(Chapters): raise Exception('REQUIREMENT NOT MET: text_starts_with_correct_versenum_after_strip_title()')
 
+    transformed = BibleChapterSets(Chapters)
+    skipped = BibleChapterSets(Chapters)
+
     for PTR in Chapters.iterate():
-        Print.yellow(PTR)
         title, text = strip_title(PTR)
         new_text = ""
 
-        verse_num = 1
+        verse_num = 0
         for line in text.splitlines():
-            Print.yellow(verse_num)
+            if line.startswith(f'{verse_num+1} '):
+                verse_num += 1
 
-            if line.startswith(f'{verse_num} ') and len(line) > 2:
+            if line.startswith(f'{verse_num} ') and len(line) > (len(str(verse_num)) + 1):
                 verse_text = line.split(f'{verse_num} ')[1]
-                new_text += f'{verse_num}\n{verse_text}\n'
+                new_text += f'{verse_num}\n{verse_text.strip()}\n'
+                continue
 
-            else:
-                new_text += f'{line.replace("\n", "")}\n'
+            new_text += f'{line.replace("\n", "").strip()}\n'
 
-            verse_num += 1
+        if not Test.ensure_new_text_verse_num_lines_have_correct_formatting(PTR, new_text):
+            skipped.mark(PTR)
+        else:
+            chapter_File(PTR).save(title+new_text)
+            transformed.mark(PTR)
 
-        if verse_num != PTR.total_verses:
-            Chapters.mark(PTR)
-            # raise Exception(f'standardize_verse_form(): unexpected # of verses encountered.\n{str(PTR)}\nExpected: {verse_num}. Actual: {PTR.total_verses}')
-        
-        if text != new_text:
-            pass
-            # Chapters.mark(PTR)
-            # File(TEMP_DIR, PTR.translation, PTR.book, f'{PTR.chapter}.txt').save(new_text)
-            """ Change Operation Goes Here! """
+    transformed.Save_Report('standardize_verse_form()_transformed')
+    skipped.Save_Report('standardize_verse_form()_skipped')
 
-    return Chapters
+    return (transformed.marked, skipped.marked)
+
 
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
@@ -158,14 +160,37 @@ before_text = str
 after_text = str
 class Test:
     def text_starts_with_correct_versenum_after_strip_title(CHAPTERS:BibleChapterSets=ALL_CHAPTERS()) -> bool:
+        """ Form text should be in Post-Step1-Transformation """
         Chapters = BibleChapterSets(CHAPTERS.set)
         for PTR in Chapters.iterate():
-            chapter_File(PTR)
             title, text = strip_title(PTR)
             if text[0:2] == "1 ":
                 Chapters.mark(PTR)
 
         return (Chapters.total == Chapters.total_marked)
+
+    def ensure_new_text_verse_num_lines_have_correct_formatting(PTR:Chapter, new_text:str) -> bool:
+        """
+        Ensures `new_text` in `standardize_verse_form()` has correct formatting before saving.
+
+        **Correct Form:**
+        ```
+        "{verse_num}\n"
+        ```
+        """
+        passed_test:bool = True 
+        
+        verse_num = 0
+        for line in new_text.splitlines(keepends=True):
+            if line.startswith(f'{verse_num+1}'):
+                verse_num += 1
+                
+                if line != f"{verse_num}\n":
+                    passed_test = False
+                    break
+        
+        return (verse_num == PTR.total_verses and passed_test)
+
 
     def standardize_verse_form(PTR:Chapter) -> tuple[before_text, after_text]:
         """ ? Vestigial ? """
@@ -186,33 +211,6 @@ class Test:
 
         return (TEXT, new_text)
 
-class Transform:
-    """
-    STEP 1: 
-    STEP 2: `standardize_verse_form()`
-    """
-
-    def standardize_verse_form(Chapters = ALL_CHAPTERS()) -> BibleChapterSets:
-        """
-        Manual Changes:
-        """
-        if TEST_chapter_number_formatting(Chapters).total_marked != 0: raise Exception('REQUIREMENT NOT MET: TEST_chapter_number_formatting().total_marked == 0')
-        if TEST_iterate_verses(Chapters).total_marked != 0:            raise Exception('REQUIREMENT NOT MET: TEST_iterate_verses().total_marked == 0')
-
-
-        results = standardize_verse_form(Chapters).Save_Report('transform_standardize_verse_form_')
-
-class Test1:
-    def chapter_number_formatting(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
-        """
-        **Returns:**
-            `BibleChapterSets.marked` -> Chapter that after `strip_title()`, don't start with "1", i.e: the correct verse_number
-        """
-        for PTR in Chapters.iterate():
-            if PTR.total_verses != len(list(iterate_verses(PTR))):
-                Chapters.mark(PTR)
-
-        return Chapters
 
 class Test2:
     """
