@@ -1,4 +1,4 @@
-import { BibleTranslations as SupportedBibleTranslations, type BibleTranslation } from "../../../_shared/BibleTranslations";
+import { BibleTranslations as SupportedBibleTranslations, type Translation } from "../../../_shared/BibleTranslations";
 
 
 /** **EQUIVALENT TO:**
@@ -15,7 +15,7 @@ export function UrlParam(key:string): string|null {
 /** Returns the expected return value (or null). If you need a naked, untouched `URLSearchParams`, use: `UrlParam()`.  */
 export class URLQueryParams {
 
-    static translations(): BibleTranslation[] | null {
+    static translations(): Translation[] | null {
         const translations = UrlParam('translations')?.split(',').filter(el => el);
         if(!translations)
             return null;
@@ -32,7 +32,7 @@ export class URLQueryParams {
             }
         }
         if(translations.length > 0) {
-            return translations as BibleTranslation[];
+            return translations as Translation[];
         }
 
         return null;

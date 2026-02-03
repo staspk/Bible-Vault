@@ -5,7 +5,7 @@ import { ReportView } from "../components/ReportView/ReportView";
 import { ContentView } from "../..";
 import { PassageView } from "../components/PassageView/PassageView";
 import { ReportBtn } from "../components/ReportBtn/ReportBtn";
-import type { BibleTranslation } from "../../../_shared/BibleTranslations";
+import type { Translation } from "../../../_shared/BibleTranslations";
 import type { Passage } from "../models/Passage";
 
 
@@ -56,5 +56,5 @@ export class Router {
 window.addEventListener("popstate", (state) => {
     if(Router.isHome())                 ContentView.Reset();
     else if(Router.isAt(Routes.Index))  PassageView.Render(state.state as Passage);
-    else if(Router.isAt(Routes.Report)) ReportView.Render(state.state as BibleTranslation[])
+    else if(Router.isAt(Routes.Report)) ReportView.Render(state.state as Translation[])
 });
