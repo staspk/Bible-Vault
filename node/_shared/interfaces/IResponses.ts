@@ -1,4 +1,4 @@
-import { BibleTranslation } from "../BibleTranslations.js";
+import { Translation } from "../BibleTranslations.js";
 import { Status } from "../enums/Status.enum.js";
 
 
@@ -46,7 +46,7 @@ export interface IChapter {
 }
 export class IChapter {
     /** Transforms `IChapter` into `IChapterResponse`.  */
-    static wrapAsResponse(translations:BibleTranslation[], data:IChapter): IChapterResponse {
+    static wrapAsResponse(translations:Translation[], data:IChapter): IChapterResponse {
         let amountNull = 0, total = 0;
         for (const [translation, verses] of Object.entries(data))
             if(verses === null)
@@ -179,7 +179,7 @@ export class IChapters {
 */
 export interface IChapterResponse {
     status: `${Status}`;
-    translations: BibleTranslation[];
+    translations: Translation[];
     data: IChapter;
 }
 
@@ -242,14 +242,13 @@ export type total_translations = number;
     ```
     */
 export interface IReport {
-    [chapter_index: string]: total_translations;
+    [chapter_index:string]: total_translations;
 }
 
 export interface IReportResponse {
     /** expected translations per chapter, set in GET request */
     total_translations: number;
-    translations: BibleTranslation[];
-    chapters_with_zero_translations: number;
+    translations: Translation[];
     /** `actual_total_files` / `(total_translations*BIBLE.totalChapters())` */
     ratio: string;
     report: IReport;

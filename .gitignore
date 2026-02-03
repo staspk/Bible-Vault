@@ -8,4 +8,6 @@ node_modules/
 node/test.ts
 
 python/bible_txt
+python/bible_txt_partial
 python/og_parsed_bible_txt.zip
+python/tor/torrc

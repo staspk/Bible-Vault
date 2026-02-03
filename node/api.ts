@@ -7,7 +7,7 @@ import { handleBadRequest, handleOK } from './kozubenko/http.js';
 import { isNullOrWhitespace } from './kozubenko/string.extensions.js';
 import { ApiEndpoints } from './_shared/ApiEndpoints.js';
 import { BIBLE, Book, ChapterPtr } from './_shared/Bible.js';
-import { BibleTranslation, BibleTranslations } from './_shared/BibleTranslations.js';
+import { Translation, BibleTranslations } from './_shared/BibleTranslations.js';
 import { IVerseRange } from './_shared/interfaces/IVerseRange.js';
 import { IChapter, IChapters, IReport, IReportResponse } from './_shared/interfaces/IResponses.js';
 import { ArrayLike } from './kozubenko/object.js';
@@ -77,14 +77,14 @@ class Bible {
                     if(verseStart < verseEnd) {
                         /* Legit Multiple Verses Api Call, ie: "Matthew 10:11-12" */
                         let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseEnd } as IVerseRange);
-                        handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter)); return;
+                        handleOK(response, IChapter.wrapAsResponse(translations as Translation[], chapter)); return;
                     } else {
                         handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`); return;
                     }
                 }
                 /* Targetted Single Verse Api Call, ie: "Matthew 10:11" */
                 let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart, { verseStart: verseStart, verseEnd: verseStart } as IVerseRange);
-                handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter)); return;
+                handleOK(response, IChapter.wrapAsResponse(translations as Translation[], chapter)); return;
             }
             handleBadRequest(response, `GET API Call requested non-existent verse or malformed verse range.`);
             return;
@@ -92,7 +92,7 @@ class Bible {
         
         /* Standard API Call, ie: "Matthew 10" */
         let chapter: IChapter = await Bible.getChapter(translations, book, chapterStart);
-        handleOK(response, IChapter.wrapAsResponse(translations as BibleTranslation[], chapter));
+        handleOK(response, IChapter.wrapAsResponse(translations as Translation[], chapter));
     }
 
     static async getChapter(translations:string[], book:Book, chapter:number, verseRange:IVerseRange|null=null): Promise<IChapter> {
@@ -154,25 +154,20 @@ class Bible_Report {
 
         let chapters:number[] = new Array(BIBLE.totalChapters()).fill(translations.length);
         let total_files = 0;
-        let chapters_with_zero_translations = 0;
         chapters.forEach((chapter, i) => {
-            let at_least_one_translation = false;
             translations.forEach(translation => {
                 const ptr = BIBLE.ChaptersMap(i+1) as ChapterPtr;
                 const file = path.join(Bible_Report.TO_REPORT_DIRECTORY, translation, ptr.book.name, `${ptr.chapter}.txt`);
                 if(fs.existsSync(file)) {
-                    at_least_one_translation = true;
                     total_files++;
                 } else chapters[i]--;
             });
-            if(at_least_one_translation === false) chapters_with_zero_translations++;
         });
 
         const total_translations = translations.length;
         handleOK(response, {
             total_translations: total_translations,
             translations: translations,
-            chapters_with_zero_translations: chapters_with_zero_translations,
             ratio: `${total_files}/${total_translations * BIBLE.totalChapters()}`,
             report: ArrayLike.Object(chapters)
         } as IReportResponse);

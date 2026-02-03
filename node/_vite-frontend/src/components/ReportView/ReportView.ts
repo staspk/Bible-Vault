@@ -7,7 +7,7 @@ import type { IReport, IReportResponse } from "../../../../_shared/interfaces/IR
 import { ContentView } from "../../../index.js";
 import { SearchInput } from "../SearchInput/SearchInput.js";
 import { Api } from "../../api/Api.js";
-import type { BibleTranslation } from "../../../../_shared/BibleTranslations.js";
+import type { Translation } from "../../../../_shared/BibleTranslations.js";
 
 
 
@@ -31,7 +31,7 @@ export class ReportView {
 
     static highlightedBook = false;
 
-    public static Render(translations:BibleTranslation[], onto:HTMLElement=ContentView.PlaceHolder()) {
+    public static Render(translations:Translation[], onto:HTMLElement=ContentView.PlaceHolder()) {
         SearchInput.Placeholder('highlight Book: Isaiah')
         if(!IViewComponent.ReplaceWith(onto, ReportView))
             return;

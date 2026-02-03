@@ -68,7 +68,7 @@ Start-ThreadJob -ArgumentList $VITE_ROOT, $PATHS_TO_WATCH, $token -StreamingHost
         
         foreach ($path in $paths_to_watch) {
             if((Get-Item $path).PSIsContainer) {
-                foreach($file in $(Get-ChildItem $path -Recurse -File)) {              <# Yes: all files are checked recursively, Stan (eye-check: at least dirs of dirs) #>
+                foreach($file in $(Get-ChildItem $path -Recurse -File)) {   <# Yes, Stan: all files are (recursively) checked. (eye-check: at least dirs of dirs) #>
                     if($vite_last_built -lt (Get-Item $file).LastWriteTimeUtc.Ticks) {
                         # Write-Host "start-server.ps1: Change has been detected in `$PATHS_TO_WATCH. Running NpmBuild()..."
                         $vite_last_built = NpmBuild $file

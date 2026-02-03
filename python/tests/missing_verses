@@ -1,0 +1,11 @@
+KJV = set()
+NASB = set()
+RSV = set()
+RUSV = set()
+NKJV = set()
+ESV = set()
+NRSV = set()
+NRT = set()
+NIV = set()
+NET = set()
+Ratio: 0/11890
