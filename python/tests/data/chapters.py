@@ -1,18 +1,29 @@
 from abc import ABC, abstractmethod
 from typing import Iterator
-from models.Bible import BIBLE, Chapter
+from models.Bible import BIBLE
+from models.IChapter import IChapter
+
 
 class IChapterIterator(ABC):
     @abstractmethod
     def iterate_verses() -> Iterator[str]: pass
 
 
-class Edge_Case:
-    def get(PTR:Chapter) -> IChapterIterator:
-        match PTR:
-            case Chapter(BIBLE.PSALMS, 42, translation='NET'): return NET_Psalms_42
-            case Chapter(BIBLE.FIRST_CHRONICLES, 3, translation='NRT'): return NRT_1Chronicles_3
-            case _: raise Exception('Edge Case does not exist!')
+class chapters:
+    """
+    Some hard-coded chapters to test functions that read chapters in.
+    """
+    def all() -> list[IChapterIterator]:
+        return [
+            NET_Psalms_42,
+            NRT_1Chronicles_3
+        ]
+
+    def get(PTR:IChapter) -> IChapterIterator:
+        if PTR.translation == 'NET' and PTR.book == BIBLE.PSALMS and PTR.chapter == 42: return NET_Psalms_42
+        if PTR.translation == 'NRT' and PTR.book == BIBLE.FIRST_CHRONICLES and PTR.chapter == 3: return NRT_1Chronicles_3
+
+        raise Exception('chapter does not exist!')
 
 
 class NET_Psalms_42(IChapterIterator):

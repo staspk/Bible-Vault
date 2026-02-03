@@ -1,6 +1,9 @@
 from parser import chapter_File
+from search import BIBLE, Test
 from transform import standardize_verse_form
-from kozubenko.print import colored_input
+from kozubenko.print import Print, colored_input
+from models.IChapter import IChapter
+from models.Bible import BIBLE as _BIBLE
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from definitions import ALL_TRANSLATIONS
@@ -25,6 +28,7 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 
 # Chapters = standardize_verse_form()
 
-standardize_verse_form(only_report=True)
+# standardize_verse_form(only_report=True)
 
 
+BIBLE.Top_Words(1000)
