@@ -20,7 +20,7 @@ from kozubenko.print import Print
 from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
-from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW
+from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, BIBLE_TXT_PARTIAL
 
 
 
