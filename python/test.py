@@ -31,4 +31,4 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # standardize_verse_form(only_report=True)
 
 
-BIBLE.Top_Words(1000)
+BIBLE.Top_Chars()

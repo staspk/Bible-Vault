@@ -78,64 +78,100 @@ class Chapter:
         if self.verses is None:
             set_frozen_attr(self, "verses", load_verses(self))
 
+char = str
 occurrences = int
 
 class BIBLE:
-    _Chapters:dict[Chapter, None] = None
+    _chapters:dict[Chapter, None] = None
+
+    _chars:dict[char, occurrences] = None
+    _chars:dict[str, occurrences] = None
 
     @classmethod
-    def Chapters(cls) -> KeysView[Chapter]:
-        if cls._Chapters is None:
-            cls._Chapters = {}
+    def chapters(cls) -> KeysView[Chapter]:
+        if cls._chapters is None:
+            cls._chapters = {}
 
             for i,book,chapter_num in Iterate_Bible_Chapters():
                 for translation in ALL_TRANSLATIONS:
                     PTR = Chapter(translation, book, chapter_num)
-                    cls._Chapters[PTR] = None
+                    cls._chapters[PTR] = None
 
-        return cls._Chapters.keys()
-    
+        return cls._chapters.keys()
 
-    words:dict[str, occurrences] = {}
+    @classmethod
+    def analyze_chars(cls) -> dict[char, occurrences]:
+        if cls._chars:
+            return cls._chars
+        
+        cls._chars = {}
+        for Chapter in cls.chapters():
+            if Chapter.verses is None:
+                continue
+
+            for verse_text in Chapter.verses.values():
+                words = " ".join(verse_text.splitlines()).split(" ")
+
+                for char in words:
+                    for char in char:
+                        if char in cls._chars: cls._chars[char] += 1
+                        else:                  cls._chars[char]  = 1
+        
+        sorted_chars = sorted(cls._chars.items(), key=itemgetter(1), reverse=True)
+        cls._chars = {}
+        for char,occurrences in sorted_chars:
+            cls._chars[char] = occurrences
+
+        return cls._chars
+
+    @classmethod
+    def analyze_words(cls) -> dict[str, occurrences]:
+        if cls._chars:
+            return cls._chars
+        
+        cls._chars = {}
+        for Chapter in cls.chapters():
+            if Chapter.verses is None:
+                continue
+
+            for verse_text in Chapter.verses.values():
+                words = " ".join(verse_text.splitlines()).split(" ")
+                
+                for word in words:
+                    if word in cls._chars: cls._chars[word] += 1
+                    else:                  cls._chars[word]  = 1
+
+        sorted_words = sorted(cls._chars.items(), key=itemgetter(1), reverse=True)
+        cls._chars = {}
+        for word,occurrences in sorted_words:
+            cls._chars[word] = occurrences
+
+        return cls._chars
 
     @classmethod
     def Top_Words(cls, step=1000):
-        if not cls._Analyze_Words_has_run:
-            cls.Analyze_Words()
+        if cls._chars is None:
+            cls.analyze_words()
 
         i = 0
-        for word,occurrences in cls.words.items():
+        for word,occurrences in cls._chars.items():
             Print.yellow(f'{word} -> {occurrences}')
             i += 1
 
             if i % step == 0:
                 input()
 
-
-    _Analyze_Words_has_run = False
     @classmethod
-    def Analyze_Words(cls) -> dict[str, occurrences]:
-        if len(cls.words.keys()) > 0:
-            return cls.words
+    def Top_Chars(cls):
+        if cls._chars is None:
+            cls.analyze_chars()
 
-        for Chapter in cls.Chapters():
-            if Chapter.verses is None:
-                continue
+        for char,occurrences in cls._chars.items():
+            if not char.isalnum():
+                Print.yellow(f'{char} -> {occurrences}')
 
-            for verse_num, verse_text in Chapter.verses.items():
-                words = " ".join(verse_text.splitlines()).split(" ")
-                
-                for word in words:
-                    if word in cls.words: cls.words[word] += 1
-                    else:                 cls.words[word]  = 1
 
-        sorted_words = sorted(cls.words.items(), key=itemgetter(1), reverse=True)
-        cls.words = {}
-
-        for word,occurrences in sorted_words:
-            cls.words[word] = occurrences
-
-        return cls.words
+# def subtract_AlphaNumeric_characters(word_count:dict[str, occurrences]) -> dict[str, occurrences]:
 
 
 
