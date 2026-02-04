@@ -1,5 +1,4 @@
 from parser import chapter_File
-from transform import standardize_verse_form
 from kozubenko.print import colored_input
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
@@ -23,8 +22,5 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 # TEST_iterate_verses().Save_Report('TEST_iterate_verses')
 
 
-# Chapters = standardize_verse_form()
-
-standardize_verse_form(only_report=True)
 
 

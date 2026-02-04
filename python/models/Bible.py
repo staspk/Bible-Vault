@@ -57,8 +57,8 @@ class Book:
     def total_verses(self, chapter):
         return self.verse_map.get(chapter)
 
-    def __str__(self):
-        return self.name
+    def __repr__(self): return self.name
+    def __str__(self):  return self.name
 
 class BIBLE:
     TOTAL_CHAPTERS = 1189   # aka: Protestant
@@ -150,18 +150,25 @@ class BIBLE:
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-    _Chapters:dict[int, Chapter] = None
-    def Chapter(chapter_index:int, translation:str=None) -> Chapter | None:
-        """ `chapter_index`: [1-1189] """
+
+    _Chapters:dict[int, Chapter] = None   # NOTE: Chapters don't have `translation`
+    def Chapters() -> dict[int, Chapter]:
         if BIBLE._Chapters is None:
             BIBLE._Chapters = {}
             for i,book,chapter in Iterate_Bible_Chapters():
                 BIBLE._Chapters[i] = Chapter(book, chapter, i)
+        return BIBLE._Chapters
+
+    def Chapter(chapter_index:int, translation:str=None) -> Chapter | None:
+        """
+        Internal `BIBLE` holds Chapters without `translation`.
         
-        ptr = BIBLE._Chapters.get(chapter_index, None)
-        if translation:
-            return Chapter(ptr.book, ptr.chapter, ptr.index, translation)
-        return ptr
+        Pass in a `translation`, if a `Chapter` including `translation` is desired.
+        """
+        ptr = BIBLE.Chapters().get(chapter_index, None)
+
+        if translation is None: return ptr
+        else:                   return Chapter(ptr.book, ptr.chapter, ptr.index, translation)
 
     _book_to_cumulative_total_chapters:dict[int, int] = None    # Book.index -> Book.chapters + total_chapters(all_books_before_Book)
     def find_chapter_index(book:Book, chapter:int) -> int:
@@ -179,12 +186,7 @@ class BIBLE:
 def Iterate_Bible_Chapters() -> Iterator[tuple[int, str, int]]:
     """
     **How to Use:**
-    ```python
-    for i,book,chapter in Iterate_Bible_Chapters():
-        it.i
-        it.book
-        it.chapter
-    ```
+    >>> for i,book,chapter in Iterate_Bible_Chapters():
     """
     i = 1
     for book in BIBLE.Books():

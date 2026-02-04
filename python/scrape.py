@@ -19,6 +19,7 @@ from kozubenko.string import String
 from kozubenko.utils import assert_bool, assert_class, assert_int, assert_list
 from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapterSets import BibleChapterSets
+from models.IChapter import IChapter
 
 
 
@@ -203,7 +204,8 @@ class Scrape(metaclass=ScrapeContextManager):
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
 
-    def scrape_chapter(translation:str, Chapter:Chapter) -> bool:
+    def scrape_chapter(translation:str, Chapter:IChapter) -> bool:
+        """ Don't let the name confuse you - this is only a helper to `Scrape.ChapterSet` """
         OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, Chapter.book.name, f'{Chapter.chapter}.txt')
 
         css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
