@@ -23,15 +23,13 @@ from models.IChapter import IChapter
 
 
 
-translation = str
-
 @dataclass
 class ProblemChapter:
     translation:str
     book:Book
     chapter:int
     reason:str=""
-    dt=datetime.now().strftime("%d/%m/%Y %H:%M")
+    dt=datetime.now().strftime("%Y/%m/%d %H:%M")
 
     def __str__(self) -> str:
         return (
@@ -205,68 +203,20 @@ class Scrape(metaclass=ScrapeContextManager):
 
         options = Options()
         options.profile = profile
-        options.add_argument("--headless")
+        # options.add_argument("--headless")
 
         driver = webdriver.Firefox(options=options)
         Scrape.driver = driver
 
-    def scrape_chapter(translation:str, Chapter:IChapter) -> bool:
-        """ Don't let the name confuse you - this is only a helper to `Scrape.ChapterSet` """
-        OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, Chapter.book.name, f'{Chapter.chapter}.txt')
-
-        css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
-        element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
-
-        selector = f"span[class*='text {Chapter.book.abbr}-{Chapter.chapter}-']"
-        spans = element.find_elements(By.CSS_SELECTOR, selector)
-
-        expected_cls = f"text {Chapter.book.abbr}-{Chapter.chapter}-1"
-        chapter_text = ""
-        iteration = 0
-        for span in spans:
-            iteration += 1
-            expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
-            if expected_cls == False:
-                return False
-            if String.isEmptyOrWhitespace(span.text):
-                continue
-
-            chapter_text += f"{span.text}\n"
-
-        OUT_TXT.save(chapter_text, encoding='UTF-8')
-        return True
-
-    def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[Chapter, list[translation]]]]) -> BibleChapterSets:
-        """
-        **Returns:** `Chapters` unable to scrape.
-        """
-        Chapters = BibleChapterSets({})
-        for CHAPTER,TRANSLATIONS, in Chapter_iterator():
-            for translations in iterate_list(TRANSLATIONS, step=5):
-                if len(translations) > 1:
-                    URL = fr"https://www.biblegateway.com/passage/?search={CHAPTER.book.abbr}%20{CHAPTER.chapter}&version={";".join(translations)}"
-
-                    Scrape.driver.get(URL)
-                    if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
-                        for translation in translations:
-                            Chapters.mark(Chapter(CHAPTER.index, translation=translation))
-                        continue
-
-                    for translation in translations:
-                        if not Scrape.scrape_chapter(translation, CHAPTER):
-                            Chapters.mark(Chapter(CHAPTER.index, translation=translation))
-
-        return BibleChapterSets(Chapters.marked)
-
 
     chapter_text = str
 
-    def parse_chapter(book:Book, chapter:int) -> chapter_text | None:
+    def parse_chapter(translation:str, book:Book, chapter:int) -> chapter_text | None:
         css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
         element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
 
         selector = f"span[class*='text {book.abbr}-{chapter}-']"
-        spans = element.find_elements(By.CSS_SELECTOR, selector)
+        spans:list[WebElement] = element.find_elements(By.CSS_SELECTOR, selector)
 
         expected_cls = f"text {book.abbr}-{chapter}-1"
         chapter_text = ""
@@ -274,10 +224,13 @@ class Scrape(metaclass=ScrapeContextManager):
     
         for span in spans:
             iteration += 1
-            expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
-            if expected_cls == False:
-                Scrape.handle(ProblemChapter(translation, book, chapter, f'not still_on_expected_path() on iteration: {iteration}')) 
-                return None
+
+            debug1 = Test.still_on_expected_path_about_to_return_False(expected_cls, span.get_attribute("class"))
+
+            # expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
+            # if expected_cls == False:
+            #     Scrape.handle(ProblemChapter(translation, book, chapter, f'not still_on_expected_path() on iteration: {iteration}')) 
+            #     return None
 
             if String.isEmptyOrWhitespace(span.text):
                 continue
@@ -310,13 +263,13 @@ class Scrape(metaclass=ScrapeContextManager):
             Scrape.driver.get(URL)
 
             if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
-                Scrape.handle(ProblemChapter(translation, book, chapter, 'AttemptToSetPageState() failure'))
+                Scrape.handle(ProblemChapter(None, book, chapter, 'AttemptToSetPageState() failure'))
                 continue
 
             for translation in target_translations:
                 OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, book.name, f'{chapter}.txt')
 
-                chapter_text = Scrape.parse_chapter(book, chapter)
+                chapter_text = Scrape.parse_chapter(translation, book, chapter)
                 if chapter_text:
                     OUT_TXT.save(chapter_text, encoding='UTF-8')
 
@@ -371,6 +324,64 @@ class Scrape(metaclass=ScrapeContextManager):
                     Scrape.setup_driver()
 
 
+    translation = str
+
+    def scrape_chapter(translation:str, Chapter:IChapter) -> bool:
+        """ Don't let the name confuse you - this is only a helper to `Scrape.ChapterSet` """
+        OUT_TXT = File(Scrape.OUT_DIRECTORY, translation, Chapter.book.name, f'{Chapter.chapter}.txt')
+
+        css_selector_for_chapter = f"[class*='version-{translation}'][class*='result-text-style-normal'][class*='text-html']"
+        element = Scrape.driver.find_element(By.CSS_SELECTOR, css_selector_for_chapter)
+
+        selector = f"span[class*='text {Chapter.book.abbr}-{Chapter.chapter}-']"
+        spans:list[WebElement] = element.find_elements(By.CSS_SELECTOR, selector)
+
+        expected_cls = f"text {Chapter.book.abbr}-{Chapter.chapter}-1"
+        chapter_text = ""
+        iteration = 0
+        for span in spans:
+            iteration += 1
+            expected_cls = still_on_expected_path(expected_cls, span.get_attribute("class"))
+            if expected_cls == False:
+                return False
+            if String.isEmptyOrWhitespace(span.text):
+                continue
+
+            chapter_text += f"{span.text}\n"
+
+        OUT_TXT.save(chapter_text, encoding='UTF-8')
+        return True
+
+    def ChapterSet(Chapter_iterator:Callable[[], Iterator[tuple[Chapter, list[translation]]]]) -> BibleChapterSets:
+        """
+        **Returns:** `Chapters` unable to scrape.
+
+        **EXAMPLE:**:
+        ```python
+        with Scrape:
+            Scrape.ChapterSet(MissingChapters.iterate)
+        ```
+        """
+        Chapters = BibleChapterSets({})
+        for CHAPTER,TRANSLATIONS, in Chapter_iterator():
+            for translations in iterate_list(TRANSLATIONS, step=5):
+                if len(translations) > 1:
+                    URL = fr"https://www.biblegateway.com/passage/?search={CHAPTER.book.abbr}%20{CHAPTER.chapter}&version={";".join(translations)}"
+
+                    Scrape.driver.get(URL)
+
+                    if not BibleGatewayOptions.AttemptToSetPageState(Scrape.driver, False, False, True, False, True):
+                        for translation in translations:
+                            Chapters.mark(Chapter.From(CHAPTER.index, translation=translation))
+                        continue
+
+                    for translation in translations:
+                        if not Scrape.scrape_chapter(translation, CHAPTER):
+                            Chapters.mark(Chapter.From(CHAPTER.index, translation=translation))
+
+        return BibleChapterSets(Chapters.marked)
+
+
 class Test:
     def IP_Rotations():
         with Scrape:
@@ -382,3 +393,6 @@ class Test:
                 time.sleep(5)
                 Tor.RotateIP()
                 Scrape.setup_driver()
+
+    def still_on_expected_path_about_to_return_False(expected_cls:str, actual_cls:str) -> str|False:
+        return not still_on_expected_path(expected_cls, actual_cls)

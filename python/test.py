@@ -9,14 +9,7 @@ from scrape import ProblemChapter
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
-def open_Chapters(Chapters:BibleChapterSets, step=50):
-    i = 0
-    for Chapter in Chapters.iterate():
-        chapter_File(Chapter).open()
-        i += 1
-        if i == 50:
-            colored_input(f'Press Enter for {step} more...')
-            i = 0
+
 
 # identify_missing_chapters().Save_Report('identify_missing_chapters')
 # identify_Chapters_missing_verses().Save_Report('identify_Chapters_missing_verses')
@@ -28,3 +21,4 @@ def open_Chapters(Chapters:BibleChapterSets, step=50):
 
 
 
+open_Chapters(ALL_CHAPTERS())

@@ -16,7 +16,7 @@
 """
 import re
 from kozubenko.os import File
-from kozubenko.print import Print
+from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
@@ -30,6 +30,15 @@ def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleCh
 
 def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+
+def open_Chapters(Chapters:BibleChapterSets, step=50):
+    i = 0
+    for Chapter in Chapters.iterate():
+        chapter_File(Chapter).open()
+        i += 1
+        if i == 50:
+            colored_input(f'Press Enter for {step} more...')
+            i = 0
 
 
 def is_standard_form(PTR:Chapter) -> bool:
@@ -59,6 +68,9 @@ def identify_missing_chapters(Chapters:BibleChapterSets = BibleChapterSets.From(
         - chapters missing verses (a common problem in the Gospels)
         - chapter->total_verse mismatches between Eng/Rus
         - ???
+
+    **Returns:**
+        - `BibleChapterSets.marked` -> missing chapters found by parser.py `chapter_File()`
     """
     for PTR in Chapters.iterate():
         if not chapter_File(PTR).exists():

@@ -14,7 +14,7 @@ class IBibleChapterSet:
     """
     Classes subclassing are a dict container of `translation`->`set[chapter_index]`
     
-    Used to load a set back in between runs. See example: `./python/models/bible_chapter_sets/standard.py`
+    Used to load a set back in between runs. See example: `./python/models/bible_chapter_sets/missing_chapters.py`
     """
 
     @classmethod
