@@ -4,16 +4,14 @@ from kozubenko.print import Print
 from models.Bible import Chapter
 from models.BibleChapterSets import BibleChapterSet, BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
-from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, TEMP_DIR
+import definitions; from definitions import ALL_TRANSLATIONS, TEMP_DIR
+from parser import ALL_CHAPTERS, chapter_File, chapter_text
 
 
-
-DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
-
-def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
-
-def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+BIBLE_TXT          = definitions.BIBLE_TXT_NEW      # the main set in python, currently standardized, ready to be consumed.
+BIBLE_TXT_PARTIAL  = definitions.BIBLE_TXT_PARTIAL  # currently: Missing_Chapters from above
+BIBLE_TXT_CURRENT  = definitions.BIBLE_TXT_CURRENT
+BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
 def compare_changes(before:str, after:str):
     File(TEMP_DIR, 'pre.txt').save(before).open()
@@ -49,17 +47,21 @@ def strip_title(PTR:Chapter) -> tuple[str, str]:
     raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
 
+# --------------------------------------------------------------------------------------------------------------------------------
+#       STEP #2
+# --------------------------------------------------------------------------------------------------------------------------------
 def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS(), only_report=False) -> tuple[BibleChapterSet, BibleChapterSet]:
     """
     STEP 2
+
+    **PARAMETERS**:
+        - `Chapters` - transformations will be done on: `Chapters.set`
+        - `only_report` - if True: a theoretical run is done, reporting what would happen if called
     
     **RETURNS:**  
         `tuple[transformed, skipped]`  
         - `transformed` -> Chapters successfully transformed.
         - `skipped` -> Chapters that need a manual look/edit before `standardize_verse_form()` can transform text to new shape/formatting.
-
-    NOTES:
-        - every line will begin begin at position 0
 
     **EXAMPLE:** Genesis 46 NKJV
     ```
@@ -111,6 +113,19 @@ def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS(), only_repo
 
     return (transformed.marked, skipped.marked)
 
+def standardize_verse_form_FOR_abnormal_verse_count():
+    """
+    STEP 2 - alternate implementation, necessary for Chapters that have:  
+        - deviating *actual* total verses. Common in newer translations, which differ in source-texts used,
+        but still report classic total verse counts for chapters.
+        See: `./python/models/bible_chapter_sets/abnormal_verse_count.py`
+
+    
+    """
+
+# --------------------------------------------------------------------------------------------------------------------------------
+#       STEP #1
+# --------------------------------------------------------------------------------------------------------------------------------
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
     STEP 1
