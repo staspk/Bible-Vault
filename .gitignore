@@ -9,5 +9,7 @@ node/test.ts
 
 python/bible_txt
 python/bible_txt_partial
+python/bible_txt_current
+python/bible_txt_postponed
 python/og_parsed_bible_txt.zip
 python/tor/torrc

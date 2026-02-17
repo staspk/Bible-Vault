@@ -137,13 +137,36 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
     2 And the woman said to the serpent, “We may eat of the fruit of the trees in the garden,
     ```
     """
+    def strip_title(PTR:Chapter, chapter_text:str) -> tuple[str, str]:
+        """
+        title == "", if no title
+
+        **Returns:**
+            - `(title, rest)`
+        """
+        lines = chapter_text.splitlines(keepends=True)
+
+        if lines[0][0:len(f'{PTR.chapter} ')] == f'{PTR.chapter} ':
+            return ("", "".join(lines))
+
+        i = 4
+        while i > -1:
+            if lines[i][0:len(f'{PTR.chapter} ')] == f'{PTR.chapter} ':
+                return (lines[0:i], "".join(lines[i:]))
+            
+            if lines[i][0:len(f'1 ')] == f'1 ':
+                return (lines[0:i], "".join(lines[i:]))
+            
+            i -=1
+
+        
+
+
+
     i = 1
     Chapters:BibleChapterSets = BibleChapterSets.From(ALL_TRANSLATIONS)
     for PTR in Chapters.iterate():
-        TEXT = chapter_text(PTR)
-        text = TEXT
-
-        (title, text) = strip_title(PTR, text)
+        (title, text) = strip_title(PTR.chapter, chapter_text(PTR))
         
         start_index = text.find(f'{PTR.chapter} ')
         if start_index == 0:
@@ -155,6 +178,15 @@ def standardize_chapter_number_formatting() -> BibleChapterSets:
     Print.yellow(Chapters.total_marked)
     Chapters.Save_Report('identify_chapters_standardized()', "Standardized Chapters")
     return Chapters
+
+
+def Transform(chapters:BibleChapterSets):
+    """
+    **STEPS:**
+        - `standardize_chapter_number_formatting()` NOTE: NEEDS FIX! SEE FUNCTION...
+    """
+
+    # standardize_chapter_number_formatting()
 
 
 class Test:
