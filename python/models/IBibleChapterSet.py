@@ -4,9 +4,9 @@ from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets, Protestant_Set
 
 
-translation = str
-chapter_index = int
-BibleChapterSet = dict[translation, set[chapter_index]]
+type translation = str
+type chapter_index = int
+type BibleChapterSet = dict[translation, set[chapter_index]]
 
 def Protestant_Set() -> set[int]: return set(range(1, BIBLE.TOTAL_CHAPTERS+1))
 
@@ -14,11 +14,20 @@ class IBibleChapterSet:
     """
     Classes subclassing are a dict container of `translation`->`set[chapter_index]`
     
-    Used to load a set back in between runs. See example: `./python/models/bible_chapter_sets/standard.py`
+    Used to save/load a set back in between runs. See example: `./python/models/bible_chapter_sets/missing_chapters.py`
     """
 
     @classmethod
+    def total(cls) -> int:
+        total = 0
+        for key,value in class_attributes(cls):
+            if isinstance(value, set):
+                total += len(value)
+        return total
+
+    @classmethod
     def chapters(cls) -> dict[translation, set[chapter_index]]:
+        """ **Returns:** `dict[translation, set[chapter_index]]` """
         chapter_set:dict[translation, set[chapter_index]] = {}
         for key,value in class_attributes(cls):
             if isinstance(value, set):
@@ -27,6 +36,7 @@ class IBibleChapterSet:
 
     @classmethod
     def Chapters(cls) -> BibleChapterSets:
+        """ **Returns**: `BibleChapterSets(dict[translation, set[chapter_index]])` """
         return BibleChapterSets(cls.chapters())
     
     @classmethod
@@ -44,7 +54,7 @@ class IBibleChapterSet:
     @classmethod
     def iterate(cls) -> Iterator[tuple[Chapter, list[translation]]]:
         """
-        **Intended:** To yield a form easily consumable by the parser.
+        **Intended:** To yield a form easily consumable by the scraper.
 
         Technically, this may not belong here, being more in the spirit of `BibleChapterSets`
         """

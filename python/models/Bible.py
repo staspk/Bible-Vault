@@ -14,19 +14,23 @@ class Chapter:
 
     @property
     def total_verses(self) -> int:
-        if self.book.name == '2 Corinthians' and self.chapter == 13 and self.translation in ('NRSV', 'NRT', 'NET'): return 13   # usually: 14
-        if self.book.name == '3 John' and self.chapter == 1 and self.translation in ('KJV', 'NKJV', 'RUSV'): return 14   # usually: 15
-        if self.book.name == 'Revelation' and self.chapter == 12 and self.translation in ('NRSV', 'NET'): return 18   # usually: 17
-
         return self.book.total_verses(self.chapter)
 
     def __post_init__(self):
+        if self.book == 1: set_frozen_attr(self, "book", BIBLE.MATTHEW)
+        if self.book == 2: set_frozen_attr(self, "book", BIBLE.MARK)
+        if self.book == 3: set_frozen_attr(self, "book", BIBLE.LUKE)
+        if self.book == 4: set_frozen_attr(self, "book", BIBLE.JOHN)
+        if self.book == 5: set_frozen_attr(self, "book", BIBLE.ACTS)
+
         if self.index is None:
             set_frozen_attr(self, "index", BIBLE.find_chapter_index(self.book, self.chapter))
 
+    @staticmethod
     def From(chapter_index:int, translation:Optional[str]=None) -> Chapter:
         return BIBLE.Chapter(chapter_index, translation)
     
+    @staticmethod
     def FromStr(string:str) -> Chapter:
         """ Assumes `translation` exists """
         chapter_index = string.split(' ', maxsplit=1)[0]
