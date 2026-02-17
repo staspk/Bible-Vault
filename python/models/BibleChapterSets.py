@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import random
 from typing import Iterator, Self
 from kozubenko.os import File
@@ -7,9 +8,9 @@ from models.Bible import BIBLE, Book, Chapter
 from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, PYTHON_TESTS_DIRECTORY
 
 
-translation = str
-chapter_index = int
-BibleChapterSet = dict[translation, set[chapter_index]]
+type translation = str
+type chapter_index = int
+type BibleChapterSet = dict[translation, set[chapter_index]]
 
 def Protestant_Set() -> set[int]:
     """ **Returns:** `set[chapter_index]` : {1-1189} """
@@ -24,16 +25,26 @@ class BibleChapterSets:
     
     **Intended For:**
     - Build a map, set of sets of the Bible by `Chapter.index`, with intent to randomly iterate/mark.
-    - Mark ability does NOT depend on `self.set` - init with: `{}`
+    - Mark ability does NOT depend on `self.set` existence - you *can* init with: `{}`
     """
     @property
     def total(self) -> int: return sum(len(set) for set in self.set.values())
     @property
     def total_marked(self) -> int: return sum(len(set) for set in self.marked.values())
 
+    @property
+    def Marked(self) -> BibleChapterSets:
+        """ **Returns:** `BibleChapterSets(self.marked)` """
+        return BibleChapterSets(self.marked)
+    
+    @property
+    def Difference(self) -> BibleChapterSets:
+        """ **Returns:** `BibleChapterSets(self.set - self.marked)` """
+        return BibleChapterSets.Subtract(self.set, self.marked)
+
     def __init__(self, chapter_set:dict[translation, set[chapter_index]]):
         self.set = chapter_set
-        self.marked:dict[str, set[int]] = {}
+        self.marked:dict[translation, set[chapter_index]] = {}
         for translation in chapter_set.keys():
             self.marked[translation] = set()
 
@@ -41,6 +52,11 @@ class BibleChapterSets:
         """ static constructor """
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
     
+    def Mark(self, condition:Callable):
+        for Chapter in self.iterate():
+            if condition(Chapter):
+                self.mark(Chapter)
+
     def mark(self, chapter:Chapter):
         """ """
         translation = chapter.translation
@@ -103,10 +119,12 @@ class BibleChapterSets:
 
         return self
 
+    @staticmethod
     def Subtract(
         A:dict[translation, set[chapter_index]],
         B:dict[translation, set[chapter_index]]
     ) -> BibleChapterSets:
+        """ A - B """
         sets = {key:value.copy() for key,value in A.items()}
 
         for translation in B.keys():

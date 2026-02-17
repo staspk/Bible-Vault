@@ -15,13 +15,26 @@ rus_translations  = ['RUSV', 'NRT']
 
 def chapter_File(PTR:Chapter): return File(Scrape.OUT_DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 
-Missing:BibleChapterSets = identify_missing_chapters()
-with Scrape:
-    for PTR in Missing.iterate():
-        Scrape.Book([PTR.translation], PTR.book, PTR.chapter, PTR.chapter)
+def scrape_missing_chapters() -> BibleChapterSets:
+    """
+    **Returns:**
+        Chapters successfully scraped.
+    """
+    Missing:BibleChapterSets = BibleChapterSets(identify_missing_chapters().marked)
+    with Scrape:
+        for PTR in Missing.iterate():
+            Scrape.Book([PTR.translation], PTR.book, PTR.chapter, PTR.chapter)
 
+            if chapter_File(PTR).exists():
+                Missing.mark(PTR)
+
+    Missing.Save_Report('missing_chapters_scraped')
+
+    Chapters:BibleChapterSets = BibleChapterSets(identify_missing_chapters().marked)
+    for PTR in Chapters.iterate():
         if chapter_File(PTR).exists():
-            Missing.mark(PTR)
+            Chapters.mark(PTR)
 
-Missing.Save_Report('missing_chapters_scraped')
+    Print.yellow(f'scrape_missing_chapters(): {Chapters.ratio()}')
+    return BibleChapterSets(Missing.marked)
 
