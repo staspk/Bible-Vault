@@ -21,6 +21,3 @@ TEMP_OUTPUT =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')
 
 
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
-
-
-# ENV                   =  os.path.join(PROJECT_ROOT_DIRECTORY, '.env', '.env')

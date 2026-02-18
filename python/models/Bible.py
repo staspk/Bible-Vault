@@ -154,7 +154,6 @@ class BIBLE:
         assert_int("index", index, 1, 66)
         return BIBLE.Books()[index - 1]
 
-
     _Chapters:dict[int, Chapter] = None   # NOTE: Chapters don't have `translation`
     def Chapters() -> dict[int, Chapter]:
         if BIBLE._Chapters is None:

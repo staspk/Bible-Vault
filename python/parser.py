@@ -32,13 +32,13 @@ BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(definitions.ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
-def chapter_File(PTR:Chapter, directory): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter, directory): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+def chapter_File(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
-def move_Chapters(from_dir:str, to_dir:str, Chapters:BibleChapterSets):
+def move_Chapters(Chapters:BibleChapterSets, from_dir:str, to_dir:str):
     """ Moves: `Chapters.set` """
     for PTR in Chapters.iterate():
-        chapter_File(PTR, from_dir).move(chapter_File(PTR, to_dir))
+        chapter_File(from_dir, PTR).move(chapter_File(to_dir, PTR))
 
 def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
     """
@@ -48,15 +48,20 @@ def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
     """
     i = 0
     for Chapter in Chapters.iterate():
-        chapter_File(Chapter, directory).open()
-        i += 1
-        if i == 50:
-            colored_input(f'Press Enter for {step} more...')
-            i = 0
+        chapter = chapter_File(directory, Chapter)
+        if chapter.exists():
+            i += 1
+            chapter.open()
+            if i == 50:
+                colored_input(f'Press Enter for {step} more...')
+                i = 0
+        else:
+            Print.lite_red(f'open_Chapters(): {Chapter} does not exist!')
 
 
-def is_standard_form(PTR:Chapter) -> bool:
-    text = chapter_text(PTR)
+
+def is_standard_form(directory:str, PTR:Chapter) -> bool:
+    text = chapter_text(directory, PTR)
     expected_total_verses = PTR.total_verses
     lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
     if lines.__len__() == expected_total_verses:
@@ -66,7 +71,7 @@ def is_standard_form(PTR:Chapter) -> bool:
 def has_missing_verses(PTR:Chapter, directory:str) -> bool:
     """ I lack 100% certainty on this one, edge-case-wise. But keeping as an alternate iterating implementation """
 
-    text = chapter_text(PTR, directory)
+    text = chapter_text(directory, PTR)
     start = 0; END = text.__len__()
 
     for verse in range(1, PTR.total_verses+1):
@@ -77,18 +82,18 @@ def has_missing_verses(PTR:Chapter, directory:str) -> bool:
     return False
 
 
-def identify_missing_chapters(Chapters:BibleChapterSets = BibleChapterSets.From(definitions.ALL_TRANSLATIONS)) -> BibleChapterSets:
+def identify_missing_chapters(directory:str, Chapters:BibleChapterSets = BibleChapterSets.From(definitions.ALL_TRANSLATIONS)) -> BibleChapterSets:
     """
     Two main problem group Chapters were deleted from `./python/bible_txt` to facilitate movement forward:
         - chapters missing verses (a common problem in the Gospels)
         - chapter->total_verse mismatches between Eng/Rus
         - ???
 
-    **Returns:**
-        - `BibleChapterSets.marked` -> missing chapters found by parser.py `chapter_File()`
+    **RETURNS:**
+        - `BibleChapterSets.marked` -> missing chapters found by parser.py
     """
     for PTR in Chapters.iterate():
-        if not chapter_File(PTR).exists():
+        if not chapter_File(directory, PTR).exists():
             Chapters.mark(PTR)
 
     return Chapters
@@ -107,9 +112,9 @@ def identify_Chapters_missing_verses(directory:str, Chapters:BibleChapterSets = 
         
     return Chapters
 
-def identify_Standard_Form(Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
+def identify_Standard_Form(directory:str, Chapters:BibleChapterSets = ALL_CHAPTERS()) -> BibleChapterSets:
     for PTR in Chapters.iterate():
-        if is_standard_form(PTR):
+        if is_standard_form(directory, PTR):
             Chapters.mark(PTR)
 
     return Chapters

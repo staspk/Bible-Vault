@@ -53,10 +53,11 @@ class BibleChapterSets:
         """ static constructor """
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})
     
-    def Mark(self, condition:Callable):
+    def Mark(self, condition:Callable) -> Self:
         for Chapter in self.iterate():
             if condition(Chapter):
                 self.mark(Chapter)
+        return self
 
     def mark(self, chapter:Chapter):
         """ """

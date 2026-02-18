@@ -50,7 +50,15 @@ class IBibleChapterSet:
             inverse[translation] = Protestant_Set() - chapter_set[translation]
             
         return BibleChapterSets(inverse)
-    
+
+    @classmethod
+    def includes(cls, chapter:Chapter) -> bool:
+        chapters = cls.chapters()
+        if chapter.translation in chapters.keys():
+            if chapter.index in chapters[chapter.translation]:
+                return True
+        return False
+
     @classmethod
     def iterate(cls) -> Iterator[tuple[Chapter, list[translation]]]:
         """

@@ -5,25 +5,28 @@ from kozubenko.cls import set_frozen_attr
 from kozubenko.os import File
 from kozubenko.parse import is_AlphaNumeric
 from kozubenko.print import Print, colored_input
+from kozubenko.script import Script
 from models.Bible import BIBLE as _BIBLE, Book, Iterate_Bible_Chapters
 from models.BibleChapterSets import BibleChapterSets
 from models.IChapter import IChapter
+from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from tests.data.chapters import chapters
-from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW
+import definitions
 
 
-DIRECTORY = BIBLE_TXT_NEW
-def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
+DIRECTORY = definitions.BIBLE_TXT_NEW
+ALL_TRANSLATIONS = definitions.ALL_TRANSLATIONS
+def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.From(ALL_TRANSLATIONS).Mark(lambda Chapter:chapter_File(Chapter).exists()).Marked
 
 def chapter_File(PTR:IChapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(PTR:IChapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
-def strip_title(PTR:IChapter) -> tuple[str, str]:
+
+type title = str; type rest = str
+def strip_title(PTR:IChapter) -> tuple[title, rest]:
     """
-    **Returns:**
-        `(title, rest)`
-            `title == ""`, if no title in text
+    `title == ""`, if no `title` in Chapter text
     """
     TEXT = chapter_text(PTR)
     lines = TEXT.splitlines(keepends=True)
@@ -48,25 +51,26 @@ def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
     verses = {}
     title, TEXT = strip_title(PTR)
 
-    verse_num = 1
-    start = TEXT.find('1\n') + len('1\n')
-    end   = TEXT.find('\n2', start)
-    verse_text = TEXT[start:end]
-    verses[1] = verse_text
-
-    while end != -1:
-        verse_num += 1
+    def find_verse_text(verse_num:int, start:int, end:int) -> tuple[int, int]:
         start = TEXT.find(f'{verse_num}\n', end) + len(f'{verse_num}\n')
         end   = TEXT.find(f'\n{verse_num+1}', start)
-        verse_text = TEXT[start:end]
         if end != -1:
-            verses[verse_num] = verse_text
+            verses[verse_num] = TEXT[start:end]
+            verse_num += 1
 
-    verses[verse_num] = TEXT[start:len(TEXT) - 1]
+        return verse_num, start, end
+
+    
+    verse_num, start, end = find_verse_text(1, 0, len(TEXT))
+    while end != -1:
+        verse_num, start, end = find_verse_text(verse_num, start, end)
+
+    verses[verse_num] = TEXT[start:len(TEXT) - 1]   # last verse
+
     return verses
 
-verse_num = int
-verse_text = str
+type verse_num = int
+type verse_text = str
 
 @dataclass(frozen=True)
 class Chapter:
@@ -76,28 +80,35 @@ class Chapter:
     verses:dict[verse_num, verse_text] = field(default=None, compare=False, hash=False)
 
     def __post_init__(self):
-        if self.verses is None:
+        set_frozen_attr(self, "index", _BIBLE.find_chapter_index(self.book, self.chapter))
+
+        if self.verses is None and not abnormal_verse_count_Chapters.includes(self):
             set_frozen_attr(self, "verses", load_verses(self))
 
-char = str
-occurrences = int
+
+def load_chapters():
+    chapters = {}
+    for i,book,chapter_num in Iterate_Bible_Chapters():
+        for translation in ALL_TRANSLATIONS:
+            PTR = Chapter(translation, book, chapter_num)
+            chapters[PTR] = None
+    return chapters
+
+type char = str
+type occurrences = int
 
 class BIBLE:
-    _chapters:dict[Chapter, None] = None
+    _chapters:dict[Chapter, None] = load_chapters()
 
     _chars:dict[char, occurrences] = None
     _words:dict[str, occurrences] = None
 
+    # def __init__(self):
+        
+
     @classmethod
     def chapters(cls) -> KeysView[Chapter]:
-        if cls._chapters is None:
-            cls._chapters = {}
-
-            for i,book,chapter_num in Iterate_Bible_Chapters():
-                for translation in ALL_TRANSLATIONS:
-                    PTR = Chapter(translation, book, chapter_num)
-                    cls._chapters[PTR] = None
-
+        if cls._chapters is None: cls._chapters = load_chapters()
         return cls._chapters.keys()
 
     @classmethod
@@ -173,7 +184,13 @@ class BIBLE:
                 Print.yellow(f'{char} -> {occurrences}')
 
 
-# def subtract_AlphaNumeric_characters(word_count:dict[str, occurrences]) -> dict[str, occurrences]:
+if __name__ == "__main__":
+    search:str = Script.Arg1()
+
+
+
+    
+
 
 
 

@@ -1,7 +1,7 @@
 from models.IBibleChapterSet import IBibleChapterSet
 
 
-class Chapters_abnormal_verse_count(IBibleChapterSet):
+class abnormal_verse_count_Chapters(IBibleChapterSet):
     """
     NOTE: 8 chapters added manually into `bible_txt` without tranformation (standardizing missing verses). See fossil record below for which ones...
     NOTE: We manually standardized/forced in the NIV chapters...need to add to this set!
@@ -18,7 +18,7 @@ class Chapters_abnormal_verse_count(IBibleChapterSet):
     NET = {1026, 1091, 964, 996, 1062, 966, 968, 1033, 1002, 972, 946, 947, 1046, 952, 1179, 990}
 
 
-""" FOSSIL RECORD """
+""" FOSSIL RECORD - necessary, see above note for why """
 # if self.book.name == '2 Corinthians' and self.chapter == 13 and self.translation in ('NRSV', 'NRT', 'NET'): return 13   # usually: 14
 # if self.book.name == '3 John' and self.chapter == 1 and self.translation in ('KJV', 'NKJV', 'RUSV'): return 14   # usually: 15
 # if self.book.name == 'Revelation' and self.chapter == 12 and self.translation in ('NRSV', 'NET'): return 18   # usually: 17
