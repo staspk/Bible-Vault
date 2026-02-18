@@ -5,6 +5,7 @@ from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from models.bible_chapter_sets.abnormal_verse_count import Chapters_abnormal_verse_count
 from definitions import ALL_TRANSLATIONS
+from transform import standardize_verse_form_FOR_abnormal_verse_count
 
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
@@ -17,4 +18,4 @@ def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleCh
 # Chapters:BibleChapterSets = MissingChapters.Chapters()
 # Chapters.Mark(lambda Chapter:Chapter.translation == 'NRT')
 
-
+standardize_verse_form_FOR_abnormal_verse_count(BIBLE_TXT_PARTIAL, only_report=True)

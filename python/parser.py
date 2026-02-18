@@ -32,8 +32,8 @@ BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(definitions.ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
-def chapter_File(PTR:Chapter, directory): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter, directory): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+def chapter_File(PTR:Chapter, directory:str): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(PTR:Chapter, directory:str): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def move_Chapters(from_dir:str, to_dir:str, Chapters:BibleChapterSets):
     """ Moves: `Chapters.set` """
