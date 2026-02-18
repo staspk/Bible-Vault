@@ -48,11 +48,16 @@ def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
     """
     i = 0
     for Chapter in Chapters.iterate():
-        chapter_File(Chapter, directory).open()
-        i += 1
-        if i == 50:
-            colored_input(f'Press Enter for {step} more...')
-            i = 0
+        chapter = chapter_File(Chapter, directory)
+        if chapter.exists():
+            i += 1
+            chapter.open()
+            if i == 50:
+                colored_input(f'Press Enter for {step} more...')
+                i = 0
+        else:
+            Print.lite_red(f'open_Chapters(): {Chapter} does not exist!')
+
 
 
 def is_standard_form(PTR:Chapter) -> bool:

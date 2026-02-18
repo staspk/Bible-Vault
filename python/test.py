@@ -1,4 +1,4 @@
-from parser import chapter_File, BIBLE_TXT, BIBLE_TXT_PARTIAL, BIBLE_TXT_CURRENT, BIBLE_TXT_POSTPONED, open_Chapters
+from parser import BIBLE_TXT, BIBLE_TXT_PARTIAL, BIBLE_TXT_CURRENT, BIBLE_TXT_POSTPONED, open_Chapters, chapter_File
 from kozubenko.print import Print, colored_input
 from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets
@@ -16,7 +16,5 @@ def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleCh
 
 # Chapters:BibleChapterSets = MissingChapters.Chapters()
 # Chapters.Mark(lambda Chapter:Chapter.translation == 'NRT')
-
-
 
 

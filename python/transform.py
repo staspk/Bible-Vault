@@ -167,13 +167,15 @@ def standardize_verse_form_FOR_abnormal_verse_count(
         new_text = ""
 
         verse_num = 1
+        start_line = 0
         lines = text.splitlines()
-        start = 0
 
-        # possible_verse_nums = [1...]
+        
 
-        for i,line in range(lines.__len__(), start=start):
+        possible_verse_nums = list(range(1, PTR.total_verses+3))  # +3: accounting for Chapters with: actual_total_verses > classic_total_verses
 
+        for i in range(start_line, lines.__len__()):
+            line = lines[i]
             
 
             if line.startswith(f'{verse_num} ') and len(line) > len(f'{verse_num} '):
@@ -183,10 +185,6 @@ def standardize_verse_form_FOR_abnormal_verse_count(
             else:
                 new_text += f'{line}\n'
 
-
-            
-
-            
 
 
 
