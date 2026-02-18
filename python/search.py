@@ -182,12 +182,6 @@ class Test:
         Tests = {
             IChapter('NET', _BIBLE.PSALMS, 42)          : None,
             IChapter('NRT', _BIBLE.FIRST_CHRONICLES, 3) : None,
-            # Chapter.From(850, translation='NRT'),
-            # Chapter.From(12,  translation='NET'),
-            # Chapter.From(411, translation='NIV'),
-            # Chapter.From(411, translation='NET'),
-            # Chapter.From(843, translation='NET'),
-            # Chapter.From(87,  translation='NET')
         }
 
         for chapter in Tests:

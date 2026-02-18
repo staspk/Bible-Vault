@@ -13,6 +13,9 @@
     potential trait of #2-#3
     909/11890
     7.64%
+    
+Oddities To Still Solve:
+    " " aka: 6/MSP, John 15 NRT, 2 occurences. NOTE: NRT is riddled with these.
 """
 import re, definitions
 from kozubenko.os import File

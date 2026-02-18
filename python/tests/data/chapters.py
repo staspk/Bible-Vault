@@ -13,12 +13,14 @@ class chapters:
     """
     Some hard-coded chapters to test functions that read chapters in.
     """
+    @staticmethod
     def all() -> list[IChapterIterator]:
         return [
             NET_Psalms_42,
             NRT_1Chronicles_3
         ]
 
+    @staticmethod
     def get(PTR:IChapter) -> IChapterIterator:
         if PTR.translation == 'NET' and PTR.book == BIBLE.PSALMS and PTR.chapter == 42: return NET_Psalms_42
         if PTR.translation == 'NRT' and PTR.book == BIBLE.FIRST_CHRONICLES and PTR.chapter == 3: return NRT_1Chronicles_3

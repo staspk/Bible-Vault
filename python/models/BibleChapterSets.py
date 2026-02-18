@@ -48,6 +48,7 @@ class BibleChapterSets:
         for translation in chapter_set.keys():
             self.marked[translation] = set()
 
+    @staticmethod
     def From(translations:list[str]=ALL_TRANSLATIONS) -> BibleChapterSets:
         """ static constructor """
         return BibleChapterSets({translation:Protestant_Set() for translation in translations})

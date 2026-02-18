@@ -27,6 +27,7 @@ class IBibleChapterSet:
 
     @classmethod
     def chapters(cls) -> dict[translation, set[chapter_index]]:
+        """ **Returns:** `dict[translation, set[chapter_index]]` """
         chapter_set:dict[translation, set[chapter_index]] = {}
         for key,value in class_attributes(cls):
             if isinstance(value, set):
@@ -35,6 +36,7 @@ class IBibleChapterSet:
 
     @classmethod
     def Chapters(cls) -> BibleChapterSets:
+        """ **Returns**: `BibleChapterSets(dict[translation, set[chapter_index]])` """
         return BibleChapterSets(cls.chapters())
     
     @classmethod

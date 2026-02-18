@@ -14,10 +14,6 @@ class Chapter:
 
     @property
     def total_verses(self) -> int:
-        if self.book.name == '2 Corinthians' and self.chapter == 13 and self.translation in ('NRSV', 'NRT', 'NET'): return 13   # usually: 14
-        if self.book.name == '3 John' and self.chapter == 1 and self.translation in ('KJV', 'NKJV', 'RUSV'): return 14   # usually: 15
-        if self.book.name == 'Revelation' and self.chapter == 12 and self.translation in ('NRSV', 'NET'): return 18   # usually: 17
-
         return self.book.total_verses(self.chapter)
 
     def __post_init__(self):
