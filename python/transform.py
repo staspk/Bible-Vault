@@ -47,7 +47,7 @@ def strip_title(PTR:Chapter, directory:str) -> tuple[str, str]:
     
     raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
-def line_has_verse_num_AND_verse_text(line:str, minimum_verse_num:int, total_verses:int):
+def line_has_verse_num_AND_verse_text(line:str, minimum_verse_num:int, total_verses:int) -> bool:
     """ helper function to: `standardize_verse_form_FOR_abnormal_verse_count()` """
     possible_verse_nums = range(minimum_verse_num, total_verses+3)  # +3 -> accounting for Chapters with: actual_total_verses > classic_total_verses (max distance == 2, supposedly)
     for verse_num in possible_verse_nums:
@@ -159,8 +159,7 @@ def standardize_verse_form_FOR_abnormal_verse_count(
         - `Chapters` - transformations will be done on: `Chapters.set`
         - `only_report` - if True: a theoretical run is done without saving changes
 
-    **RETURNS:**
-    `tuple[transformed, skipped]`  
+    **RETURNS:** `tuple[transformed, skipped]`  
     - `transformed` -> Chapters successfully transformed.
     - `skipped` -> Chapters that raised Exception during transform operation.
     
@@ -172,7 +171,7 @@ def standardize_verse_form_FOR_abnormal_verse_count(
     def is_verse_num_line(line:str, minimum_verse_num:int, total_verses:int) -> int|False:
         possible_verse_nums = range(minimum_verse_num, total_verses+3)  # +3 -> accounting for Chapters with: actual_total_verses > classic_total_verses (max distance == 2, supposedly)
         for verse_num in possible_verse_nums:
-            if line.startswith(f'{verse_num} ') and len(line) > len(f'{verse_num} '):
+            if line.startswith(f'{verse_num} '):
                 return verse_num
         return False
     
@@ -188,18 +187,19 @@ def standardize_verse_form_FOR_abnormal_verse_count(
             title, text = strip_title(PTR, directory)
             new_text = ""
 
-            verse_num = 1
+            verses_found = 1
             for line in text.splitlines():
-                if line_has_verse_num_AND_verse_text(line, verse_num, PTR.total_verses):
+                if line_has_verse_num_AND_verse_text(line, verses_found, PTR.total_verses):
                     verse_num, verse_text = line.split(" ", maxsplit=1)
                     new_text += f'{verse_num}\n'
                     new_text += f'{verse_text}\n'
-                    verse_num += 1
-                elif current_verse_num := is_verse_num_line():
-                    new_text += f'{current_verse_num}\n'
+                    verses_found += 1
+                elif verse_num := is_verse_num_line(line, verses_found, PTR.total_verses):
+                    new_text += f'{verse_num}\n'
+                    verses_found += 1
                 else:
                     new_text += f'{line}\n'
-            
+
             if not only_report: chapter_File(PTR, directory).save(title+new_text)
             transformed.mark(PTR)
         except:
