@@ -10,12 +10,9 @@ from transform import standardize_verse_form_FOR_abnormal_verse_count
 
 def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
 
-# identify_missing_chapters().Save_Report('identify_missing_chapters')
-# identify_Chapters_missing_verses().Save_Report('identify_Chapters_missing_verses')
-# identify_Standard_Form().Save_Report('identify_Standard_Form')
-
 
 # Chapters:BibleChapterSets = MissingChapters.Chapters()
 # Chapters.Mark(lambda Chapter:Chapter.translation == 'NRT')
 
-standardize_verse_form_FOR_abnormal_verse_count(BIBLE_TXT_PARTIAL, only_report=True)
+# standardize_verse_form_FOR_abnormal_verse_count(BIBLE_TXT_PARTIAL, only_report=False)
+open_Chapters(BIBLE_TXT_PARTIAL, Chapters_abnormal_verse_count.Chapters())
