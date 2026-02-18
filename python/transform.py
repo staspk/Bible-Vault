@@ -1,19 +1,18 @@
 import time
 from kozubenko.os import File
 from kozubenko.print import Print
-from models.Bible import Chapter
+from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSet, BibleChapterSets
+from models.bible_chapter_sets.abnormal_verse_count import Chapters_abnormal_verse_count
 from models.bible_chapter_sets.missing_chapters import MissingChapters
-from definitions import ALL_TRANSLATIONS, BIBLE_TXT_NEW, TEMP_DIR
+import definitions; from definitions import ALL_TRANSLATIONS, TEMP_DIR
+from parser import ALL_CHAPTERS, chapter_File, chapter_text
 
 
-
-DIRECTORY = BIBLE_TXT_NEW # BIBLE_TXT_PARTIAL
-
-def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(ALL_TRANSLATIONS).set, MissingChapters.chapters())
-
-def chapter_File(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(PTR:Chapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+BIBLE_TXT          = definitions.BIBLE_TXT_NEW      # the main set in python, currently standardized, ready to be consumed.
+BIBLE_TXT_PARTIAL  = definitions.BIBLE_TXT_PARTIAL  # currently: Missing_Chapters from above
+BIBLE_TXT_CURRENT  = definitions.BIBLE_TXT_CURRENT
+BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
 def compare_changes(before:str, after:str):
     File(TEMP_DIR, 'pre.txt').save(before).open()
@@ -49,17 +48,21 @@ def strip_title(PTR:Chapter) -> tuple[str, str]:
     raise Exception(f'strip_title(): Encountered text aberration. "1 " not found! Chapter: {str(PTR)}')
 
 
+# --------------------------------------------------------------------------------------------------------------------------------
+#       STEP #2
+# --------------------------------------------------------------------------------------------------------------------------------
 def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS(), only_report=False) -> tuple[BibleChapterSet, BibleChapterSet]:
     """
     STEP 2
+
+    **PARAMETERS**:
+        - `Chapters` - transformations will be done on: `Chapters.set`
+        - `only_report` - if True: a theoretical run is done, reporting what would happen if called
     
     **RETURNS:**  
         `tuple[transformed, skipped]`  
         - `transformed` -> Chapters successfully transformed.
         - `skipped` -> Chapters that need a manual look/edit before `standardize_verse_form()` can transform text to new shape/formatting.
-
-    NOTES:
-        - every line will begin begin at position 0
 
     **EXAMPLE:** Genesis 46 NKJV
     ```
@@ -111,6 +114,85 @@ def standardize_verse_form(Chapters:BibleChapterSets = ALL_CHAPTERS(), only_repo
 
     return (transformed.marked, skipped.marked)
 
+def is_edge_case(chapter:Chapter) -> bool:
+    """
+    Currently, the only edge case is: RSV Exodus 22, verses in order:
+        - 1
+        - 4
+        - 2
+        - 3
+        - 5
+        - ...
+
+    I manually fixed this one.
+    """
+    if chapter == Chapter(BIBLE.EXODUS, 22, translation='RSV'):
+        return True
+    return False
+
+def standardize_verse_form_FOR_abnormal_verse_count(
+    directory:str,
+    Chapters:BibleChapterSets = Chapters_abnormal_verse_count.Chapters(),
+    only_report=False
+) -> tuple[BibleChapterSet, BibleChapterSet]:
+    """
+    STEP 2 - alternate implementation, necessary for Chapters that have:  
+        - deviating *actual* total verses. Common in newer translations, which differ in source-texts used,
+        but still report classic total verse counts for chapters.
+        See: `./python/models/bible_chapter_sets/abnormal_verse_count.py`
+
+    Guiding assumption/principle is that we do NOT know how many verses we will encounter during iteration, despite the BIBLE model claim.
+
+    **PARAMETERS:**
+        - 
+
+    **RETURNS:**
+    `tuple[transformed, skipped]`  
+        - 
+        - 
+    
+    **SEE `standardize_verse_form()` FOR EXAMPLE**
+    """
+    if not Test.text_starts_with_correct_versenum_after_strip_title(Chapters): raise Exception('REQUIREMENT NOT MET: text_starts_with_correct_versenum_after_strip_title()')
+
+    transformed = BibleChapterSets(Chapters.set)
+    skipped = BibleChapterSets(Chapters.set)
+
+    for PTR in Chapters.iterate():
+        # this implem wouldn't work because we assume: next_verse_num, is ALWAYS: next_verse_num > verse_num 
+        if is_edge_case(PTR):
+            continue
+
+        title, text = strip_title(PTR)
+        new_text = ""
+
+        verse_num = 1
+        lines = text.splitlines()
+        start = 0
+
+        # possible_verse_nums = [1...]
+
+        for i,line in range(lines.__len__(), start=start):
+
+            
+
+            if line.startswith(f'{verse_num} ') and len(line) > len(f'{verse_num} '):
+                verse_num, verse_text = line.split(" ", maxsplit=1)
+                new_text += f'{verse_num}\n'
+                new_text += f'{verse_text}\n'
+            else:
+                new_text += f'{line}\n'
+
+
+            
+
+            
+
+
+
+# --------------------------------------------------------------------------------------------------------------------------------
+#       STEP #1
+# --------------------------------------------------------------------------------------------------------------------------------
 def standardize_chapter_number_formatting() -> BibleChapterSets:
     """
     STEP 1
