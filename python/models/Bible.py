@@ -47,11 +47,11 @@ class Chapter:
 @dataclass(frozen=True)
 class Book:
     """
-    * `name:str`      -> *"Genesis"*
-    * `abbr:str`      -> consistent with BibleGateway's abbreviations
-    * `index:int`     -> numerical appearance in the bible, *1-66*
-    * `chapters:int`  -> total chapters, e.g: *50*
-    * `verse_map:dict` -> <chapter,total verses>
+    - `name:str`       -> *"Genesis"*
+    - `abbr:str`       -> consistent with BibleGateway's abbreviations
+    - `index:int`      -> numerical appearance in the bible, *1-66*
+    - `chapters:int`   -> total chapters, e.g: *50*
+    - `verse_map:dict` -> [chapter_index, total verses]
     """
     name:str
     abbr:str
@@ -59,7 +59,7 @@ class Book:
     chapters:int
     verse_map:dict = field(compare=False, hash=False)
 
-    def total_verses(self, chapter):
+    def total_verses(self, chapter:int) -> int|None:
         return self.verse_map.get(chapter)
 
     def __repr__(self): return self.name

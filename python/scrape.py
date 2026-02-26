@@ -1,3 +1,12 @@
+"""
+scrape.py - 2 main scraping paradigms, use:
+    `still_on_expected_path()` MUST PASS:
+        BIBLE.Book().verse_map will be used to determine "normal" verse_count for particular Chapter. See: `python/models/Bible.py`
+
+    `still_on_expected_path()` TEST SKIPPED:
+        Often necessary for Critical-Text Variations for NT Chapters. I've saved a record of the ones I ran into: `/python/models/bible_chapter_sets/abnormal_verse_count_Chapters.py`
+        See: `standardize_verse_form_FOR_abnormal_verse_count()` in transform.py
+"""
 import time, random
 from typing import Any, Iterator, Self
 from dataclasses import dataclass, fields
@@ -10,7 +19,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from definitions import *
 from tor.tor import Tor
 from kozubenko.print import *
 from kozubenko.os import File
@@ -21,7 +29,38 @@ from models.Bible import BIBLE, Book, Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.IChapter import IChapter
 from models.IChapter import IChapter
+import definitions
 
+
+
+def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
+    """
+    Assumption/expectation as we iterate through BibleGateway `spans` holding verse-line/verse,  
+    is that these spans will iterate the verse_number in it's class, i.e:
+       
+    **If** current_verse -> Hosea 9:3  
+        `expected_cls` can ONLY be:  
+        `text Hos-9-3` OR `text Hos-9-4`
+
+    **If** we encounter anything else, we return `False`, signals `Chapter`:
+        - has an abnormal verse structure, see:
+        `/python/models/bible_chapter_sets/abnormal_verse_count_Chapters.py`
+
+    **RETURNS:**
+        - `expected_cls`
+        - "next" `expected_cls`
+        - `False`
+    """
+    if expected_cls != actual_cls:
+        rest, verse = expected_cls.rsplit('-', 1)
+        verse = int(verse)
+        verse += 1
+        new_cls = f'{rest}-{verse}'
+        if new_cls != actual_cls:
+            return False   # 'expected_cls is neither actual_cls, nor actual_cls+1'
+        return new_cls
+    else:
+        return expected_cls
 
 
 @dataclass
@@ -148,29 +187,6 @@ class BibleGatewayOptions:
             f"red_letter: {self.red_letter.state}"
         )
 
-def still_on_expected_path(expected_cls:str, actual_cls:str) -> str|False:
-    """
-    Assumption/expectation as we iterate through BibleGateway `spans` holding verse-line/verse,  
-    is that these spans will iterate the verse_number in it's class, i.e:
-       
-    **If** current_verse -> Hosea 9:3  
-    `cls` can only ever be:  
-    `text Hos-9-3` OR `text Hos-9-4`
-
-    **If** we encounter anything else, continuing will yield a corrupted text/chapter
-
-    **Returns:** `expected_cls`, iterated `expected_cls`, OR `False`
-    """
-    if expected_cls != actual_cls:
-        rest, verse = expected_cls.rsplit('-', 1)
-        verse = int(verse)
-        verse += 1
-        new_cls = f'{rest}-{verse}'
-        if new_cls != actual_cls:
-            return False   # 'expected_cls is neither actual_cls, nor actual_cls+1'
-        return new_cls
-    else:
-        return expected_cls
 
 class ScrapeContextManager(type):
     def __enter__(cls):
@@ -184,7 +200,7 @@ class ScrapeContextManager(type):
         Tor.Stop()
 
 class Scrape(metaclass=ScrapeContextManager):
-    OUT_DIRECTORY:str = BIBLE_TXT_PARTIAL # BIBLE_TXT_NEW
+    OUT_DIRECTORY:str = definitions.BIBLE_TXT_PARTIAL   # definitions.BIBLE_TXT_NEW
     driver:Any = None
 
     problem_chapters:list[ProblemChapter] = []

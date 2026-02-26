@@ -1,4 +1,18 @@
 """
+Intended to be used AFTER all Transform steps, on standardized Bible Chapter .txts:
+    - strip_title()
+    - load_verses()
+
+----------------------------------------------------------------------------------
+
+parser.py also holds leftovers used to test scrape results BEFORE/BETWEEN Transformation Steps.
+    Much was destroyed due to poor methodology/unforeseen gaps. This is what remains...
+
+----------------------------------------------------------------------------------
+
+Below is the Analysis of Scraping 10 versions/translations of the Bible, before Transformation/Standardization Steps:
+    ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
+
 "Standard Form" (#1) [see: ./models/biblegateway/#1-jeremiah-41-esv.txt]
     entire verse on one line
     6006/11890
@@ -30,15 +44,10 @@ BIBLE_TXT_PARTIAL  = definitions.BIBLE_TXT_PARTIAL  # currently: Missing_Chapter
 BIBLE_TXT_CURRENT  = definitions.BIBLE_TXT_CURRENT
 BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
-def ALL_CHAPTERS() -> BibleChapterSets: return BibleChapterSets.Subtract(BibleChapterSets.From(definitions.ALL_TRANSLATIONS).set, MissingChapters.chapters())
+def ALL_CHAPTERS(): return BibleChapterSets.From(definitions.ALL_TRANSLATIONS).Mark(lambda Chapter:chapter_File(BIBLE_TXT, Chapter).exists()).Marked
 
 def chapter_File(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
 def chapter_text(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
-
-def move_Chapters(Chapters:BibleChapterSets, from_dir:str, to_dir:str):
-    """ Moves: `Chapters.set` """
-    for PTR in Chapters.iterate():
-        chapter_File(from_dir, PTR).move(chapter_File(to_dir, PTR))
 
 def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
     """
@@ -58,7 +67,63 @@ def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
         else:
             Print.lite_red(f'open_Chapters(): {Chapter} does not exist!')
 
+def move_Chapters(Chapters:BibleChapterSets, from_dir:str, to_dir:str):
+    """ Moves: `Chapters.set` """
+    for PTR in Chapters.iterate():
+        chapter_File(from_dir, PTR).move(chapter_File(to_dir, PTR))
 
+
+type title = str; type rest = str
+
+def strip_title(PTR:IChapter) -> tuple[title, rest]:
+    """
+    `title == ""`, if no `title` in Chapter text
+    """
+    TEXT = chapter_text(PTR)
+    lines = TEXT.splitlines(keepends=True)
+
+    if lines[0] == "1\n": return ("", TEXT)
+
+    # Every title <= 2 lines. To be safe, working backwards from line 5 to find first verse...
+    i = 4
+    while i > -1:
+        if lines[i] == "1\n":
+            title = "".join(lines[:i])
+            rest  = "".join(lines[i:])
+            return (title, rest)
+        i -= 1
+    
+    raise Exception(f'strip_title(): Encountered text aberration. "1\n" not found! Chapter: {str(PTR)}')
+
+def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
+    if not chapter_File(PTR).exists():
+        return None
+
+    verses = {}
+    title, TEXT = strip_title(PTR)
+
+    def find_verse_text(verse_num:int, start:int, end:int) -> tuple[int, int]:
+        start = TEXT.find(f'{verse_num}\n', end) + len(f'{verse_num}\n')
+        end   = TEXT.find(f'\n{verse_num+1}', start)
+        if end != -1:
+            verses[verse_num] = TEXT[start:end]
+            verse_num += 1
+
+        return verse_num, start, end
+
+    verse_num, start, end = find_verse_text(1, 0, len(TEXT))
+    while end != -1:
+        verse_num, start, end = find_verse_text(verse_num, start, end)
+
+    verses[verse_num] = TEXT[start:len(TEXT) - 1]   # last verse
+
+    return verses
+
+
+
+#---------------------------------------------------------------------
+#      Quasi-Vestigial - but still useful!
+#---------------------------------------------------------------------
 
 def is_standard_form(directory:str, PTR:Chapter) -> bool:
     text = chapter_text(directory, PTR)
@@ -118,4 +183,3 @@ def identify_Standard_Form(directory:str, Chapters:BibleChapterSets = ALL_CHAPTE
             Chapters.mark(PTR)
 
     return Chapters
-
