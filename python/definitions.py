@@ -23,4 +23,4 @@ TEMP_OUTPUT =  os.path.join(PYTHON_ROOT_DIRECTORY, 'output.txt')
 
 ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']
 
-BIBLE = File(PYTHON_DATA_DIRECTORY, "bible.bin")   # bible text as binary file. See: ./factory.py -> construct_Bible()
+BIBLE = File(PYTHON_DATA_DIRECTORY, "Bible.dict")   # See: ./Bible.py -> construct_Bible()

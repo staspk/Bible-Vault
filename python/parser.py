@@ -34,9 +34,10 @@ Oddities To Still Solve:
 import re, definitions
 from kozubenko.os import File
 from kozubenko.print import Print, colored_input
-from models.Bible import BIBLE, Chapter
+from models.IChapter import IChapter
+from models.Bible import Chapter
 from models.BibleChapterSets import BibleChapterSets
-from models.bible_chapter_sets.missing_chapters import MissingChapters
+from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
 
 
 BIBLE_TXT          = definitions.BIBLE_TXT_NEW      # the main set in python, currently standardized, ready to be consumed.
@@ -74,12 +75,15 @@ def move_Chapters(Chapters:BibleChapterSets, from_dir:str, to_dir:str):
 
 
 type title = str; type rest = str
+type verse_num = int; type verse_text = str
 
 def strip_title(PTR:IChapter) -> tuple[title, rest]:
     """
+    Intended to be used AFTER Standardization/Transform Steps.
+
     `title == ""`, if no `title` in Chapter text
     """
-    TEXT = chapter_text(PTR)
+    TEXT = chapter_text(BIBLE_TXT, PTR)
     lines = TEXT.splitlines(keepends=True)
 
     if lines[0] == "1\n": return ("", TEXT)
@@ -95,8 +99,14 @@ def strip_title(PTR:IChapter) -> tuple[title, rest]:
     
     raise Exception(f'strip_title(): Encountered text aberration. "1\n" not found! Chapter: {str(PTR)}')
 
-def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
-    if not chapter_File(PTR).exists():
+def load_verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
+    """
+    Intended to be used AFTER Standardization/Transform Steps. Standard Method.
+
+    NOTE: Not sure what to do with: `title`, need to handle Eng/Rus Psalms Issue.
+        Currently, not even saving it. Possibly could save to 0
+    """
+    if not chapter_File(BIBLE_TXT, PTR).exists():
         return None
 
     verses = {}
@@ -119,7 +129,22 @@ def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
 
     return verses
 
+def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num, verse_text]|None:
+    """
+    Intended to be used AFTER Standardization/Transform Steps.
 
+    NOTE: Not sure what to do with: `title`, need to handle Eng/Rus Psalms Issue.
+        Currently, not even saving it. Possibly could save to 0
+    """
+    return None
+
+def Load_Verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
+    """
+    Intended to be used AFTER Standardization/Transform Steps.
+    """
+    if abnormal_verse_count_Chapters.includes(PTR):
+        return load_verses_FOR_abnormal_verse_count_Chapter(PTR)
+    return load_verses(PTR)
 
 #---------------------------------------------------------------------
 #      Quasi-Vestigial - but still useful!

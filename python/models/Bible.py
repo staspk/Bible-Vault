@@ -1,9 +1,11 @@
 from typing import Iterator, Optional
 from dataclasses import dataclass, field
 from kozubenko.cls import set_frozen_attr
+from kozubenko.os import File
 from kozubenko.parse import substring_between
 from kozubenko.utils import assert_int
 import definitions
+
 
 
 @dataclass(frozen=True)
@@ -179,7 +181,7 @@ class BIBLE:
         if BIBLE._book_to_cumulative_total_chapters is None:
             books:list[Book] = BIBLE.Books()
             BIBLE._book_to_cumulative_total_chapters = {}
-            
+
             cumulative_total_chapters = 0
             for BOOK in books:
                 cumulative_total_chapters += BOOK.chapters
@@ -198,14 +200,41 @@ def Iterate_Bible_Chapters() -> Iterator[tuple[int, str, int]]:
             yield (index, book, chapter)
             index += 1
 
-
-def construct_Bible(out_path = definitions.BIBLE):
+def construct_Bible(translations=definitions.ALL_TRANSLATIONS, out_path = definitions.BIBLE):
     """
-    
-
     **RETURNS:**
-        - 
+        - `dict[translation:str][Book][chapter:int][verse:int] = verse_text`
     """
+    from models.IChapter import IChapter
+    from parser import Load_Verses
+
+    Bible = {}
+    for translation in translations:
+        if translation not in Bible: Bible[translation] = {}
+
+        for book in BIBLE.Books():
+            if book not in Bible[translation]: Bible[translation][book] = {}
+
+            for chapter in range(1, book.chapters+1):
+                if chapter not in Bible[translation][book]: Bible[translation][book][chapter] = {}
+
+                verses = Load_Verses(IChapter(translation, book, chapter))
+                if verses is None:
+                    Bible[translation][book][chapter] = None
+                else:
+                    for verse_num,verse_text in verses.items():
+                        Bible[translation][book][chapter][verse_num] = verse_text
+
+                # for verse_num,verse_text in Load_Verses(IChapter(translation, book, chapter)).items():
+                #     Bible[translation][book][chapter][verse_num] = verse_text
+
+    File(out_path).save_binary(Bible)
+    return Bible
+
+
+
+
+    
 
 
 

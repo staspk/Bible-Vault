@@ -5,11 +5,13 @@ from kozubenko.cls import set_frozen_attr
 from kozubenko.os import File
 from kozubenko.parse import is_AlphaNumeric
 from kozubenko.print import Print, colored_input
+from kozubenko.string import List
 from models.Bible import BIBLE as _BIBLE, Book, Iterate_Bible_Chapters
 from models.BibleChapterSets import BibleChapterSets
 from models.IChapter import IChapter
 from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
 from models.bible_chapter_sets.missing_chapters import MissingChapters
+from parser import load_verses
 from tests.data.chapters import chapters
 import definitions
 from kozubenko import script
@@ -24,50 +26,7 @@ def chapter_File(PTR:IChapter): return File(DIRECTORY, PTR.translation, PTR.book
 def chapter_text(PTR:IChapter): return File(DIRECTORY, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 
-type title = str; type rest = str
-def strip_title(PTR:IChapter) -> tuple[title, rest]:
-    """
-    `title == ""`, if no `title` in Chapter text
-    """
-    TEXT = chapter_text(PTR)
-    lines = TEXT.splitlines(keepends=True)
 
-    if lines[0] == "1\n": return ("", TEXT)
-
-    # Every title <= 2 lines. To be safe, working backwards from line 5 to find first verse...
-    i = 4
-    while i > -1:
-        if lines[i] == "1\n":
-            title = "".join(lines[:i])
-            rest  = "".join(lines[i:])
-            return (title, rest)
-        i -= 1
-    
-    raise Exception(f'strip_title(): Encountered text aberration. "1\n" not found! Chapter: {str(PTR)}')
-
-def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
-    if not chapter_File(PTR).exists():
-        return None
-
-    verses = {}
-    title, TEXT = strip_title(PTR)
-
-    def find_verse_text(verse_num:int, start:int, end:int) -> tuple[int, int]:
-        start = TEXT.find(f'{verse_num}\n', end) + len(f'{verse_num}\n')
-        end   = TEXT.find(f'\n{verse_num+1}', start)
-        if end != -1:
-            verses[verse_num] = TEXT[start:end]
-            verse_num += 1
-
-        return verse_num, start, end
-
-    verse_num, start, end = find_verse_text(1, 0, len(TEXT))
-    while end != -1:
-        verse_num, start, end = find_verse_text(verse_num, start, end)
-
-    verses[verse_num] = TEXT[start:len(TEXT) - 1]   # last verse
-
-    return verses
 
 type verse_num = int
 type verse_text = str
@@ -192,10 +151,11 @@ if __name__ == "__main__":
     Print.Args()
 
     search:str        = script.Arg1(required=False) or "Angel of the Lord"
-    domain:list[Book] = list(script.Arg2(required=False))
+    domain:list[Book] = List.From(script.Arg2())
 
     Print.green(domain)
 
+    Print.green(_BIBLE.ACTS.total_verses(-1))
 
 
 
