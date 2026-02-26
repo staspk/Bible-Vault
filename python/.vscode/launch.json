@@ -16,6 +16,15 @@
             "request": "launch",
             "program": "${workspaceFolder}/test.py",
             "justMyCode": true
+        },
+        {
+            "name": "Python: Debug search.py",
+            "type": "debugpy",
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+            "request": "launch",
+            "program": "${workspaceFolder}/search.py",
+            "args": ["Angel of the Lord"],
+            "justMyCode": true
         }
     ]
 }
