@@ -9,10 +9,11 @@ from transform import standardize_verse_form_FOR_abnormal_verse_count
 import search
 
 
-# Chapters:BibleChapterSets = MissingChapters.Chapters()
+Chapters:BibleChapterSets = MissingChapters.Chapters()
 # Chapters.Mark(lambda Chapter:Chapter.translation == 'NRT')
 
 # standardize_verse_form_FOR_abnormal_verse_count(BIBLE_TXT_PARTIAL, only_report=False)
 # open_Chapters(BIBLE_TXT_PARTIAL, Chapters_abnormal_verse_count.Chapters())
 
-search.BIBLE.analyze_words()
+# search.BIBLE.analyze_words()
+

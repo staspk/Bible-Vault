@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from kozubenko.cls import set_frozen_attr
 from kozubenko.parse import substring_between
 from kozubenko.utils import assert_int
+import definitions
 
 
 @dataclass(frozen=True)
@@ -189,19 +190,30 @@ class BIBLE:
 def Iterate_Bible_Chapters() -> Iterator[tuple[int, str, int]]:
     """
     **How to Use:**
-    >>> for i,book,chapter in Iterate_Bible_Chapters():
+    >>> for index,book,chapter in Iterate_Bible_Chapters():
     """
-    i = 1
+    index = 1
     for book in BIBLE.Books():
         for chapter in range(1, book.chapters + 1):
-            yield (i, book, chapter)
-            i += 1
+            yield (index, book, chapter)
+            index += 1
+
+
+def construct_Bible(out_path = definitions.BIBLE):
+    """
+    
+
+    **RETURNS:**
+        - 
+    """
+
+
 
 class Abbreviations:
     """
-    abbreviations for bible books as tuples:
-    #1 - BibleGateway's
-    #2 - ApiBible
+    **Associated To:**
+        #1 - BibleGateway
+        #2 - ApiBible
     """
     MATTHEW              = ("Matt",   "MAT")
     MARK                 = ("Mark",   "MRK")

@@ -5,7 +5,6 @@ from kozubenko.cls import set_frozen_attr
 from kozubenko.os import File
 from kozubenko.parse import is_AlphaNumeric
 from kozubenko.print import Print, colored_input
-from kozubenko.script import Script
 from models.Bible import BIBLE as _BIBLE, Book, Iterate_Bible_Chapters
 from models.BibleChapterSets import BibleChapterSets
 from models.IChapter import IChapter
@@ -13,6 +12,8 @@ from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from tests.data.chapters import chapters
 import definitions
+from kozubenko import script
+
 
 
 DIRECTORY = definitions.BIBLE_TXT_NEW
@@ -60,7 +61,6 @@ def load_verses(PTR:IChapter) -> dict[verse_num, verse_text] | None:
 
         return verse_num, start, end
 
-    
     verse_num, start, end = find_verse_text(1, 0, len(TEXT))
     while end != -1:
         verse_num, start, end = find_verse_text(verse_num, start, end)
@@ -86,7 +86,7 @@ class Chapter:
             set_frozen_attr(self, "verses", load_verses(self))
 
 
-def load_chapters():
+def assemble_Chapters():
     chapters = {}
     for i,book,chapter_num in Iterate_Bible_Chapters():
         for translation in ALL_TRANSLATIONS:
@@ -98,7 +98,7 @@ type char = str
 type occurrences = int
 
 class BIBLE:
-    _chapters:dict[Chapter, None] = load_chapters()
+    _chapters:dict[Chapter, None] = None # assemble_Chapters()
 
     _chars:dict[char, occurrences] = None
     _words:dict[str, occurrences] = None
@@ -108,7 +108,7 @@ class BIBLE:
 
     @classmethod
     def chapters(cls) -> KeysView[Chapter]:
-        if cls._chapters is None: cls._chapters = load_chapters()
+        if cls._chapters is None: cls._chapters = assemble_Chapters()
         return cls._chapters.keys()
 
     @classmethod
@@ -184,12 +184,23 @@ class BIBLE:
                 Print.yellow(f'{char} -> {occurrences}')
 
 
+def search_Bible(search:str, book:list[Book]):
+    pass
+
+
 if __name__ == "__main__":
-    search:str = Script.Arg1()
+    Print.Args()
+
+    search:str        = script.Arg1(required=False) or "Angel of the Lord"
+    domain:list[Book] = list(script.Arg2(required=False))
+
+    Print.green(domain)
 
 
 
-    
+
+
+
 
 
 
