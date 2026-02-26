@@ -2,6 +2,7 @@ from typing import Iterator
 from kozubenko.cls import class_attributes
 from models.Bible import BIBLE, Chapter
 from models.BibleChapterSets import BibleChapterSets, Protestant_Set
+from models.IChapter import IChapter
 
 
 type translation = str
@@ -52,10 +53,10 @@ class IBibleChapterSet:
         return BibleChapterSets(inverse)
 
     @classmethod
-    def includes(cls, chapter:Chapter) -> bool:
+    def includes(cls, Chapter:IChapter) -> bool:
         chapters = cls.chapters()
-        if chapter.translation in chapters.keys():
-            if chapter.index in chapters[chapter.translation]:
+        if Chapter.translation in chapters.keys():
+            if BIBLE.find_chapter_index(Chapter.book, Chapter.chapter) in chapters[Chapter.translation]:
                 return True
         return False
 
