@@ -102,7 +102,7 @@ def load_verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
     """
     Intended to be used AFTER Standardization/Transform Steps. Standard Method.
 
-    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.
+    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.  
     NOTE: `title` in Russian/Masoretic IS verse 1 
     """
     if not chapter_File(BIBLE_TXT, PTR).exists():
@@ -132,64 +132,98 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
     """
     Intended to be used AFTER Standardization/Transform Steps.
 
-    Guiding Assumptions/Principle: 
+    #### **Guiding Principle/Assumptions** - We cannot rely on verse order!  
+    See the most (current known) aberrant `Chapter` in this regard: `IChapter('RSV', BIBLE.EXODUS, 22)`  
+        1, 4, 2, 3, 5, 6, ...
 
-    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.
+    There are also `Chapters` (Eng/Rus, likely: LXX/MT root cause) with:  
+    `CLASSIC_CHAPTER_VERSE_COUNT` < `ACTUAL_CHAPTER_VERSE_COUNT`
+
+    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.  
     NOTE: `title` in Russian/Masoretic IS verse 1 
     """
     UPPER_BOUND_DIVERGENCE = 3  # Eng/Rus & Critical-Text Variations < 3
-    CLASSIC_CHAPTER_VERSE_COUNT = PTR.book.total_verses(PTR.chapter)   # aka: 
+    CLASSIC_CHAPTER_VERSE_COUNT = PTR.book.total_verses(PTR.chapter)
     MAX_POSSIBLE_ACTUAL_VERSE_COUNT = CLASSIC_CHAPTER_VERSE_COUNT + UPPER_BOUND_DIVERGENCE
+
+    type verse_num_position = int
+    def backtrack_from_end_of_CHAPTER_TEXT_to_find_LAST_VERSE_NUM(chapter_text:str) -> tuple[verse_num, verse_num_position] | Exception:
+        for verse_num in range(MAX_POSSIBLE_ACTUAL_VERSE_COUNT, MAX_POSSIBLE_ACTUAL_VERSE_COUNT-UPPER_BOUND_DIVERGENCE-1, -1):
+            position = chapter_text.rfind(f'\n{verse_num}\n')
+            if position != -1:
+                return verse_num, position + len('\n')
+
+        raise Exception("Assumption/Domain Breakdown: verse_num_positions MUST have a min/max at this point, aka: len()==2")
+
+    def find_verse_num_positions_in_CHAPTER_TEXT(chapter_text:str, possible_verse_nums:range[int], start:int, end:int) -> dict[verse_num, verse_num_position]:
+        verse_num_positions:dict[verse_num, verse_num_position] = {}
+        remaining = list(possible_verse_nums)
+        
+        for verse_num in possible_verse_nums:
+            verse_num_string = f'\n{verse_num}\n'
+            position = chapter_text.find(verse_num_string, start, end)
+            if position != -1:
+                verse_num_positions[verse_num] = position + len('\n')
+                
+                remaining.remove(verse_num)
+                start = position
+
+        if len(remaining) == 0:   # temporary check to make sure abnormal_verse_count_Chapters ACTUALLY HAVE abnormal verse count
+            if not LAST_VERSE_NUM > CLASSIC_CHAPTER_VERSE_COUNT:  # negates subset that above check can't pin down properly
+                raise Exception(f"load_verses_FOR_abnormal_verse_count_Chapter(): This Chapter ain't an abnormal: {IChapter}")
+            
+        return verse_num_positions
+
+    def find_verse_text(chapter_text:str, verse_num_positions:dict[verse_num, verse_num_position], verse:int, next_verse:int|None) -> str:
+        verse_offset = len(f'{verse}\n')
+        start = verse_num_positions[verse] + verse_offset
+        end   = verse_num_positions.get()
+
+        if next_verse is None:
+            end = len(chapter_text)
+ 
+        return chapter_text[start:end]
 
     if not chapter_File(BIBLE_TXT, PTR).exists():
         return None
 
-    verses = {}
+    verses:dict[verse_num, verse_text] = {}  # the goal, aka: return value
     title, TEXT = strip_title(PTR)
 
-    verse_num_positions = {1:0}   # verse_num -> position aka. We assume EVERY Chapter starts with verse_num == 1. So far, so true.
-    start = 0 + len(f'{1}\n')
+    FIRST_VERSE_NUM, FIRST_VERSE_NUM_POSITION = 1, 0
+    LAST_VERSE_NUM,  LAST_VERSE_NUM_POSITION  = backtrack_from_end_of_CHAPTER_TEXT_to_find_LAST_VERSE_NUM(TEXT)
 
-    for verse_num in range(MAX_POSSIBLE_ACTUAL_VERSE_COUNT, MAX_POSSIBLE_ACTUAL_VERSE_COUNT+UPPER_BOUND_DIVERGENCE, -1):
-        position = TEXT.find(f'\n{verse_num}\n', start)
-        if position != -1:
-            verse_num_positions[verse_num] = position
-            break
+    verse_num_positions:dict[verse_num, verse_num_position] = {
+        FIRST_VERSE_NUM:FIRST_VERSE_NUM_POSITION,
+        **find_verse_num_positions_in_CHAPTER_TEXT(TEXT, range(2, LAST_VERSE_NUM), FIRST_VERSE_NUM_POSITION, LAST_VERSE_NUM_POSITION),
+        LAST_VERSE_NUM:LAST_VERSE_NUM_POSITION
+    } # verse_num > LAST_VERSE_NUM that exists between TEXT[FIRST_VERSE_NUM:LAST_VERSE_NUM] will not be found. Such a Variance not found in current 10 Bible versions, but potential possible future problem...
+  
 
-    if len(verse_num_positions.keys()) != 2:
-        raise Exception("Assumption/Domain Breakdown: verse_num_positions MUST have a min/max at this point, aka: len()==2")
+    # verse_nums,LENGTH = list(verse_num_positions.keys()), len(verse_num_positions)
+    # for i in verse_nums(LENGTH - 2):
+    #     verse_num      = verse_nums[i]
+    #     next_verse_num = verse_nums[i+1]
+    #     verses[verse_num] = find_verse_text(verse_num_positions, verse_num, next_verse_num)
     
-    VERSE_NUM_AT_END = list(verse_num_positions.keys())[1]   # we have NOT proven a higher int does not exist: 1 <-between-> VERSE_NUM_AT_END. Such a Variance not found in current 10 Bible versions, but potential possible future problem...
-    start = list(verse_num_positions.values())[0]
-    end   = list(verse_num_positions.values())[1]
-
-    remaining = list(range(2, VERSE_NUM_AT_END))
-    possible_verse_nums = list(range(2, VERSE_NUM_AT_END))
-    for verse_num in possible_verse_nums:
-        verse_num_string = f'\n{verse_num}\n'
-        position = TEXT.find(verse_num_string, start, end)
-        if position != -1:
-            verse_num_positions[verse_num] = position
-            
-            remaining.remove(verse_num)
-            start = position
-
-    for verse_num,position in verse_num_positions.items():
-        offset = f'{len(verse_num)}'
+    # last_verse_num = verse_nums[LENGTH-1]
+    # verses[last_verse_num] = find_verse_text(verse_num_positions, last_verse_num, None)
 
 
+    from itertools import pairwise, chain
 
-    if len(remaining) == 0:   # temporary check to make sure abnormal_verse_count_Chapters ACTUALLY HAVE abnormal verse count
-        if not VERSE_NUM_AT_END > CLASSIC_CHAPTER_VERSE_COUNT:  # negates subset that above check can't pin down properly
-            raise Exception(f"load_verses_FOR_abnormal_verse_count_Chapter(): This Chapter ain't an abnormal: {IChapter}")
+    verse_nums = verse_num_positions.keys()
 
-    return None
+    for verse_num, next_verse_num in pairwise(chain(verse_nums, [None])):
+        verses[verse_num] = find_verse_text(TEXT, verse_num_positions, verse_num, next_verse_num)
+
+    return verses
 
 def Load_Verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
     """
     Intended to be used AFTER Standardization/Transform Steps.
 
-    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.
+    NOTE: `title` is "lost" here. Solve Eng/Rus Psalms Issue, first. Possibly could save to 0.  
     NOTE: `title` in Russian/Masoretic IS verse 1 
     """
     if abnormal_verse_count_Chapters.includes(PTR):
