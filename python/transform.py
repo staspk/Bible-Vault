@@ -61,7 +61,7 @@ def is_edge_case(chapter:Chapter) -> bool:
         next_verse_num > verse_num
 
     Currently, the only edge case found: RSV Exodus 22
-    verse order:
+    verse order:  
         - 1
         - 4
         - 2

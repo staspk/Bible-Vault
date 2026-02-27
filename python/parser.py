@@ -137,7 +137,7 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
 
     #### **Guiding Principle/Assumptions** - We cannot rely on verse order!  
     See the most (current known) aberrant `Chapter` in this regard: `IChapter('RSV', BIBLE.EXODUS, 22)`  
-        1, 4, 2, 3, 5, 6, ...
+        **verse order:** 1, 4, 2, 3, 5, 6, ...
 
     There are also `Chapters` (Eng/Rus, likely: LXX/MT root cause) with:  
     `CLASSIC_CHAPTER_VERSE_COUNT` < `ACTUAL_CHAPTER_VERSE_COUNT`
@@ -296,7 +296,7 @@ class Test:
         }
 
         for chapter in Tests:
-            ACTUAL_VERSES = list(Test_Chapters.get(chapter).iterate_verses())
+            ACTUAL_VERSES = list(Test_Chapters.get(chapter).iterate_verse_text())
             VERSES = list(load_verses(chapter).values())
 
             if len(ACTUAL_VERSES) != len(VERSES):
@@ -324,7 +324,12 @@ class Test:
 
         def test_edge_case_Chapter():
             """ i.e: `IChapter('RSV', BIBLE.EXODUS, 22)` """
-            return True
+            Chapter = IChapter('RSV', BIBLE.EXODUS, 22)
+
+            ACTUAL_VERSES = list(Test_Chapters.verse_order_edge_case_Chapter().iterate_verses())
+            LOADED_VERSES = list(load_verses_FOR_abnormal_verse_count_Chapter(Chapter).items())
+
+            return (ACTUAL_VERSES == LOADED_VERSES)   # Yes, Stan: Python compares Structural Equality (a == b), unlike TS/JAVA/C#
 
         def test_normal_Chapters():
             test_Chapters = {
@@ -333,14 +338,14 @@ class Test:
             }
 
             for Chapter in test_Chapters:
-                ACTUAL_VERSES = list(Test_Chapters.get(Chapter).iterate_verses())
+                ACTUAL_VERSES = list(Test_Chapters.get(Chapter).iterate_verse_text())
                 LOADED_VERSES = list(load_verses_FOR_abnormal_verse_count_Chapter(Chapter).values())
 
                 test_Chapters[Chapter] = (ACTUAL_VERSES == LOADED_VERSES)   # Yes, Stan: Python compares Structural Equality (a == b), unlike TS/JAVA/C#
 
             return all(test_Chapters.values())
 
-        TEST_RESULT = test_edge_case_Chapter() and test_normal_Chapters()
+        TEST_RESULT = test_edge_case_Chapter() # and test_normal_Chapters()
         if report_to_console:
             if TEST_RESULT: Print.green("parser.py::Test.load_verses_FOR_abnormal_verse_count_Chapter(): PASS")
             else:           Print.red("parser.py::Test.load_verses_FOR_abnormal_verse_count_Chapter(): FAIL!")

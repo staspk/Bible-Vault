@@ -333,7 +333,7 @@ class Test:
         TEST_2 = Chapter(BIBLE.PSALMS, 42, translation='NET')
 
         def test(PTR:Chapter) -> bool:
-            ACTUAL_VERSES = list(Test_Chapters.get(PTR).iterate_verses())
+            ACTUAL_VERSES = list(Test_Chapters.get(PTR).iterate_verse_text())
 
             total_verses = 0
             for verse_text in Bible[PTR.translation][PTR.book][PTR.chapter].values():
