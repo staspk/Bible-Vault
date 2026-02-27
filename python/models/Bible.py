@@ -24,6 +24,7 @@ class Chapter:
 
     @property
     def total_verses(self) -> int:
+        """ The "classic" verse_count. Modern Bible versions tend to report this value even when Critical-Text verse removals lessen the actual_verse_count. """
         return self.book.total_verses(self.chapter)
 
     def __post_init__(self):
@@ -69,6 +70,10 @@ class Book:
     verse_map:dict = field(compare=False, hash=False)
 
     def total_verses(self, chapter:int) -> int|None:
+        """
+        The "classic" verse_count.
+        Modern Bible versions tend to report this value even when Critical-Text verse removals lessen the actual_verse_count.
+        """
         return self.verse_map.get(chapter)
 
     def __repr__(self): return self.name
