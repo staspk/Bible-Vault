@@ -290,7 +290,7 @@ def identify_Standard_Form(directory:str, Chapters:BibleChapterSets = ALL_CHAPTE
 
 class Test:
     @staticmethod
-    def load_verses() -> bool:
+    def load_verses(report_to_console=True) -> bool:
         Tests = {
             IChapter('NET', BIBLE.PSALMS, 42)          : None,
             IChapter('NRT', BIBLE.FIRST_CHRONICLES, 3) : None,
@@ -313,7 +313,12 @@ class Test:
             
             Tests[chapter] = True
 
-        return all(Tests.values())
+        PASS_RESULT = all(Tests.values())
+        if report_to_console:
+            if PASS_RESULT: Print.green("parser.py::Test.load_verses(): PASS")
+            else:           Print.red("parser.py::Test.load_verses(): FAIL!")
+
+        return PASS_RESULT
 
     @staticmethod
     def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> bool:
