@@ -32,6 +32,7 @@ Oddities To Still Solve:
     " " aka: 6/MSP, John 15 NRT, 2 occurences. NOTE: NRT is riddled with these.
 """
 import re, definitions
+from itertools import pairwise, chain
 from kozubenko.os import File
 from kozubenko.print import Print, colored_input
 from models.IChapter import IChapter
@@ -177,7 +178,7 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
     def find_verse_text(chapter_text:str, verse_num_positions:dict[verse_num, verse_num_position], verse:int, next_verse:int|None) -> str:
         verse_offset = len(f'{verse}\n')
         start = verse_num_positions[verse] + verse_offset
-        end   = verse_num_positions.get()
+        end   = verse_num_positions.get(next_verse)
 
         if next_verse is None:
             end = len(chapter_text)
@@ -199,21 +200,7 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
         LAST_VERSE_NUM:LAST_VERSE_NUM_POSITION
     } # verse_num > LAST_VERSE_NUM that exists between TEXT[FIRST_VERSE_NUM:LAST_VERSE_NUM] will not be found. Such a Variance not found in current 10 Bible versions, but potential possible future problem...
   
-
-    # verse_nums,LENGTH = list(verse_num_positions.keys()), len(verse_num_positions)
-    # for i in verse_nums(LENGTH - 2):
-    #     verse_num      = verse_nums[i]
-    #     next_verse_num = verse_nums[i+1]
-    #     verses[verse_num] = find_verse_text(verse_num_positions, verse_num, next_verse_num)
-    
-    # last_verse_num = verse_nums[LENGTH-1]
-    # verses[last_verse_num] = find_verse_text(verse_num_positions, last_verse_num, None)
-
-
-    from itertools import pairwise, chain
-
     verse_nums = verse_num_positions.keys()
-
     for verse_num, next_verse_num in pairwise(chain(verse_nums, [None])):
         verses[verse_num] = find_verse_text(TEXT, verse_num_positions, verse_num, next_verse_num)
 
