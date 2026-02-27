@@ -14,4 +14,4 @@ from parser import ALL_CHAPTERS, BIBLE_TXT, BIBLE_TXT_PARTIAL, Test, chapter_Fil
 # chapter_File(BIBLE_TXT, PTR).open()
 # load_verses_FOR_abnormal_verse_count_Chapter(PTR)
 
-Test.load_verses()
+Test.load_verses_FOR_abnormal_verse_count_Chapter()

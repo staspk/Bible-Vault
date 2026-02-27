@@ -14,7 +14,7 @@ class Test_Chapters:
     Hard-coded Bible Chapters that have passed a meticulous eye-test, for testing functions that load in chapter text.
     """
     @staticmethod
-    def all() -> list[IChapterIterator]:
+    def All() -> list[IChapterIterator]:
         return [
             NET_Psalms_42,
             NRT_1Chronicles_3

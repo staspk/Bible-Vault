@@ -171,21 +171,22 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
                 remaining.remove(verse_num)
                 start = position
 
-        if len(remaining) == 0:   # temporary check to make sure abnormal_verse_count_Chapters ACTUALLY HAVE abnormal verse count
-            if not LAST_VERSE_NUM > CLASSIC_CHAPTER_VERSE_COUNT:  # negates subset that above check can't pin down properly
-                raise Exception(f"load_verses_FOR_abnormal_verse_count_Chapter(): This Chapter ain't an abnormal: {IChapter}")
+        # if len(remaining) == 0:   # temporary check to make sure abnormal_verse_count_Chapters ACTUALLY HAVE abnormal verse count
+        #     if not LAST_VERSE_NUM > CLASSIC_CHAPTER_VERSE_COUNT:  # negates subset that above check can't pin down properly
+        #         raise Exception(f"load_verses_FOR_abnormal_verse_count_Chapter(): This Chapter ain't an abnormal: {IChapter}")
             
         return verse_num_positions
 
     def find_verse_text(chapter_text:str, verse_num_positions:dict[verse_num, verse_num_position], verse:int, next_verse:int|None) -> str:
         verse_offset = len(f'{verse}\n')
+
         start = verse_num_positions[verse] + verse_offset
         end   = verse_num_positions.get(next_verse)
 
         if next_verse is None:
             end = len(chapter_text)
  
-        return chapter_text[start:end]
+        return chapter_text[start:end-len('\n')]
 
     if not chapter_File(BIBLE_TXT, PTR).exists():
         return None
@@ -205,8 +206,6 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
     verse_nums = verse_num_positions.keys()
     for verse_num, next_verse_num in pairwise(chain(verse_nums, [None])):
         verses[verse_num] = find_verse_text(TEXT, verse_num_positions, verse_num, next_verse_num)
-
-    
 
     return verses
 
@@ -313,15 +312,15 @@ class Test:
             
             Tests[chapter] = True
 
-        PASS_RESULT = all(Tests.values())
+        TEST_RESULT = all(Tests.values())
         if report_to_console:
-            if PASS_RESULT: Print.green("parser.py::Test.load_verses(): PASS")
+            if TEST_RESULT: Print.green("parser.py::Test.load_verses(): PASS")
             else:           Print.red("parser.py::Test.load_verses(): FAIL!")
 
-        return PASS_RESULT
+        return TEST_RESULT
 
     @staticmethod
-    def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> bool:
+    def load_verses_FOR_abnormal_verse_count_Chapter(report_to_console=True) -> bool:
 
         def test_edge_case_Chapter():
             """ i.e: `IChapter('RSV', BIBLE.EXODUS, 22)` """
@@ -333,23 +332,17 @@ class Test:
                 IChapter('NRT', BIBLE.FIRST_CHRONICLES, 3) : None,
             }
 
-            for chapter in test_Chapters:
-                ACTUAL_VERSES = list(Test_Chapters.get(chapter).iterate_verses())
-                VERSES = list(load_verses(chapter).values())
+            for Chapter in test_Chapters:
+                ACTUAL_VERSES = list(Test_Chapters.get(Chapter).iterate_verses())
+                LOADED_VERSES = list(load_verses_FOR_abnormal_verse_count_Chapter(Chapter).values())
 
-                if len(ACTUAL_VERSES) != len(VERSES):
-                    test_Chapters[chapter] = False
-                    continue
-
-                for i in range(len(VERSES)):
-                    verse = VERSES[i]
-                    actual_verse = ACTUAL_VERSES[i]
-                    if verse != actual_verse:
-                        test_Chapters[chapter] = False
-                        continue
-                
-                test_Chapters[chapter] = True
+                test_Chapters[Chapter] = (ACTUAL_VERSES == LOADED_VERSES)   # Yes, Stan: Python compares Structural Equality (a == b), unlike TS/JAVA/C#
 
             return all(test_Chapters.values())
 
-        return test_edge_case_Chapter() and test_normal_Chapters()
+        TEST_RESULT = test_edge_case_Chapter() and test_normal_Chapters()
+        if report_to_console:
+            if TEST_RESULT: Print.green("parser.py::Test.load_verses_FOR_abnormal_verse_count_Chapter(): PASS")
+            else:           Print.red("parser.py::Test.load_verses_FOR_abnormal_verse_count_Chapter(): FAIL!")
+
+        return TEST_RESULT
