@@ -147,7 +147,7 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
     verses = {}
     title, TEXT = strip_title(PTR)
 
-    verse_num_positions = {1:0}   # verse_num -> position aka: start
+    verse_num_positions = {1:0}   # verse_num -> position aka. We assume EVERY Chapter starts with verse_num == 1. So far, so true.
     start = 0 + len(f'{1}\n')
 
     for verse_num in range(MAX_POSSIBLE_ACTUAL_VERSE_COUNT, MAX_POSSIBLE_ACTUAL_VERSE_COUNT+UPPER_BOUND_DIVERGENCE, -1):
@@ -173,7 +173,10 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
             
             remaining.remove(verse_num)
             start = position
-    
+
+    for verse_num,position in verse_num_positions.items():
+        offset = f'{len(verse_num)}'
+
 
 
     if len(remaining) == 0:   # temporary check to make sure abnormal_verse_count_Chapters ACTUALLY HAVE abnormal verse count
@@ -193,10 +196,11 @@ def Load_Verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
         return load_verses_FOR_abnormal_verse_count_Chapter(PTR)
     return load_verses(PTR)
 
-#---------------------------------------------------------------------
-#      Quasi-Vestigial - but still useful!
-#---------------------------------------------------------------------
 
+
+# -----------------------------------------------------------------------------------------------------------------
+#      Quasi-Vestigial - but still useful!
+# -----------------------------------------------------------------------------------------------------------------
 def is_standard_form(directory:str, PTR:IChapter) -> bool:
     text = chapter_text(directory, PTR)
     expected_total_verses = PTR.book.total_verses(PTR.chapter)
@@ -255,3 +259,12 @@ def identify_Standard_Form(directory:str, Chapters:BibleChapterSets = ALL_CHAPTE
             Chapters.mark(PTR)
 
     return Chapters
+# -----------------------------------------------------------------------------------------------------------------
+
+
+
+class Test:
+    @staticmethod
+    def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter):
+
+        return False

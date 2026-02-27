@@ -1,3 +1,15 @@
+"""
+The only edge case found in: ALL_TRANSLATIONS = ['KJV', 'NASB', 'RSV', 'RUSV', 'NKJV', 'ESV', 'NRSV', 'NRT', 'NIV', 'NET']:
+For abnormal verse order:
+    RSV Exodus 22
+        - 1
+        - 4
+        - 2
+        - 3
+        - 5
+        - 6
+        - ...
+"""
 from typing import Iterator, Optional
 from dataclasses import dataclass, field
 from kozubenko.cls import set_frozen_attr
