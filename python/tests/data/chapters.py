@@ -9,7 +9,7 @@ class IChapterIterator(ABC):
     def iterate_verses() -> Iterator[str]: pass
 
 
-class chapters:
+class Test_Chapters:
     """
     Hard-coded Bible Chapters that have passed a meticulous eye-test, for testing functions that load in chapter text.
     """

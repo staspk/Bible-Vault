@@ -35,9 +35,11 @@ import re, definitions
 from itertools import pairwise, chain
 from kozubenko.os import File
 from kozubenko.print import Print, colored_input
+from models.Bible import BIBLE
 from models.IChapter import IChapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
+from tests.data.chapters import Test_Chapters
 
 
 BIBLE_TXT          = definitions.BIBLE_TXT_NEW      # the main set in python, currently standardized, ready to be consumed.
@@ -204,6 +206,8 @@ def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> dict[verse_num
     for verse_num, next_verse_num in pairwise(chain(verse_nums, [None])):
         verses[verse_num] = find_verse_text(TEXT, verse_num_positions, verse_num, next_verse_num)
 
+    
+
     return verses
 
 def Load_Verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
@@ -286,6 +290,61 @@ def identify_Standard_Form(directory:str, Chapters:BibleChapterSets = ALL_CHAPTE
 
 class Test:
     @staticmethod
-    def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter):
+    def load_verses() -> bool:
+        Tests = {
+            IChapter('NET', BIBLE.PSALMS, 42)          : None,
+            IChapter('NRT', BIBLE.FIRST_CHRONICLES, 3) : None,
+        }
 
-        return False
+        for chapter in Tests:
+            ACTUAL_VERSES = list(Test_Chapters.get(chapter).iterate_verses())
+            VERSES = list(load_verses(chapter).values())
+
+            if len(ACTUAL_VERSES) != len(VERSES):
+                Tests[chapter] = False
+                continue
+
+            for i in range(len(VERSES)):
+                verse = VERSES[i]
+                actual_verse = ACTUAL_VERSES[i]
+                if verse != actual_verse:
+                    Tests[chapter] = False
+                    continue
+            
+            Tests[chapter] = True
+
+        return all(Tests.values())
+
+    @staticmethod
+    def load_verses_FOR_abnormal_verse_count_Chapter(PTR:IChapter) -> bool:
+
+        def test_edge_case_Chapter():
+            """ i.e: `IChapter('RSV', BIBLE.EXODUS, 22)` """
+            return True
+
+        def test_normal_Chapters():
+            test_Chapters = {
+                IChapter('NET', BIBLE.PSALMS, 42)          : None,
+                IChapter('NRT', BIBLE.FIRST_CHRONICLES, 3) : None,
+            }
+
+            for chapter in test_Chapters:
+                ACTUAL_VERSES = list(Test_Chapters.get(chapter).iterate_verses())
+                VERSES = list(load_verses(chapter).values())
+
+                if len(ACTUAL_VERSES) != len(VERSES):
+                    test_Chapters[chapter] = False
+                    continue
+
+                for i in range(len(VERSES)):
+                    verse = VERSES[i]
+                    actual_verse = ACTUAL_VERSES[i]
+                    if verse != actual_verse:
+                        test_Chapters[chapter] = False
+                        continue
+                
+                test_Chapters[chapter] = True
+
+            return all(test_Chapters.values())
+
+        return test_edge_case_Chapter() and test_normal_Chapters()

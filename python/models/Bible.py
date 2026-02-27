@@ -327,13 +327,13 @@ class Test:
             RUSV/NRT PSALMS - both for: before/during/after eng/rus mismatch (6 TOTAL)
     
         """
-        from tests.data.chapters import chapters
+        from tests.data.chapters import Test_Chapters
 
         TEST_1 = Chapter(BIBLE.FIRST_CHRONICLES, 3, translation='NRT')
         TEST_2 = Chapter(BIBLE.PSALMS, 42, translation='NET')
 
         def test(PTR:Chapter) -> bool:
-            ACTUAL_VERSES = list(chapters.get(PTR).iterate_verses())
+            ACTUAL_VERSES = list(Test_Chapters.get(PTR).iterate_verses())
 
             total_verses = 0
             for verse_text in Bible[PTR.translation][PTR.book][PTR.chapter].values():

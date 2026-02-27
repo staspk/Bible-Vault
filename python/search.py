@@ -12,7 +12,7 @@ from models.IChapter import IChapter
 from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
 from models.bible_chapter_sets.missing_chapters import MissingChapters
 from parser import load_verses
-from tests.data.chapters import chapters
+from tests.data.chapters import Test_Chapters
 import definitions
 from kozubenko import script
 
@@ -156,38 +156,3 @@ if __name__ == "__main__":
     Print.green(domain)
 
     Print.green(_BIBLE.ACTS.total_verses(-1))
-
-
-
-
-
-
-
-
-
-class Test:
-    def load_verses() -> bool:
-        Tests = {
-            IChapter('NET', _BIBLE.PSALMS, 42)          : None,
-            IChapter('NRT', _BIBLE.FIRST_CHRONICLES, 3) : None,
-        }
-
-        for chapter in Tests:
-            ACTUAL_VERSES = list(chapters.get(chapter).iterate_verses())
-            VERSES = list(load_verses(chapter).values())
-
-            if len(ACTUAL_VERSES) != len(VERSES):
-                Tests[chapter] = False
-                continue
-
-            for i in range(len(VERSES)):
-                verse = VERSES[i]
-                actual_verse = ACTUAL_VERSES[i]
-                if verse != actual_verse:
-                    Tests[chapter] = False
-                    continue
-            
-            Tests[chapter] = True
-
-        return all(Tests.values())
-
