@@ -35,7 +35,6 @@ import re, definitions
 from kozubenko.os import File
 from kozubenko.print import Print, colored_input
 from models.IChapter import IChapter
-from models.Bible import Chapter
 from models.BibleChapterSets import BibleChapterSets
 from models.bible_chapter_sets.abnormal_verse_count import abnormal_verse_count_Chapters
 
@@ -47,8 +46,8 @@ BIBLE_TXT_POSTPONED = definitions.BIBLE_TXT_POSTPONED
 
 def ALL_CHAPTERS(): return BibleChapterSets.From(definitions.ALL_TRANSLATIONS).Mark(lambda Chapter:chapter_File(BIBLE_TXT, Chapter).exists()).Marked
 
-def chapter_File(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
-def chapter_text(directory:str, PTR:Chapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
+def chapter_File(directory:str, PTR:IChapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt')
+def chapter_text(directory:str, PTR:IChapter): return File(directory, PTR.translation, PTR.book.name, f'{PTR.chapter}.txt').contents(encoding='UTF-8')
 
 def open_Chapters(directory:str, Chapters:BibleChapterSets, step=50):
     """
@@ -121,7 +120,7 @@ def load_verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
 
         return verse_num, start, end
 
-    verse_num, start, end = find_verse_text(1, 0, len(TEXT))
+    verse_num, start, end = find_verse_text(1, 0, 0)
     while end != -1:
         verse_num, start, end = find_verse_text(verse_num, start, end)
 
@@ -150,21 +149,21 @@ def Load_Verses(PTR:IChapter) -> dict[verse_num, verse_text]|None:
 #      Quasi-Vestigial - but still useful!
 #---------------------------------------------------------------------
 
-def is_standard_form(directory:str, PTR:Chapter) -> bool:
+def is_standard_form(directory:str, PTR:IChapter) -> bool:
     text = chapter_text(directory, PTR)
-    expected_total_verses = PTR.total_verses
+    expected_total_verses = PTR.book.total_verses(PTR.chapter)
     lines = re.findall(r'.+', text)   # any single character (except newline), one or more repetitions
     if lines.__len__() == expected_total_verses:
         return True
     return False
 
-def has_missing_verses(PTR:Chapter, directory:str) -> bool:
+def has_missing_verses(directory:str, PTR:IChapter) -> bool:
     """ I lack 100% certainty on this one, edge-case-wise. But keeping as an alternate iterating implementation """
 
     text = chapter_text(directory, PTR)
     start = 0; END = text.__len__()
 
-    for verse in range(1, PTR.total_verses+1):
+    for verse in range(1, PTR.book.total_verses(PTR.chapter)+1):
         start = text[start:END].find(f'{verse} ')
         if start == -1:
             return True
@@ -197,7 +196,7 @@ def identify_Chapters_missing_verses(directory:str, Chapters:BibleChapterSets = 
     **HOWEVER:** These Chapters have been temporarily deleted from the record, and will be dealt with later.
     """
     for PTR in Chapters.iterate():
-        if has_missing_verses(PTR, directory):
+        if has_missing_verses(directory, PTR):
             Chapters.mark(PTR)
         
     return Chapters
