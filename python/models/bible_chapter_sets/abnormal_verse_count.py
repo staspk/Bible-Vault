@@ -18,7 +18,14 @@ class abnormal_verse_count_Chapters(IBibleChapterSet):
     NET = {1026, 1091, 964, 996, 1062, 966, 968, 1033, 1002, 972, 946, 947, 1046, 952, 1179, 990}
 
 
-""" FOSSIL RECORD - necessary, see above note for why """
+
+
+
+
+
+# ----------------------------------------------------------
+#   FOSSIL RECORD - necessary, see above docstring for why
+# ----------------------------------------------------------
 # if self.book.name == '2 Corinthians' and self.chapter == 13 and self.translation in ('NRSV', 'NRT', 'NET'): return 13   # usually: 14
 # if self.book.name == '3 John' and self.chapter == 1 and self.translation in ('KJV', 'NKJV', 'RUSV'): return 14   # usually: 15
 # if self.book.name == 'Revelation' and self.chapter == 12 and self.translation in ('NRSV', 'NET'): return 18   # usually: 17

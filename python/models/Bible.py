@@ -1,8 +1,8 @@
 from typing import Iterator, Optional
 from dataclasses import dataclass, field
 from kozubenko.cls import set_frozen_attr
-from kozubenko.os import File
 from kozubenko.parse import substring_between
+from kozubenko.print import Print
 from kozubenko.utils import assert_int
 import definitions
 
@@ -10,6 +10,13 @@ import definitions
 
 @dataclass(frozen=True)
 class Chapter:
+    """
+    **INIT E.G:**
+    ```python
+    Chapter(BIBLE.EXODUS, 1, translation='NASB')
+    Chapter.From(51, 'NASB')
+    ```
+    """
     book:Book
     chapter:int
     index:int = None
@@ -200,16 +207,18 @@ def Iterate_Bible_Chapters() -> Iterator[tuple[int, str, int]]:
             yield (index, book, chapter)
             index += 1
 
-def construct_Bible(translations=definitions.ALL_TRANSLATIONS, out_path = definitions.BIBLE):
+def Construct_Bible(TRANSLATIONS=definitions.ALL_TRANSLATIONS, OUT = definitions.BIBLE) -> dict[translation, dict[Book, dict[chapter, verses]]]:
     """
     **RETURNS:**
-        - `dict[translation:str][Book][chapter:int][verse:int] = verse_text`
+        - `dict[translation][Book][chapter][verse] = verse_text`
     """
     from models.IChapter import IChapter
     from parser import Load_Verses
 
+    Print.green("Construct_Bible(): has been called - this will take several minutes...")
+
     Bible = {}
-    for translation in translations:
+    for translation in TRANSLATIONS:
         if translation not in Bible: Bible[translation] = {}
 
         for book in BIBLE.Books():
@@ -218,25 +227,40 @@ def construct_Bible(translations=definitions.ALL_TRANSLATIONS, out_path = defini
             for chapter in range(1, book.chapters+1):
                 if chapter not in Bible[translation][book]: Bible[translation][book][chapter] = {}
 
-                verses = Load_Verses(IChapter(translation, book, chapter))
-                if verses is None:
+                chapters = Load_Verses(IChapter(translation, book, chapter))
+                if chapters is None:
                     Bible[translation][book][chapter] = None
                 else:
-                    for verse_num,verse_text in verses.items():
+                    for verse_num,verse_text in chapters.items():
                         Bible[translation][book][chapter][verse_num] = verse_text
+    
+    total_Chapters_with_verses = 0
+    for translations in Bible.values():
+        for books in translations.values():
+            for chapters in books.values():
+                if chapters is not None:
+                    total_Chapters_with_verses += 1
 
-                # for verse_num,verse_text in Load_Verses(IChapter(translation, book, chapter)).items():
-                #     Bible[translation][book][chapter][verse_num] = verse_text
+    Print.yellow(f"   translations -> {TRANSLATIONS}")
+    Print.yellow(f"   chapters: {BIBLE.TOTAL_CHAPTERS*len(TRANSLATIONS)}")
+    Print.red(f"   missing: {BIBLE.TOTAL_CHAPTERS*len(TRANSLATIONS) - total_Chapters_with_verses}")
+    Print.yellow(f"   actual: {total_Chapters_with_verses}")
 
-    File(out_path).save_binary(Bible)
+    if not Test.Construct_Bible(Bible):
+        raise Exception("Construct_Bible(): TESTS NOT PASSED!")
+
+    OUT.save_binary(Bible)
+    Print.green("Construct_Bible(): Complete!")
     return Bible
 
 
 
 
-    
-
-
+type translation = str
+type chapter = int
+type verse_num = int
+type verse_text = str
+type verses = dict[verse_num, verse_text]
 
 class Abbreviations:
     """
@@ -271,3 +295,38 @@ class Abbreviations:
     THIRD_JOHN           = ("3John",  "3JN")
     JUDE                 = ("Jude",   "JUD")
     REVELATION           = ("Rev",    "REV")
+
+
+class Test:
+    @staticmethod
+    def Construct_Bible(Bible:dict[translation, dict[Book, dict[chapter, verses]]]):
+        """
+        Tests check `total_verses` AND `verse_text` has been loaded in correctly for 2 Chapters:
+            - Chapter(BIBLE.FIRST_CHRONICLES, 3, translation='NRT')
+            - Chapter(BIBLE.PSALMS, 42, translation='NET')
+
+        NOTE: TESTS NEED TO BE ADDED
+            abnormal_verse_count_Chapters - at least 12 random NT Critical Text mismatches
+            RUSV/NRT PSALMS - both for: before/during/after eng/rus mismatch (6 TOTAL)
+    
+        """
+        from tests.data.chapters import chapters
+
+        TEST_1 = Chapter(BIBLE.FIRST_CHRONICLES, 3, translation='NRT')
+        TEST_2 = Chapter(BIBLE.PSALMS, 42, translation='NET')
+
+        def test(PTR:Chapter) -> bool:
+            ACTUAL_VERSES = list(chapters.get(PTR).iterate_verses())
+
+            total_verses = 0
+            for verse_text in Bible[PTR.translation][PTR.book][PTR.chapter].values():
+                if verse_text != ACTUAL_VERSES[total_verses]:
+                    return False
+                total_verses += 1
+
+            if total_verses != len(ACTUAL_VERSES):
+                return False
+            
+            return True
+
+        return test(TEST_1) and test(TEST_2)

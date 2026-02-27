@@ -11,7 +11,7 @@ class IChapterIterator(ABC):
 
 class chapters:
     """
-    Some hard-coded chapters to test functions that read chapters in.
+    Hard-coded Bible Chapters that have passed a meticulous eye-test, for testing functions that load in chapter text.
     """
     @staticmethod
     def all() -> list[IChapterIterator]:
